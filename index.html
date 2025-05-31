@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Solicitud de Visado</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Formulario de Solicitud de Visado</h1>
+        <p class="intro-text">Por favor, complete este formulario con la información más precisa posible para su solicitud de visado.</p>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill"></div>
+            <span class="progress-bar-text">0% Completo</span>
+        </div>
+
+        <form id="visaApplicationForm">
+            <fieldset class="form-card country-selection-fieldset">
+                <legend>Selección de País</legend>
+                <div class="form-group">
+                    <label>¿Para qué país desea solicitar el visado?</label>
+                    <div class="radio-group">
+                        <input type="radio" id="visaTypeUSA" name="visaType" value="USA">
+                        <label for="visaTypeUSA" class="country-option-label"><span class="flag">🇺🇸</span> Estados Unidos</label>
+
+                        <input type="radio" id="visaTypeCanada" name="visaType" value="Canada">
+                        <label for="visaTypeCanada" class="country-option-label"><span class="flag">🇨🇦</span> Canadá</label>
+                    </div>
+                    <div id="countrySelectionError" class="error-message" style="display: none;">Por favor, seleccione un país.</div>
+                </div>
+            </fieldset>
+
+            <div id="usaFormSections" style="display: none;">
+                <h2>Información Personal (EE. UU.)</h2>
+                <fieldset class="form-card">
+                    <legend>Datos Personales</legend>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.surname">Apellidos:</label>
+                        <input type="text" id="usa.personalInfo.surname" name="usa.personalInfo.surname" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.givenName">Nombres:</label>
+                        <input type="text" id="usa.personalInfo.givenName" name="usa.personalInfo.givenName" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.dob">Fecha de Nacimiento:</label>
+                        <input type="date" id="usa.personalInfo.dob" name="usa.personalInfo.dob" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.pobCity">Ciudad de Nacimiento:</label>
+                        <input type="text" id="usa.personalInfo.pobCity" name="usa.personalInfo.pobCity" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.pobStateProvince">Provincia/Estado de Nacimiento:</label>
+                        <input type="text" id="usa.personalInfo.pobStateProvince" name="usa.personalInfo.pobStateProvince" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.pobCountry">País de Nacimiento:</label>
+                        <input type="text" id="usa.personalInfo.pobCountry" name="usa.personalInfo.pobCountry" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.nationality">Nacionalidad:</label>
+                        <input type="text" id="usa.personalInfo.nationality" name="usa.personalInfo.nationality" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Tiene otra nacionalidad?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.personalInfo.otherNationalityYes" name="usa.personalInfo.otherNationality" value="Si">
+                            <label for="usa.personalInfo.otherNationalityYes">Sí</label>
+                            <input type="radio" id="usa.personalInfo.otherNationalityNo" name="usa.personalInfo.otherNationality" value="No" checked>
+                            <label for="usa.personalInfo.otherNationalityNo">No</label>
+                        </div>
+                    </div>
+                    <div id="otherNationalityDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.personalInfo.otherNationalityCountry">País de la otra nacionalidad:</label>
+                            <input type="text" id="usa.personalInfo.otherNationalityCountry" name="usa.personalInfo.otherNationalityCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.personalInfo.otherNationalityPassportNumber">Número de pasaporte de la otra nacionalidad:</label>
+                            <input type="text" id="usa.personalInfo.otherNationalityPassportNumber" name="usa.personalInfo.otherNationalityPassportNumber" data-validation-type="passport">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usa.personalInfo.gender">Género:</label>
+                        <select id="usa.personalInfo.gender" name="usa.personalInfo.gender" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.personalInfo.maritalStatus">Estado Civil:</label>
+                        <select id="usa.personalInfo.maritalStatus" name="usa.personalInfo.maritalStatus" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Soltero">Soltero/a</option>
+                            <option value="Casado">Casado/a</option>
+                            <option value="Divorciado">Divorciado/a</option>
+                            <option value="Viudo">Viudo/a</option>
+                            <option value="Separado">Separado/a legalmente</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Ha usado otros nombres (de soltera, religioso, profesional, etc.)?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.personalInfo.otherNamesUsedYes" name="usa.personalInfo.otherNamesUsed" value="Si">
+                            <label for="usa.personalInfo.otherNamesUsedYes">Sí</label>
+                            <input type="radio" id="usa.personalInfo.otherNamesUsedNo" name="usa.personalInfo.otherNamesUsed" value="No" checked>
+                            <label for="usa.personalInfo.otherNamesUsedNo">No</label>
+                        </div>
+                    </div>
+                    <div id="otherNamesDetails" class="conditional-section">
+                        <div id="otherNamesContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addOtherNameBtn" class="add-btn">Añadir Otro Nombre</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Tiene un nombre con telecódigo?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.personalInfo.telecodeNameYes" name="usa.personalInfo.telecodeName" value="Si">
+                            <label for="usa.personalInfo.telecodeNameYes">Sí</label>
+                            <input type="radio" id="usa.personalInfo.telecodeNameNo" name="usa.personalInfo.telecodeName" value="No" checked>
+                            <label for="usa.personalInfo.telecodeNameNo">No</label>
+                        </div>
+                    </div>
+                    <div id="telecodeNameDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.personalInfo.telecodeSurname">Apellidos (Telecódigo):</label>
+                            <input type="text" id="usa.personalInfo.telecodeSurname" name="usa.personalInfo.telecodeSurname" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.personalInfo.telecodeGivenName">Nombres (Telecódigo):</label>
+                            <input type="text" id="usa.personalInfo.telecodeGivenName" name="usa.personalInfo.telecodeGivenName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-card">
+                    <legend>Información de Pasaporte</legend>
+                    <div class="form-group">
+                        <label for="usa.passportInfo.passportNumber">Número de Pasaporte:</label>
+                        <input type="text" id="usa.passportInfo.passportNumber" name="usa.passportInfo.passportNumber" required data-validation-type="passport">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.passportInfo.passportBookNumber">Número de Libro de Pasaporte (si aplica):</label>
+                        <input type="text" id="usa.passportInfo.passportBookNumber" name="usa.passportInfo.passportBookNumber" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.passportInfo.passportIssueDate">Fecha de Emisión del Pasaporte:</label>
+                        <input type="date" id="usa.passportInfo.passportIssueDate" name="usa.passportInfo.passportIssueDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.passportInfo.passportExpiryDate">Fecha de Caducidad del Pasaporte:</label>
+                        <input type="date" id="usa.passportInfo.passportExpiryDate" name="usa.passportInfo.passportExpiryDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.passportInfo.passportIssuingCountry">País de Emisión del Pasaporte:</label>
+                        <input type="text" id="usa.passportInfo.passportIssuingCountry" name="usa.passportInfo.passportIssuingCountry" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Ha perdido o le han robado un pasaporte?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.passportInfo.lostPassportYes" name="usa.passportInfo.lostPassport" value="Si">
+                            <label for="usa.passportInfo.lostPassportYes">Sí</label>
+                            <input type="radio" id="usa.passportInfo.lostPassportNo" name="usa.passportInfo.lostPassport" value="No" checked>
+                            <label for="usa.passportInfo.lostPassportNo">No</label>
+                        </div>
+                    </div>
+                    <div id="lostPassportDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.passportInfo.lostPassportExplanation">Explique cuándo y dónde se perdió o fue robado:</label>
+                            <textarea id="usa.passportInfo.lostPassportExplanation" name="usa.passportInfo.lostPassportExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-card">
+                    <legend>Información de Contacto</legend>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.addressLine1">Dirección Línea 1:</label>
+                        <input type="text" id="usa.contactInfo.addressLine1" name="usa.contactInfo.addressLine1" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.addressLine2">Dirección Línea 2 (Opcional):</label>
+                        <input type="text" id="usa.contactInfo.addressLine2" name="usa.contactInfo.addressLine2" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.city">Ciudad:</label>
+                        <input type="text" id="usa.contactInfo.city" name="usa.contactInfo.city" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.stateProvince">Provincia/Estado:</label>
+                        <input type="text" id="usa.contactInfo.stateProvince" name="usa.contactInfo.stateProvince" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.zipCode">Código Postal:</label>
+                        <input type="text" id="usa.contactInfo.zipCode" name="usa.contactInfo.zipCode" required data-validation-type="zipcode">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.country">País de Residencia:</label>
+                        <input type="text" id="usa.contactInfo.country" name="usa.contactInfo.country" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.primaryPhone">Teléfono Principal:</label>
+                        <input type="tel" id="usa.contactInfo.primaryPhone" name="usa.contactInfo.primaryPhone" required data-validation-type="phone">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.secondaryPhone">Teléfono Secundario (Opcional):</label>
+                        <input type="tel" id="usa.contactInfo.secondaryPhone" name="usa.contactInfo.secondaryPhone" data-validation-type="phone" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.workPhone">Teléfono del Trabajo (Opcional):</label>
+                        <input type="tel" id="usa.contactInfo.workPhone" name="usa.contactInfo.workPhone" data-validation-type="phone" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.contactInfo.email">Correo Electrónico:</label>
+                        <input type="email" id="usa.contactInfo.email" name="usa.contactInfo.email" required data-validation-type="email">
+                        <div class="error-message"></div>
+                    </div>
+                </fieldset>
+
+                <h2>Información de Viaje (EE. UU.)</h2>
+                <fieldset class="form-card">
+                    <legend>Detalles del Viaje</legend>
+                    <div class="form-group">
+                        <label for="usa.travelInfo.purpose">Propósito del Viaje a EE. UU.:</label>
+                        <select id="usa.travelInfo.purpose" name="usa.travelInfo.purpose" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Turismo">Turismo</option>
+                            <option value="Negocios">Negocios</option>
+                            <option value="Estudios">Estudios</option>
+                            <option value="Empleo">Empleo</option>
+                            <option value="Tránsito">Tránsito</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.travelInfo.specificPurpose">Si seleccionó "Otro", especifique el propósito:</label>
+                        <input type="text" id="usa.travelInfo.specificPurpose" name="usa.travelInfo.specificPurpose" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.travelInfo.arrivalDate">Fecha de Llegada Prevista a EE. UU.:</label>
+                        <input type="date" id="usa.travelInfo.arrivalDate" name="usa.travelInfo.arrivalDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.travelInfo.stayDuration">Duración Prevista de la Estancia en EE. UU.:</label>
+                        <input type="text" id="usa.travelInfo.stayDuration" name="usa.travelInfo.stayDuration" placeholder="Ej: 2 semanas, 3 meses" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.travelInfo.usAddress">Dirección en EE. UU. donde se alojará:</label>
+                        <input type="text" id="usa.travelInfo.usAddress" name="usa.travelInfo.usAddress" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Quién paga su viaje?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.travelInfo.personPayingTravelSelf" name="usa.travelInfo.personPayingTravel" value="Yo mismo" checked>
+                            <label for="usa.travelInfo.personPayingTravelSelf">Yo mismo</label>
+                            <input type="radio" id="usa.travelInfo.personPayingTravelOther" name="usa.travelInfo.personPayingTravel" value="Otro">
+                            <label for="usa.travelInfo.personPayingTravelOther">Otro</label>
+                        </div>
+                    </div>
+                    <div id="otherPayerDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.travelInfo.otherPayerName">Nombre completo de la persona/entidad que paga:</label>
+                            <input type="text" id="usa.travelInfo.otherPayerName" name="usa.travelInfo.otherPayerName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.travelInfo.otherPayerRelationship">Relación con la persona/entidad que paga:</label>
+                            <input type="text" id="usa.travelInfo.otherPayerRelationship" name="usa.travelInfo.otherPayerRelationship" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.travelInfo.otherPayerPhone">Teléfono de contacto de la persona/entidad que paga:</label>
+                            <input type="tel" id="usa.travelInfo.otherPayerPhone" name="usa.travelInfo.otherPayerPhone" data-validation-type="phone">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.travelInfo.otherPayerAddress">Dirección de la persona/entidad que paga:</label>
+                            <input type="text" id="usa.travelInfo.otherPayerAddress" name="usa.travelInfo.otherPayerAddress" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Viaja con otras personas?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.travelInfo.travelingWithOthersYes" name="usa.travelInfo.travelingWithOthers" value="Si">
+                            <label for="usa.travelInfo.travelingWithOthersYes">Sí</label>
+                            <input type="radio" id="usa.travelInfo.travelingWithOthersNo" name="usa.travelInfo.travelingWithOthers" value="No" checked>
+                            <label for="usa.travelInfo.travelingWithOthersNo">No</label>
+                        </div>
+                    </div>
+                    <div id="travelingWithOthersDetails" class="conditional-section">
+                        <div id="travelCompanionsContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addTravelCompanionBtn" class="add-btn">Añadir Compañero de Viaje</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha viajado a EE. UU. anteriormente?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.travelInfo.previousUsTravelYes" name="usa.travelInfo.previousUsTravel" value="Si">
+                            <label for="usa.travelInfo.previousUsTravelYes">Sí</label>
+                            <input type="radio" id="usa.travelInfo.previousUsTravelNo" name="usa.travelInfo.previousUsTravel" value="No" checked>
+                            <label for="usa.travelInfo.previousUsTravelNo">No</label>
+                        </div>
+                    </div>
+                    <div id="previousUsTravelDetails" class="conditional-section">
+                        <div id="previousUsTravelContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addPreviousUsTravelBtn" class="add-btn">Añadir Viaje Anterior</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha tenido una visa de EE. UU. anteriormente?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.travelInfo.previousUsVisaYes" name="usa.travelInfo.previousUsVisa" value="Si">
+                            <label for="usa.travelInfo.previousUsVisaYes">Sí</label>
+                            <input type="radio" id="usa.travelInfo.previousUsVisaNo" name="usa.travelInfo.previousUsVisa" value="No" checked>
+                            <label for="usa.travelInfo.previousUsVisaNo">No</label>
+                        </div>
+                    </div>
+                    <div id="previousUsVisaDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.travelInfo.previousUsVisaNumber">Número de visa anterior:</label>
+                            <input type="text" id="usa.travelInfo.previousUsVisaNumber" name="usa.travelInfo.previousUsVisaNumber" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.travelInfo.previousUsVisaType">Tipo de visa anterior:</label>
+                            <input type="text" id="usa.travelInfo.previousUsVisaType" name="usa.travelInfo.previousUsVisaType" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.travelInfo.previousUsVisaIssueDate">Fecha de emisión de visa anterior:</label>
+                            <input type="date" id="usa.travelInfo.previousUsVisaIssueDate" name="usa.travelInfo.previousUsVisaIssueDate" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.travelInfo.previousUsVisaExpiryDate">Fecha de caducidad de visa anterior:</label>
+                            <input type="date" id="usa.travelInfo.previousUsVisaExpiryDate" name="usa.travelInfo.previousUsVisaExpiryDate" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>¿Es la misma clase de visa que solicita ahora?</label>
+                            <div class="radio-group">
+                                <input type="radio" id="usa.travelInfo.previousUsVisaSameTypeYes" name="usa.travelInfo.previousUsVisaSameType" value="Si">
+                                <label for="usa.travelInfo.previousUsVisaSameTypeYes">Sí</label>
+                                <input type="radio" id="usa.travelInfo.previousUsVisaSameTypeNo" name="usa.travelInfo.previousUsVisaSameType" value="No" checked>
+                                <label for="usa.travelInfo.previousUsVisaSameTypeNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Alguna vez le han denegado una visa de EE. UU., o le han negado la entrada a EE. UU., o ha retirado su solicitud de entrada en un puerto de entrada de EE. UU.?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.travelInfo.deniedUsVisaYes" name="usa.travelInfo.deniedUsVisa" value="Si">
+                            <label for="usa.travelInfo.deniedUsVisaYes">Sí</label>
+                            <input type="radio" id="usa.travelInfo.deniedUsVisaNo" name="usa.travelInfo.deniedUsVisa" value="No" checked>
+                            <label for="usa.travelInfo.deniedUsVisaNo">No</label>
+                        </div>
+                    </div>
+                    <div id="deniedUsVisaDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.travelInfo.deniedUsVisaExplanation">Explique los detalles:</label>
+                            <textarea id="usa.travelInfo.deniedUsVisaExplanation" name="usa.travelInfo.deniedUsVisaExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Alguna vez se le ha cancelado o revocado una visa de EE. UU.?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.travelInfo.visaCancelledYes" name="usa.travelInfo.visaCancelled" value="Si">
+                            <label for="usa.travelInfo.visaCancelledYes">Sí</label>
+                            <input type="radio" id="usa.travelInfo.visaCancelledNo" name="usa.travelInfo.visaCancelled" value="No" checked>
+                            <label for="usa.travelInfo.visaCancelledNo">No</label>
+                        </div>
+                    </div>
+                    <div id="visaCancelledDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.travelInfo.visaCancelledExplanation">Explique los detalles:</label>
+                            <textarea id="usa.travelInfo.visaCancelledExplanation" name="usa.travelInfo.visaCancelledExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <h2>Información Familiar (EE. UU.)</h2>
+                <fieldset class="form-card">
+                    <legend>Datos Familiares</legend>
+                    <div class="form-group">
+                        <label for="usa.familyInfo.fatherSurname">Apellidos del Padre:</label>
+                        <input type="text" id="usa.familyInfo.fatherSurname" name="usa.familyInfo.fatherSurname" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.familyInfo.fatherGivenName">Nombres del Padre:</label>
+                        <input type="text" id="usa.familyInfo.fatherGivenName" name="usa.familyInfo.fatherGivenName" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.familyInfo.fatherDob">Fecha de Nacimiento del Padre:</label>
+                        <input type="date" id="usa.familyInfo.fatherDob" name="usa.familyInfo.fatherDob" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿La dirección del padre es la misma que la suya?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.familyInfo.fatherAddressSameYes" name="usa.familyInfo.fatherAddressSame" value="Si" checked>
+                            <label for="usa.familyInfo.fatherAddressSameYes">Sí</label>
+                            <input type="radio" id="usa.familyInfo.fatherAddressSameNo" name="usa.familyInfo.fatherAddressSame" value="No">
+                            <label for="usa.familyInfo.fatherAddressSameNo">No</label>
+                        </div>
+                    </div>
+                    <div id="fatherAddressDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.familyInfo.fatherAddress">Dirección del Padre:</label>
+                            <input type="text" id="usa.familyInfo.fatherAddress" name="usa.familyInfo.fatherAddress" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usa.familyInfo.motherSurname">Apellidos de la Madre:</label>
+                        <input type="text" id="usa.familyInfo.motherSurname" name="usa.familyInfo.motherSurname" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.familyInfo.motherGivenName">Nombres de la Madre:</label>
+                        <input type="text" id="usa.familyInfo.motherGivenName" name="usa.familyInfo.motherGivenName" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.familyInfo.motherDob">Fecha de Nacimiento de la Madre:</label>
+                        <input type="date" id="usa.familyInfo.motherDob" name="usa.familyInfo.motherDob" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿La dirección de la madre es la misma que la suya?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.familyInfo.motherAddressSameYes" name="usa.familyInfo.motherAddressSame" value="Si" checked>
+                            <label for="usa.familyInfo.motherAddressSameYes">Sí</label>
+                            <input type="radio" id="usa.familyInfo.motherAddressSameNo" name="usa.familyInfo.motherAddressSame" value="No">
+                            <label for="usa.familyInfo.motherAddressSameNo">No</label>
+                        </div>
+                    </div>
+                    <div id="motherAddressDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.familyInfo.motherAddress">Dirección de la Madre:</label>
+                            <input type="text" id="usa.familyInfo.motherAddress" name="usa.familyInfo.motherAddress" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Tiene cónyuge?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.familyInfo.hasSpouseYes" name="usa.familyInfo.hasSpouse" value="Si">
+                            <label for="usa.familyInfo.hasSpouseYes">Sí</label>
+                            <input type="radio" id="usa.familyInfo.hasSpouseNo" name="usa.familyInfo.hasSpouse" value="No" checked>
+                            <label for="usa.familyInfo.hasSpouseNo">No</label>
+                        </div>
+                    </div>
+                    <div id="spouseDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.familyInfo.spouse.surname">Apellidos del Cónyuge:</label>
+                            <input type="text" id="usa.familyInfo.spouse.surname" name="usa.familyInfo.spouse.surname" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.familyInfo.spouse.givenName">Nombres del Cónyuge:</label>
+                            <input type="text" id="usa.familyInfo.spouse.givenName" name="usa.familyInfo.spouse.givenName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.familyInfo.spouse.dob">Fecha de Nacimiento del Cónyuge:</label>
+                            <input type="date" id="usa.familyInfo.spouse.dob" name="usa.familyInfo.spouse.dob" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.familyInfo.spouse.nationality">Nacionalidad del Cónyuge:</label>
+                            <input type="text" id="usa.familyInfo.spouse.nationality" name="usa.familyInfo.spouse.nationality" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.familyInfo.spouse.pobCity">Ciudad de Nacimiento del Cónyuge:</label>
+                            <input type="text" id="usa.familyInfo.spouse.pobCity" name="usa.familyInfo.spouse.pobCity" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.familyInfo.spouse.pobCountry">País de Nacimiento del Cónyuge:</label>
+                            <input type="text" id="usa.familyInfo.spouse.pobCountry" name="usa.familyInfo.spouse.pobCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>¿La dirección del cónyuge es la misma que la suya?</label>
+                            <div class="radio-group">
+                                <input type="radio" id="usa.familyInfo.spouse.addressSameYes" name="usa.familyInfo.spouse.addressSame" value="Si" checked>
+                                <label for="usa.familyInfo.spouse.addressSameYes">Sí</label>
+                                <input type="radio" id="usa.familyInfo.spouse.addressSameNo" name="usa.familyInfo.spouse.addressSame" value="No">
+                                <label for="usa.familyInfo.spouse.addressSameNo">No</label>
+                            </div>
+                        </div>
+                        <div id="spouseAddressDetails" class="conditional-section">
+                            <div class="form-group">
+                                <label for="usa.familyInfo.spouse.address">Dirección del Cónyuge:</label>
+                                <input type="text" id="usa.familyInfo.spouse.address" name="usa.familyInfo.spouse.address" data-validation-type="text">
+                                <div class="error-message"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Tiene hijos?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.familyInfo.hasChildrenYes" name="usa.familyInfo.hasChildren" value="Si">
+                            <label for="usa.familyInfo.hasChildrenYes">Sí</label>
+                            <input type="radio" id="usa.familyInfo.hasChildrenNo" name="usa.familyInfo.hasChildren" value="No" checked>
+                            <label for="usa.familyInfo.hasChildrenNo">No</label>
+                        </div>
+                    </div>
+                    <div id="childrenDetails" class="conditional-section">
+                        <div id="childrenContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addChildBtn" class="add-btn">Añadir Hijo</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Tiene familiares en EE. UU. (padres, cónyuge, hijos, hermanos)?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.familyInfo.usFamilyYes" name="usa.familyInfo.usFamily" value="Si">
+                            <label for="usa.familyInfo.usFamilyYes">Sí</label>
+                            <input type="radio" id="usa.familyInfo.usFamilyNo" name="usa.familyInfo.usFamily" value="No" checked>
+                            <label for="usa.familyInfo.usFamilyNo">No</label>
+                        </div>
+                    </div>
+                    <div id="usFamilyDetails" class="conditional-section">
+                        <div id="usFamilyContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addUsFamilyBtn" class="add-btn">Añadir Familiar en EE. UU.</button>
+                    </div>
+                </fieldset>
+
+                <h2>Información de Empleo y Educación (EE. UU.)</h2>
+                <fieldset class="form-card">
+                    <legend>Empleo y Educación</legend>
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.currentOccupation">Ocupación Actual:</label>
+                        <input type="text" id="usa.workEduInfo.currentOccupation" name="usa.workEduInfo.currentOccupation" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.employerName">Nombre del Empleador Actual:</label>
+                        <input type="text" id="usa.workEduInfo.employerName" name="usa.workEduInfo.employerName" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.employerAddress">Dirección del Empleador:</label>
+                        <input type="text" id="usa.workEduInfo.employerAddress" name="usa.workEduInfo.employerAddress" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.employerPhone">Teléfono del Empleador:</label>
+                        <input type="tel" id="usa.workEduInfo.employerPhone" name="usa.workEduInfo.employerPhone" required data-validation-type="phone">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.startDate">Fecha de Inicio en el Empleo Actual:</label>
+                        <input type="date" id="usa.workEduInfo.startDate" name="usa.workEduInfo.startDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.monthlySalary">Salario Mensual (en moneda local):</label>
+                        <input type="number" id="usa.workEduInfo.monthlySalary" name="usa.workEduInfo.monthlySalary" data-validation-type="number" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.jobDescription">Descripción de sus funciones (Opcional):</label>
+                        <textarea id="usa.workEduInfo.jobDescription" name="usa.workEduInfo.jobDescription" rows="3" data-validation-type="text" data-optional="true"></textarea>
+                        <div class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha tenido empleo anterior?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.workEduInfo.previousEmploymentYes" name="usa.workEduInfo.previousEmployment" value="Si">
+                            <label for="usa.workEduInfo.previousEmploymentYes">Sí</label>
+                            <input type="radio" id="usa.workEduInfo.previousEmploymentNo" name="usa.workEduInfo.previousEmployment" value="No" checked>
+                            <label for="usa.workEduInfo.previousEmploymentNo">No</label>
+                        </div>
+                    </div>
+                    <div id="previousEmploymentDetails" class="conditional-section">
+                        <div id="previousEmploymentContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addPreviousEmployerBtn" class="add-btn">Añadir Empleo Anterior</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Cuál es su nivel educativo más alto?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.workEduInfo.highestEducationHighSchool" name="usa.workEduInfo.highestEducation" value="Bachillerato" checked>
+                            <label for="usa.workEduInfo.highestEducationHighSchool">Bachillerato</label>
+                            <input type="radio" id="usa.workEduInfo.highestEducationUniversity" name="usa.workEduInfo.highestEducation" value="Universidad">
+                            <label for="usa.workEduInfo.highestEducationUniversity">Universidad</label>
+                            <input type="radio" id="usa.workEduInfo.highestEducationOther" name="usa.workEduInfo.highestEducation" value="Otro">
+                            <label for="usa.workEduInfo.highestEducationOther">Otro</label>
+                        </div>
+                    </div>
+                    <div id="educationDetails" class="conditional-section">
+                        <div id="educationContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addEducationBtn" class="add-btn">Añadir Educación</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usa.workEduInfo.languagesSpoken">Idiomas que habla (separados por coma):</label>
+                        <input type="text" id="usa.workEduInfo.languagesSpoken" name="usa.workEduInfo.languagesSpoken" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Ha visitado otros países en los últimos cinco años?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.workEduInfo.countriesVisitedYes" name="usa.workEduInfo.countriesVisited" value="Si">
+                            <label for="usa.workEduInfo.countriesVisitedYes">Sí</label>
+                            <input type="radio" id="usa.workEduInfo.countriesVisitedNo" name="usa.workEduInfo.countriesVisited" value="No" checked>
+                            <label for="usa.workEduInfo.countriesVisitedNo">No</label>
+                        </div>
+                    </div>
+                    <div id="countriesVisitedDetails" class="conditional-section">
+                        <div id="countriesVisitedContainer" class="dynamic-fields-container">
+                            </div>
+                        <button type="button" id="addCountryVisitedBtn" class="add-btn">Añadir País Visitado</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Tiene habilidades especializadas o entrenamiento (armas de fuego, explosivos, nuclear, biológico, químico)?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.workEduInfo.specializedSkillsYes" name="usa.workEduInfo.specializedSkills" value="Si">
+                            <label for="usa.workEduInfo.specializedSkillsYes">Sí</label>
+                            <input type="radio" id="usa.workEduInfo.specializedSkillsNo" name="usa.workEduInfo.specializedSkills" value="No" checked>
+                            <label for="usa.workEduInfo.specializedSkillsNo">No</label>
+                        </div>
+                    </div>
+                    <div id="specializedSkillsDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.workEduInfo.specializedSkillsDescription">Describa sus habilidades:</label>
+                            <textarea id="usa.workEduInfo.specializedSkillsDescription" name="usa.workEduInfo.specializedSkillsDescription" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha servido en el ejército o fuerzas armadas?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.workEduInfo.militaryServiceYes" name="usa.workEduInfo.militaryService" value="Si">
+                            <label for="usa.workEduInfo.militaryServiceYes">Sí</label>
+                            <input type="radio" id="usa.workEduInfo.militaryServiceNo" name="usa.workEduInfo.militaryService" value="No" checked>
+                            <label for="usa.workEduInfo.militaryServiceNo">No</label>
+                        </div>
+                    </div>
+                    <div id="militaryServiceDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.workEduInfo.militaryCountry">País de servicio:</label>
+                            <input type="text" id="usa.workEduInfo.militaryCountry" name="usa.workEduInfo.militaryCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.workEduInfo.militaryBranch">Rama de servicio:</label>
+                            <input type="text" id="usa.workEduInfo.militaryBranch" name="usa.workEduInfo.militaryBranch" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.workEduInfo.militaryRank">Rango:</label>
+                            <input type="text" id="usa.workEduInfo.militaryRank" name="usa.workEduInfo.militaryRank" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.workEduInfo.militaryDuties">Funciones/especialidad:</label>
+                            <textarea id="usa.workEduInfo.militaryDuties" name="usa.workEduInfo.militaryDuties" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.workEduInfo.militaryStartDate">Fecha de inicio del servicio:</label>
+                            <input type="date" id="usa.workEduInfo.militaryStartDate" name="usa.workEduInfo.militaryStartDate" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usa.workEduInfo.militaryEndDate">Fecha de fin del servicio:</label>
+                            <input type="date" id="usa.workEduInfo.militaryEndDate" name="usa.workEduInfo.militaryEndDate" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <h2>Información de Seguridad y Antecedentes (EE. UU.)</h2>
+                <fieldset class="form-card">
+                    <legend>Preguntas de Seguridad</legend>
+                    <p class="warning-text">Responda a todas las preguntas con "Sí" o "No". Si responde "Sí" a alguna, deberá proporcionar una explicación.</p>
+                    <div class="form-group">
+                        <label>¿Tiene algún trastorno físico o mental, o es usted un consumidor de drogas o adicto?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.healthYes" name="usa.securityInfo.health" value="Si">
+                            <label for="usa.securityInfo.healthYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.healthNo" name="usa.securityInfo.health" value="No" checked>
+                            <label for="usa.securityInfo.healthNo">No</label>
+                        </div>
+                    </div>
+                    <div id="healthDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.healthExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.healthExplanation" name="usa.securityInfo.healthExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Alguna vez ha sido arrestado o condenado por algún delito, o ha cometido un delito?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.criminalYes" name="usa.securityInfo.criminal" value="Si">
+                            <label for="usa.securityInfo.criminalYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.criminalNo" name="usa.securityInfo.criminal" value="No" checked>
+                            <label for="usa.securityInfo.criminalNo">No</label>
+                        </div>
+                    </div>
+                    <div id="criminalDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.criminalExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.criminalExplanation" name="usa.securityInfo.criminalExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha violado alguna ley relacionada con sustancias controladas?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.drugsYes" name="usa.securityInfo.drugs" value="Si">
+                            <label for="usa.securityInfo.drugsYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.drugsNo" name="usa.securityInfo.drugs" value="No" checked>
+                            <label for="usa.securityInfo.drugsNo">No</label>
+                        </div>
+                    </div>
+                    <div id="drugsDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.drugsExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.drugsExplanation" name="usa.securityInfo.drugsExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Alguna vez ha estado involucrado en la prostitución o la trata de personas?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.prostitutionYes" name="usa.securityInfo.prostitution" value="Si">
+                            <label for="usa.securityInfo.prostitutionYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.prostitutionNo" name="usa.securityInfo.prostitution" value="No" checked>
+                            <label for="usa.securityInfo.prostitutionNo">No</label>
+                        </div>
+                    </div>
+                    <div id="prostitutionDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.prostitutionExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.prostitutionExplanation" name="usa.securityInfo.prostitutionExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha estado involucrado en el lavado de dinero?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.moneyLaunderingYes" name="usa.securityInfo.moneyLaundering" value="Si">
+                            <label for="usa.securityInfo.moneyLaunderingYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.moneyLaunderingNo" name="usa.securityInfo.moneyLaundering" value="No" checked>
+                            <label for="usa.securityInfo.moneyLaunderingNo">No</label>
+                        </div>
+                    </div>
+                    <div id="moneyLaunderingDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.moneyLaunderingExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.moneyLaunderingExplanation" name="usa.securityInfo.moneyLaunderingExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha estado involucrado en la trata de personas?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.humanTraffickingYes" name="usa.securityInfo.humanTrafficking" value="Si">
+                            <label for="usa.securityInfo.humanTraffickingYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.humanTraffickingNo" name="usa.securityInfo.humanTrafficking" value="No" checked>
+                            <label for="usa.securityInfo.humanTraffickingNo">No</label>
+                        </div>
+                    </div>
+                    <div id="humanTraffickingDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.humanTraffickingExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.humanTraffickingExplanation" name="usa.securityInfo.humanTraffickingExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Alguna vez se ha quedado más tiempo del permitido en EE. UU. o ha violado los términos de una visa de EE. UU.?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.overstayYes" name="usa.securityInfo.overstay" value="Si">
+                            <label for="usa.securityInfo.overstayYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.overstayNo" name="usa.securityInfo.overstay" value="No" checked>
+                            <label for="usa.securityInfo.overstayNo">No</label>
+                        </div>
+                    </div>
+                    <div id="overstayDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.overstayExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.overstayExplanation" name="usa.securityInfo.overstayExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha buscado obtener o ha ayudado a otros a obtener una visa o entrada a EE. UU. mediante fraude o tergiversación intencional de un hecho material?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.misrepresentationYes" name="usa.securityInfo.misrepresentation" value="Si">
+                            <label for="usa.securityInfo.misrepresentationYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.misrepresentationNo" name="usa.securityInfo.misrepresentation" value="No" checked>
+                            <label for="usa.securityInfo.misrepresentationNo">No</label>
+                        </div>
+                    </div>
+                    <div id="misrepresentationDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.misrepresentationExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.misrepresentationExplanation" name="usa.securityInfo.misrepresentationExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Alguna vez ha sido deportado de EE. UU. o se le ha negado la entrada a EE. UU. y se le ha ordenado que se marche?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.deportedYes" name="usa.securityInfo.deported" value="Si">
+                            <label for="usa.securityInfo.deportedYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.deportedNo" name="usa.securityInfo.deported" value="No" checked>
+                            <label for="usa.securityInfo.deportedNo">No</label>
+                        </div>
+                    </div>
+                    <div id="deportedDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.deportedExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.deportedExplanation" name="usa.securityInfo.deportedExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha estado involucrado en actividades terroristas o es miembro de una organización terrorista?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.terroristYes" name="usa.securityInfo.terrorist" value="Si">
+                            <label for="usa.securityInfo.terroristYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.terroristNo" name="usa.securityInfo.terrorist" value="No" checked>
+                            <label for="usa.securityInfo.terroristNo">No</label>
+                        </div>
+                    </div>
+                    <div id="terroristDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.terroristExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.terroristExplanation" name="usa.securityInfo.terroristExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Tiene la intención de participar en actividades terroristas en EE. UU.?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.intendTerrorismYes" name="usa.securityInfo.intendTerrorism" value="Si">
+                            <label for="usa.securityInfo.intendTerrorismYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.intendTerrorismNo" name="usa.securityInfo.intendTerrorism" value="No" checked>
+                            <label for="usa.securityInfo.intendTerrorismNo">No</label>
+                        </div>
+                    </div>
+                    <div id="intendTerrorismDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.intendTerrorismExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.intendTerrorismExplanation" name="usa.securityInfo.intendTerrorismExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha sido miembro o representante de una organización terrorista?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.terroristOrgMemberYes" name="usa.securityInfo.terroristOrgMember" value="Si">
+                            <label for="usa.securityInfo.terroristOrgMemberYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.terroristOrgMemberNo" name="usa.securityInfo.terroristOrgMember" value="No" checked>
+                            <label for="usa.securityInfo.terroristOrgMemberNo">No</label>
+                        </div>
+                    </div>
+                    <div id="terroristOrgMemberDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.terroristOrgMemberExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.terroristOrgMemberExplanation" name="usa.securityInfo.terroristOrgMemberExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Es usted sujeto de una "carga pública" en EE. UU.?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="usa.securityInfo.publicChargeYes" name="usa.securityInfo.publicCharge" value="Si">
+                            <label for="usa.securityInfo.publicChargeYes">Sí</label>
+                            <input type="radio" id="usa.securityInfo.publicChargeNo" name="usa.securityInfo.publicCharge" value="No" checked>
+                            <label for="usa.securityInfo.publicChargeNo">No</label>
+                        </div>
+                    </div>
+                    <div id="publicChargeDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="usa.securityInfo.publicChargeExplanation">Explique los detalles:</label>
+                            <textarea id="usa.securityInfo.publicChargeExplanation" name="usa.securityInfo.publicChargeExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div id="canadaFormSections" style="display: none;">
+                <h2>Información Personal (Canadá)</h2>
+                <fieldset class="form-card">
+                    <legend>Datos Personales</legend>
+                    <div class="form-group">
+                        <label for="canada.personalInfo.surname">Apellidos:</label>
+                        <input type="text" id="canada.personalInfo.surname" name="canada.personalInfo.surname" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.personalInfo.givenName">Nombres:</label>
+                        <input type="text" id="canada.personalInfo.givenName" name="canada.personalInfo.givenName" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.personalInfo.dob">Fecha de Nacimiento:</label>
+                        <input type="date" id="canada.personalInfo.dob" name="canada.personalInfo.dob" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.personalInfo.nationality">Nacionalidad:</label>
+                        <input type="text" id="canada.personalInfo.nationality" name="canada.personalInfo.nationality" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.personalInfo.passportNumber">Número de Pasaporte:</label>
+                        <input type="text" id="canada.personalInfo.passportNumber" name="canada.personalInfo.passportNumber" required data-validation-type="passport">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.personalInfo.passportExpiryDate">Fecha de Caducidad del Pasaporte:</label>
+                        <input type="date" id="canada.personalInfo.passportExpiryDate" name="canada.personalInfo.passportExpiryDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                </fieldset>
+
+                <h2>Información de Viaje (Canadá)</h2>
+                <fieldset class="form-card">
+                    <legend>Detalles del Viaje</legend>
+                    <div class="form-group">
+                        <label for="canada.travelInfo.purpose">Propósito del Viaje a Canadá:</label>
+                        <select id="canada.travelInfo.purpose" name="canada.travelInfo.purpose" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Turismo">Turismo</option>
+                            <option value="Estudios">Estudios</option>
+                            <option value="Trabajo">Trabajo</option>
+                            <option value="Visita Familiar">Visita Familiar</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.travelInfo.arrivalDate">Fecha de Llegada Prevista a Canadá:</label>
+                        <input type="date" id="canada.travelInfo.arrivalDate" name="canada.travelInfo.arrivalDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.travelInfo.stayDuration">Duración Prevista de la Estancia en Canadá:</label>
+                        <input type="text" id="canada.travelInfo.stayDuration" name="canada.travelInfo.stayDuration" placeholder="Ej: 2 semanas, 3 meses" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Dispone de fondos suficientes para su estancia en Canadá?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.travelInfo.hasFundsYes" name="canada.travelInfo.hasFunds" value="Si">
+                            <label for="canada.travelInfo.hasFundsYes">Sí</label>
+                            <input type="radio" id="canada.travelInfo.hasFundsNo" name="canada.travelInfo.hasFunds" value="No" checked>
+                            <label for="canada.travelInfo.hasFundsNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canFundsDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.travelInfo.fundsExplanation">Explique cómo financiará su viaje:</label>
+                            <textarea id="canada.travelInfo.fundsExplanation" name="canada.travelInfo.fundsExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <h2>Información de Seguridad y Antecedentes (Canadá)</h2>
+                <fieldset class="form-card">
+                    <legend>Preguntas de Seguridad</legend>
+                    <p class="warning-text">Responda a todas las preguntas con "Sí" o "No". Si responde "Sí" a alguna, deberá proporcionar una explicación.</p>
+                    <div class="form-group">
+                        <label>¿Alguna vez ha sido arrestado o condenado por algún delito, o ha cometido un delito?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.securityInfo.criminalYes" name="canada.securityInfo.criminal" value="Si">
+                            <label for="canada.securityInfo.criminalYes">Sí</label>
+                            <input type="radio" id="canada.securityInfo.criminalNo" name="canada.securityInfo.criminal" value="No" checked>
+                            <label for="canada.securityInfo.criminalNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canCriminalDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.securityInfo.criminalExplanation">Explique los detalles:</label>
+                            <textarea id="canada.securityInfo.criminalExplanation" name="canada.securityInfo.criminalExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="saveProgressBtn" class="save-btn">Guardar Progreso</button>
+                <button type="button" id="reviewAndSubmitBtn" class="submit-btn">Revisar y Enviar Información</button>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Solicitud de Visado. Todos los derechos reservados.</p>
+    </footer>
+
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modalTitle">Título del Mensaje</h2>
+            <p id="modalMessage">Este es un mensaje de ejemplo.</p>
+            <div class="modal-buttons">
+                <button id="modalCloseBtn" class="modal-btn secondary-btn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="summaryModal" class="modal">
+        <div class="modal-content large-modal-content">
+            <span class="close-button" id="summaryCloseButton">&times;</span>
+            <h2>Resumen de su Solicitud</h2>
+            <div id="summaryContent" class="summary-content">
+                </div>
+            <div class="modal-buttons">
+                <button id="editFormBtn" class="modal-btn secondary-btn">Editar Formulario</button>
+                <button id="confirmAndDownloadBtn" class="modal-btn primary-btn">Confirmar y Descargar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
