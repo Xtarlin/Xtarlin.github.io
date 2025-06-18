@@ -13,12 +13,14 @@
         <h1>Formulario de Solicitud de Visado</h1>
         <p class="intro-text">Por favor, complete este formulario con la información más precisa posible para su solicitud de visado.</p>
 
+        <!-- Progress Bar -->
         <div class="progress-bar-container">
             <div class="progress-bar-fill"></div>
             <span class="progress-bar-text">0% Completo</span>
         </div>
 
         <form id="visaApplicationForm">
+            <!-- Country Selection -->
             <fieldset class="form-card country-selection-fieldset">
                 <legend>Selección de País</legend>
                 <div class="form-group">
@@ -34,6 +36,7 @@
                 </div>
             </fieldset>
 
+            <!-- USA Form Section (Initially hidden) -->
             <div id="usaFormSections" style="display: none;">
                 <h2>Información Personal (EE. UU.)</h2>
                 <fieldset class="form-card">
@@ -128,7 +131,8 @@
                     </div>
                     <div id="otherNamesDetails" class="conditional-section">
                         <div id="otherNamesContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- Other names fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addOtherNameBtn" class="add-btn">Añadir Otro Nombre</button>
                     </div>
 
@@ -254,9 +258,8 @@
                     </div>
                 </fieldset>
 
-                <h2>Información de Viaje (EE. UU.)</h2>
                 <fieldset class="form-card">
-                    <legend>Detalles del Viaje</legend>
+                    <legend>Información de Viaje</legend>
                     <div class="form-group">
                         <label for="usa.travelInfo.purpose">Propósito del Viaje a EE. UU.:</label>
                         <select id="usa.travelInfo.purpose" name="usa.travelInfo.purpose" required>
@@ -333,7 +336,8 @@
                     </div>
                     <div id="travelingWithOthersDetails" class="conditional-section">
                         <div id="travelCompanionsContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- Travel companions fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addTravelCompanionBtn" class="add-btn">Añadir Compañero de Viaje</button>
                     </div>
 
@@ -348,7 +352,8 @@
                     </div>
                     <div id="previousUsTravelDetails" class="conditional-section">
                         <div id="previousUsTravelContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- Previous US travel fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addPreviousUsTravelBtn" class="add-btn">Añadir Viaje Anterior</button>
                     </div>
 
@@ -428,7 +433,6 @@
                     </div>
                 </fieldset>
 
-                <h2>Información Familiar (EE. UU.)</h2>
                 <fieldset class="form-card">
                     <legend>Datos Familiares</legend>
                     <div class="form-group">
@@ -564,7 +568,8 @@
                     </div>
                     <div id="childrenDetails" class="conditional-section">
                         <div id="childrenContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- Children fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addChildBtn" class="add-btn">Añadir Hijo</button>
                     </div>
 
@@ -579,12 +584,12 @@
                     </div>
                     <div id="usFamilyDetails" class="conditional-section">
                         <div id="usFamilyContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- US family members fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addUsFamilyBtn" class="add-btn">Añadir Familiar en EE. UU.</button>
                     </div>
                 </fieldset>
 
-                <h2>Información de Empleo y Educación (EE. UU.)</h2>
                 <fieldset class="form-card">
                     <legend>Empleo y Educación</legend>
                     <div class="form-group">
@@ -634,7 +639,8 @@
                     </div>
                     <div id="previousEmploymentDetails" class="conditional-section">
                         <div id="previousEmploymentContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- Previous employment fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addPreviousEmployerBtn" class="add-btn">Añadir Empleo Anterior</button>
                     </div>
 
@@ -651,7 +657,8 @@
                     </div>
                     <div id="educationDetails" class="conditional-section">
                         <div id="educationContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- Education fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addEducationBtn" class="add-btn">Añadir Educación</button>
                     </div>
 
@@ -671,7 +678,8 @@
                     </div>
                     <div id="countriesVisitedDetails" class="conditional-section">
                         <div id="countriesVisitedContainer" class="dynamic-fields-container">
-                            </div>
+                            <!-- Visited countries fields will be added here dynamically -->
+                        </div>
                         <button type="button" id="addCountryVisitedBtn" class="add-btn">Añadir País Visitado</button>
                     </div>
 
@@ -735,7 +743,6 @@
                     </div>
                 </fieldset>
 
-                <h2>Información de Seguridad y Antecedentes (EE. UU.)</h2>
                 <fieldset class="form-card">
                     <legend>Preguntas de Seguridad</legend>
                     <p class="warning-text">Responda a todas las preguntas con "Sí" o "No". Si responde "Sí" a alguna, deberá proporcionar una explicación.</p>
@@ -962,105 +969,997 @@
                 </fieldset>
             </div>
 
+            <!-- Canada Form Section (Initially hidden) -->
             <div id="canadaFormSections" style="display: none;">
-                <h2>Información Personal (Canadá)</h2>
+                <h2>Información Personal (IMM5257e)</h2>
                 <fieldset class="form-card">
                     <legend>Datos Personales</legend>
                     <div class="form-group">
-                        <label for="canada.personalInfo.surname">Apellidos:</label>
-                        <input type="text" id="canada.personalInfo.surname" name="canada.personalInfo.surname" required data-validation-type="text">
+                        <label for="canada.imm5257e.personalInfo.surname">Apellidos (como en el pasaporte):</label>
+                        <input type="text" id="canada.imm5257e.personalInfo.surname" name="canada.imm5257e.personalInfo.surname" required data-validation-type="text">
                         <div class="error-message"></div>
                     </div>
                     <div class="form-group">
-                        <label for="canada.personalInfo.givenName">Nombres:</label>
-                        <input type="text" id="canada.personalInfo.givenName" name="canada.personalInfo.givenName" required data-validation-type="text">
+                        <label for="canada.imm5257e.personalInfo.givenName">Nombres (como en el pasaporte):</label>
+                        <input type="text" id="canada.imm5257e.personalInfo.givenName" name="canada.imm5257e.personalInfo.givenName" required data-validation-type="text">
                         <div class="error-message"></div>
                     </div>
                     <div class="form-group">
-                        <label for="canada.personalInfo.dob">Fecha de Nacimiento:</label>
-                        <input type="date" id="canada.personalInfo.dob" name="canada.personalInfo.dob" required data-validation-type="date">
-                        <div class="error-message"></div>
+                        <label>¿Ha usado otros nombres (apodo, de soltera, alias, etc.)?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.personalInfo.otherNamesUsedYes" name="canada.imm5257e.personalInfo.otherNamesUsed" value="Si">
+                            <label for="canada.imm5257e.personalInfo.otherNamesUsedYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.personalInfo.otherNamesUsedNo" name="canada.imm5257e.personalInfo.otherNamesUsed" value="No" checked>
+                            <label for="canada.imm5257e.personalInfo.otherNamesUsedNo">No</label>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="canada.personalInfo.nationality">Nacionalidad:</label>
-                        <input type="text" id="canada.personalInfo.nationality" name="canada.personalInfo.nationality" required data-validation-type="text">
-                        <div class="error-message"></div>
+                    <div id="canadaOtherNamesDetails" class="conditional-section">
+                        <div id="canadaOtherNamesContainer" class="dynamic-fields-container">
+                        </div>
+                        <button type="button" id="canadaAddOtherNameBtn" class="add-btn">Añadir Otro Nombre</button>
                     </div>
-                    <div class="form-group">
-                        <label for="canada.personalInfo.passportNumber">Número de Pasaporte:</label>
-                        <input type="text" id="canada.personalInfo.passportNumber" name="canada.personalInfo.passportNumber" required data-validation-type="passport">
-                        <div class="error-message"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="canada.personalInfo.passportExpiryDate">Fecha de Caducidad del Pasaporte:</label>
-                        <input type="date" id="canada.personalInfo.passportExpiryDate" name="canada.personalInfo.passportExpiryDate" required data-validation-type="date">
-                        <div class="error-message"></div>
-                    </div>
-                </fieldset>
 
-                <h2>Información de Viaje (Canadá)</h2>
-                <fieldset class="form-card">
-                    <legend>Detalles del Viaje</legend>
                     <div class="form-group">
-                        <label for="canada.travelInfo.purpose">Propósito del Viaje a Canadá:</label>
-                        <select id="canada.travelInfo.purpose" name="canada.travelInfo.purpose" required>
+                        <label for="canada.imm5257e.personalInfo.gender">Sexo:</label>
+                        <select id="canada.imm5257e.personalInfo.gender" name="canada.imm5257e.personalInfo.gender" required>
                             <option value="">Seleccione...</option>
-                            <option value="Turismo">Turismo</option>
-                            <option value="Estudios">Estudios</option>
-                            <option value="Trabajo">Trabajo</option>
-                            <option value="Visita Familiar">Visita Familiar</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Masculino">Masculino</option>
                             <option value="Otro">Otro</option>
                         </select>
                         <div class="error-message"></div>
                     </div>
                     <div class="form-group">
-                        <label for="canada.travelInfo.arrivalDate">Fecha de Llegada Prevista a Canadá:</label>
-                        <input type="date" id="canada.travelInfo.arrivalDate" name="canada.travelInfo.arrivalDate" required data-validation-type="date">
+                        <label for="canada.imm5257e.personalInfo.dob">Fecha de Nacimiento (AAAA-MM-DD):</label>
+                        <input type="date" id="canada.imm5257e.personalInfo.dob" name="canada.imm5257e.personalInfo.dob" required data-validation-type="date">
                         <div class="error-message"></div>
                     </div>
                     <div class="form-group">
-                        <label for="canada.travelInfo.stayDuration">Duración Prevista de la Estancia en Canadá:</label>
-                        <input type="text" id="canada.travelInfo.stayDuration" name="canada.travelInfo.stayDuration" placeholder="Ej: 2 semanas, 3 meses" required data-validation-type="text">
+                        <label for="canada.imm5257e.personalInfo.pobCity">Ciudad de Nacimiento:</label>
+                        <input type="text" id="canada.imm5257e.personalInfo.pobCity" name="canada.imm5257e.personalInfo.pobCity" required data-validation-type="text">
                         <div class="error-message"></div>
                     </div>
                     <div class="form-group">
-                        <label>¿Dispone de fondos suficientes para su estancia en Canadá?</label>
+                        <label for="canada.imm5257e.personalInfo.pobCountry">País o Territorio de Nacimiento:</label>
+                        <input type="text" id="canada.imm5257e.personalInfo.pobCountry" name="canada.imm5257e.personalInfo.pobCountry" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.personalInfo.nationality">Nacionalidad:</label>
+                        <input type="text" id="canada.imm5257e.personalInfo.nationality" name="canada.imm5257e.personalInfo.nationality" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.personalInfo.currentResidenceCountry">País o Territorio de Residencia Actual:</label>
+                        <input type="text" id="canada.imm5257e.personalInfo.currentResidenceCountry" name="canada.imm5257e.personalInfo.currentResidenceCountry" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.personalInfo.currentResidenceStatus">Estatus en el País de Residencia Actual:</label>
+                        <input type="text" id="canada.imm5257e.personalInfo.currentResidenceStatus" name="canada.imm5257e.personalInfo.currentResidenceStatus" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                     <div class="form-group">
+                        <label for="canada.imm5257e.personalInfo.currentResidenceFrom">Desde (Fecha - AAAA-MM-DD):</label>
+                        <input type="date" id="canada.imm5257e.personalInfo.currentResidenceFrom" name="canada.imm5257e.personalInfo.currentResidenceFrom" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.personalInfo.currentResidenceTo">Hasta (Fecha - AAAA-MM-DD):</label>
+                        <input type="date" id="canada.imm5257e.personalInfo.currentResidenceTo" name="canada.imm5257e.personalInfo.currentResidenceTo" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Durante los últimos cinco años ha vivido en algún país o territorio que no sea su país de ciudadanía o su país de residencia actual por más de seis meses?</label>
                         <div class="radio-group">
-                            <input type="radio" id="canada.travelInfo.hasFundsYes" name="canada.travelInfo.hasFunds" value="Si">
-                            <label for="canada.travelInfo.hasFundsYes">Sí</label>
-                            <input type="radio" id="canada.travelInfo.hasFundsNo" name="canada.travelInfo.hasFunds" value="No" checked>
-                            <label for="canada.travelInfo.hasFundsNo">No</label>
+                            <input type="radio" id="canada.imm5257e.personalInfo.prevResidenceCountriesYes" name="canada.imm5257e.personalInfo.prevResidenceCountries" value="Si">
+                            <label for="canada.imm5257e.personalInfo.prevResidenceCountriesYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.personalInfo.prevResidenceCountriesNo" name="canada.imm5257e.personalInfo.prevResidenceCountries" value="No" checked>
+                            <label for="canada.imm5257e.personalInfo.prevResidenceCountriesNo">No</label>
                         </div>
                     </div>
-                    <div id="canFundsDetails" class="conditional-section">
+                    <div id="canadaPrevResidenceCountriesDetails" class="conditional-section">
+                        <div id="canadaPrevResidenceCountriesContainer" class="dynamic-fields-container">
+                        </div>
+                        <button type="button" id="canadaAddPrevResidenceCountryBtn" class="add-btn">Añadir País de Residencia Anterior</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>País o Territorio donde está solicitando: ¿Es el mismo que su país o territorio de residencia actual?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.personalInfo.applyingCountrySameYes" name="canada.imm5257e.personalInfo.applyingCountrySame" value="Si" checked>
+                            <label for="canada.imm5257e.personalInfo.applyingCountrySameYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.personalInfo.applyingCountrySameNo" name="canada.imm5257e.personalInfo.applyingCountrySame" value="No">
+                            <label for="canada.imm5257e.personalInfo.applyingCountrySameNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaApplyingCountryDetails" class="conditional-section">
                         <div class="form-group">
-                            <label for="canada.travelInfo.fundsExplanation">Explique cómo financiará su viaje:</label>
-                            <textarea id="canada.travelInfo.fundsExplanation" name="canada.travelInfo.fundsExplanation" rows="3" data-validation-type="text"></textarea>
+                            <label for="canada.imm5257e.personalInfo.applyingCountry">País o Territorio donde está solicitando:</label>
+                            <input type="text" id="canada.imm5257e.personalInfo.applyingCountry" name="canada.imm5257e.personalInfo.applyingCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.personalInfo.applyingCountryStatus">Estatus en el País donde está solicitando:</label>
+                            <input type="text" id="canada.imm5257e.personalInfo.applyingCountryStatus" name="canada.imm5257e.personalInfo.applyingCountryStatus" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                         <div class="form-group">
+                            <label for="canada.imm5257e.personalInfo.applyingCountryFrom">Desde (Fecha - AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5257e.personalInfo.applyingCountryFrom" name="canada.imm5257e.personalInfo.applyingCountryFrom" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.personalInfo.applyingCountryTo">Hasta (Fecha - AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5257e.personalInfo.applyingCountryTo" name="canada.imm5257e.personalInfo.applyingCountryTo" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="canada.imm5257e.personalInfo.maritalStatus">Estado Civil Actual:</label>
+                        <select id="canada.imm5257e.personalInfo.maritalStatus" name="canada.imm5257e.personalInfo.maritalStatus" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Annulled Marriage">Matrimonio Anulado</option>
+                            <option value="Common-Law">Unión Libre</option>
+                            <option value="Divorced">Divorciado</option>
+                            <option value="Legally Separated">Separado Legalmente</option>
+                            <option value="Married">Casado</option>
+                            <option value="Single">Soltero</option>
+                            <option value="Widowed">Viudo</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <div id="canadaMarriageDateDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.personalInfo.marriageDate">Fecha en que se casó o inició unión libre (AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5257e.personalInfo.marriageDate" name="canada.imm5257e.personalInfo.marriageDate" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.personalInfo.spouseSurname">Apellidos de su Cónyuge/Pareja:</label>
+                            <input type="text" id="canada.imm5257e.personalInfo.spouseSurname" name="canada.imm5257e.personalInfo.spouseSurname" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.personalInfo.spouseGivenName">Nombres de su Cónyuge/Pareja:</label>
+                            <input type="text" id="canada.imm5257e.personalInfo.spouseGivenName" name="canada.imm5257e.personalInfo.spouseGivenName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Ha estado casado/a o en unión libre anteriormente?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.personalInfo.prevMarriedYes" name="canada.imm5257e.personalInfo.prevMarried" value="Si">
+                            <label for="canada.imm5257e.personalInfo.prevMarriedYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.personalInfo.prevMarriedNo" name="canada.imm5257e.personalInfo.prevMarried" value="No" checked>
+                            <label for="canada.imm5257e.personalInfo.prevMarriedNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaPrevMarriedDetails" class="conditional-section">
+                        <div id="canadaPrevMarriedContainer" class="dynamic-fields-container">
+                        </div>
+                        <button type="button" id="canadaAddPrevMarriedBtn" class="add-btn">Añadir Pareja/Cónyuge Anterior</button>
+                    </div>
+                </fieldset>
+
+                <h2>Contacto (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Información de Contacto</legend>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressPOBox">Apartado de Correos (P.O. box):</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressPOBox" name="canada.imm5257e.contactInfo.mailingAddressPOBox" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressAptUnit">Apto./Unidad:</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressAptUnit" name="canada.imm5257e.contactInfo.mailingAddressAptUnit" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressStreetNo">Número de Calle:</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressStreetNo" name="canada.imm5257e.contactInfo.mailingAddressStreetNo" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressStreetName">Nombre de la Calle:</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressStreetName" name="canada.imm5257e.contactInfo.mailingAddressStreetName" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressCity">Ciudad/Pueblo:</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressCity" name="canada.imm5257e.contactInfo.mailingAddressCity" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressCountry">País o Territorio:</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressCountry" name="canada.imm5257e.contactInfo.mailingAddressCountry" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressProvinceState">Provincia/Estado:</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressProvinceState" name="canada.imm5257e.contactInfo.mailingAddressProvinceState" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressPostalCode">Código Postal:</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressPostalCode" name="canada.imm5257e.contactInfo.mailingAddressPostalCode" required data-validation-type="zipcode">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.mailingAddressDistrict">Distrito (Opcional):</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.mailingAddressDistrict" name="canada.imm5257e.contactInfo.mailingAddressDistrict" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Su dirección residencial es la misma que la dirección de correspondencia?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.contactInfo.residentialAddressSameYes" name="canada.imm5257e.contactInfo.residentialAddressSame" value="Si" checked>
+                            <label for="canada.imm5257e.contactInfo.residentialAddressSameYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.contactInfo.residentialAddressSameNo" name="canada.imm5257e.contactInfo.residentialAddressSame" value="No">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressSameNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaResidentialAddressDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressAptUnit">Apto./Unidad (Residencial):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressAptUnit" name="canada.imm5257e.contactInfo.residentialAddressAptUnit" data-validation-type="text" data-optional="true">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressStreetNo">Número de Calle (Residencial):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressStreetNo" name="canada.imm5257e.contactInfo.residentialAddressStreetNo" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressStreetName">Nombre de la Calle (Residencial):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressStreetName" name="canada.imm5257e.contactInfo.residentialAddressStreetName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressCity">Ciudad/Pueblo (Residencial):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressCity" name="canada.imm5257e.contactInfo.residentialAddressCity" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressCountry">País o Territorio (Residencial):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressCountry" name="canada.imm5257e.contactInfo.residentialAddressCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressProvinceState">Provincia/Estado (Residencial):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressProvinceState" name="canada.imm5257e.contactInfo.residentialAddressProvinceState" data-validation-type="text" data-optional="true">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressPostalCode">Código Postal (Residencial):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressPostalCode" name="canada.imm5257e.contactInfo.residentialAddressPostalCode" data-validation-type="zipcode">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.contactInfo.residentialAddressDistrict">Distrito (Residencial, Opcional):</label>
+                            <input type="text" id="canada.imm5257e.contactInfo.residentialAddressDistrict" name="canada.imm5257e.contactInfo.residentialAddressDistrict" data-validation-type="text" data-optional="true">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.primaryPhoneType">Tipo de Teléfono Principal:</label>
+                        <select id="canada.imm5257e.contactInfo.primaryPhoneType" name="canada.imm5257e.contactInfo.primaryPhoneType" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Cellular">Celular</option>
+                            <option value="Landline">Fijo</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                     <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.primaryPhoneCountryCode">Código de País (+):</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.primaryPhoneCountryCode" name="canada.imm5257e.contactInfo.primaryPhoneCountryCode" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.primaryPhoneNumber">Número de Teléfono Principal:</label>
+                        <input type="tel" id="canada.imm5257e.contactInfo.primaryPhoneNumber" name="canada.imm5257e.contactInfo.primaryPhoneNumber" required data-validation-type="phone">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.primaryPhoneExt">Extensión (Opcional):</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.primaryPhoneExt" name="canada.imm5257e.contactInfo.primaryPhoneExt" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.alternatePhoneType">Tipo de Teléfono Alternativo (Opcional):</label>
+                        <select id="canada.imm5257e.contactInfo.alternatePhoneType" name="canada.imm5257e.contactInfo.alternatePhoneType" data-optional="true">
+                            <option value="">Seleccione...</option>
+                            <option value="Cellular">Celular</option>
+                            <option value="Landline">Fijo</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                     <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.alternatePhoneCountryCode">Código de País (+) (Alternativo):</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.alternatePhoneCountryCode" name="canada.imm5257e.contactInfo.alternatePhoneCountryCode" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.alternatePhoneNumber">Número de Teléfono Alternativo (Opcional):</label>
+                        <input type="tel" id="canada.imm5257e.contactInfo.alternatePhoneNumber" name="canada.imm5257e.contactInfo.alternatePhoneNumber" data-validation-type="phone" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.alternatePhoneExt">Extensión (Alternativa, Opcional):</label>
+                        <input type="text" id="canada.imm5257e.contactInfo.alternatePhoneExt" name="canada.imm5257e.contactInfo.alternatePhoneExt" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.faxNumber">Número de Fax (Opcional):</label>
+                        <input type="tel" id="canada.imm5257e.contactInfo.faxNumber" name="canada.imm5257e.contactInfo.faxNumber" data-validation-type="phone" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.contactInfo.email">Correo Electrónico:</label>
+                        <input type="email" id="canada.imm5257e.contactInfo.email" name="canada.imm5257e.contactInfo.email" required data-validation-type="email">
+                        <div class="error-message"></div>
+                    </div>
+                </fieldset>
+
+                <h2>Lenguajes (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Información de Lenguajes</legend>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.languages.nativeLanguage">Idioma Nativo/Lengua Materna:</label>
+                        <input type="text" id="canada.imm5257e.languages.nativeLanguage" name="canada.imm5257e.languages.nativeLanguage" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Es capaz de comunicarse en inglés y/o francés?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.languages.canCommunicateEnFrYes" name="canada.imm5257e.languages.canCommunicateEnFr" value="Si">
+                            <label for="canada.imm5257e.languages.canCommunicateEnFrYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.languages.canCommunicateEnFrNo" name="canada.imm5257e.languages.canCommunicateEnFr" value="No" checked>
+                            <label for="canada.imm5257e.languages.canCommunicateEnFrNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaCanCommunicateEnFrDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.languages.mostAtEaseLanguage">¿En qué idioma se siente más cómodo/a?</label>
+                            <select id="canada.imm5257e.languages.mostAtEaseLanguage" name="canada.imm5257e.languages.mostAtEaseLanguage">
+                                <option value="">Seleccione...</option>
+                                <option value="English">Inglés</option>
+                                <option value="French">Francés</option>
+                                <option value="Both">Ambos</option>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Ha realizado una prueba de una agencia designada para evaluar su dominio del inglés o francés?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.languages.takenLanguageTestYes" name="canada.imm5257e.languages.takenLanguageTest" value="Si">
+                            <label for="canada.imm5257e.languages.takenLanguageTestYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.languages.takenLanguageTestNo" name="canada.imm5257e.languages.takenLanguageTest" value="No" checked>
+                            <label for="canada.imm5257e.languages.takenLanguageTestNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaTakenLanguageTestDetails" class="conditional-section">
+                        <!-- Fields for test results could go here if needed -->
+                        <p class="info-text">Si respondió "Sí", asegúrese de tener los resultados de su prueba a mano.</p>
+                    </div>
+                </fieldset>
+
+                <h2>Pasaporte (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Información de Pasaporte</legend>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.passport.passportNumber">Número de Pasaporte:</label>
+                        <input type="text" id="canada.imm5257e.passport.passportNumber" name="canada.imm5257e.passport.passportNumber" required data-validation-type="passport">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.passport.issueCountry">País o Territorio de Emisión:</label>
+                        <input type="text" id="canada.imm5257e.passport.issueCountry" name="canada.imm5257e.passport.issueCountry" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.passport.issueDate">Fecha de Emisión (AAAA-MM-DD):</label>
+                        <input type="date" id="canada.imm5257e.passport.issueDate" name="canada.imm5257e.passport.issueDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.passport.expiryDate">Fecha de Caducidad (AAAA-MM-DD):</label>
+                        <input type="date" id="canada.imm5257e.passport.expiryDate" name="canada.imm5257e.passport.expiryDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Para este viaje, usará un pasaporte emitido por el Ministerio de Asuntos Exteriores en Taiwán que incluya su número de identificación personal?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.passport.taiwanPassportWithIdYes" name="canada.imm5257e.passport.taiwanPassportWithId" value="Si">
+                            <label for="canada.imm5257e.passport.taiwanPassportWithIdYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.passport.taiwanPassportWithIdNo" name="canada.imm5257e.passport.taiwanPassportWithId" value="No" checked>
+                            <label for="canada.imm5257e.passport.taiwanPassportWithIdNo">No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Para este viaje, usará un pasaporte nacional israelí?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.passport.nationalIsraeliPassportYes" name="canada.imm5257e.passport.nationalIsraeliPassport" value="Si">
+                            <label for="canada.imm5257e.passport.nationalIsraeliPassportYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.passport.nationalIsraeliPassportNo" name="canada.imm5257e.passport.nationalIsraeliPassport" value="No" checked>
+                            <label for="canada.imm5257e.passport.nationalIsraeliPassportNo">No</label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <h2>Documento de Identidad Nacional (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Información de ID Nacional</legend>
+                    <div class="form-group">
+                        <label>¿Tiene un documento de identidad nacional?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.nationalId.hasNationalIdYes" name="canada.imm5257e.nationalId.hasNationalId" value="Si">
+                            <label for="canada.imm5257e.nationalId.hasNationalIdYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.nationalId.hasNationalIdNo" name="canada.imm5257e.nationalId.hasNationalId" value="No" checked>
+                            <label for="canada.imm5257e.nationalId.hasNationalIdNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaNationalIdDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.nationalId.documentNumber">Número de Documento:</label>
+                            <input type="text" id="canada.imm5257e.nationalId.documentNumber" name="canada.imm5257e.nationalId.documentNumber" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.nationalId.issueCountry">País o Territorio de Emisión:</label>
+                            <input type="text" id="canada.imm5257e.nationalId.issueCountry" name="canada.imm5257e.nationalId.issueCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.nationalId.issueDate">Fecha de Emisión (AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5257e.nationalId.issueDate" name="canada.imm5257e.nationalId.issueDate" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.nationalId.expiryDate">Fecha de Caducidad (AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5257e.nationalId.expiryDate" name="canada.imm5257e.nationalId.expiryDate" data-validation-type="date">
                             <div class="error-message"></div>
                         </div>
                     </div>
                 </fieldset>
 
-                <h2>Información de Seguridad y Antecedentes (Canadá)</h2>
+                <h2>Tarjeta de Residencia Permanente de EE. UU. (IMM5257e)</h2>
                 <fieldset class="form-card">
-                    <legend>Preguntas de Seguridad</legend>
-                    <p class="warning-text">Responda a todas las preguntas con "Sí" o "No". Si responde "Sí" a alguna, deberá proporcionar una explicación.</p>
+                    <legend>Información de Green Card de EE. UU.</legend>
                     <div class="form-group">
-                        <label>¿Alguna vez ha sido arrestado o condenado por algún delito, o ha cometido un delito?</label>
+                        <label>¿Es residente permanente legal de los Estados Unidos con una tarjeta de registro de extranjero válida (green card)?</label>
                         <div class="radio-group">
-                            <input type="radio" id="canada.securityInfo.criminalYes" name="canada.securityInfo.criminal" value="Si">
-                            <label for="canada.securityInfo.criminalYes">Sí</label>
-                            <input type="radio" id="canada.securityInfo.criminalNo" name="canada.securityInfo.criminal" value="No" checked>
-                            <label for="canada.securityInfo.criminalNo">No</label>
+                            <input type="radio" id="canada.imm5257e.usprCard.isUsPermanentResidentYes" name="canada.imm5257e.usprCard.isUsPermanentResident" value="Si">
+                            <label for="canada.imm5257e.usprCard.isUsPermanentResidentYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.usprCard.isUsPermanentResidentNo" name="canada.imm5257e.usprCard.isUsPermanentResident" value="No" checked>
+                            <label for="canada.imm5257e.usprCard.isUsPermanentResidentNo">No</label>
                         </div>
                     </div>
-                    <div id="canCriminalDetails" class="conditional-section">
+                    <div id="canadaUsprCardDetails" class="conditional-section">
                         <div class="form-group">
-                            <label for="canada.securityInfo.criminalExplanation">Explique los detalles:</label>
-                            <textarea id="canada.securityInfo.criminalExplanation" name="canada.securityInfo.criminalExplanation" rows="3" data-validation-type="text"></textarea>
+                            <label for="canada.imm5257e.usprCard.documentNumber">Número de Documento:</label>
+                            <input type="text" id="canada.imm5257e.usprCard.documentNumber" name="canada.imm5257e.usprCard.documentNumber" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5257e.usprCard.expiryDate">Fecha de Caducidad (AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5257e.usprCard.expiryDate" name="canada.imm5257e.usprCard.expiryDate" data-validation-type="date">
                             <div class="error-message"></div>
                         </div>
                     </div>
+                </fieldset>
+
+                <h2>Detalles del Viaje a Canadá (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Información del Viaje</legend>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.travelInfo.purpose">Propósito de su visita:</label>
+                        <select id="canada.imm5257e.travelInfo.purpose" name="canada.imm5257e.travelInfo.purpose" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Tourism">Turismo</option>
+                            <option value="Study">Estudios</option>
+                            <option value="Work">Trabajo</option>
+                            <option value="Visit Family">Visita Familiar</option>
+                            <option value="Other">Otro</option>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.travelInfo.otherPurpose">Si "Otro", especifique:</label>
+                        <input type="text" id="canada.imm5257e.travelInfo.otherPurpose" name="canada.imm5257e.travelInfo.otherPurpose" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.travelInfo.fromDate">Desde (Fecha - AAAA-MM-DD):</label>
+                        <input type="date" id="canada.imm5257e.travelInfo.fromDate" name="canada.imm5257e.travelInfo.fromDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.travelInfo.toDate">Hasta (Fecha - AAAA-MM-DD):</label>
+                        <input type="date" id="canada.imm5257e.travelInfo.toDate" name="canada.imm5257e.travelInfo.toDate" required data-validation-type="date">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.travelInfo.fundsAvailableCAD">Fondos disponibles para su estancia (CAD):</label>
+                        <input type="number" id="canada.imm5257e.travelInfo.fundsAvailableCAD" name="canada.imm5257e.travelInfo.fundsAvailableCAD" required data-validation-type="number">
+                        <div class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nombre, dirección y relación de cualquier persona(s) o institución(es) que visitará:</label>
+                        <div id="canadaVisitContactsContainer" class="dynamic-fields-container">
+                        </div>
+                        <button type="button" id="canadaAddVisitContactBtn" class="add-btn">Añadir Contacto a Visitar</button>
+                    </div>
+                </fieldset>
+
+                <h2>Historial de Países de Residencia Anteriores (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Países de Residencia Previa</legend>
+                    <div id="canadaPreviousCountriesResidenceContainer" class="dynamic-fields-container">
+                    </div>
+                     <button type="button" id="canadaAddPreviousCountryResidenceBtn" class="add-btn">Añadir País de Residencia Anterior</button>
+                </fieldset>
+
+                <h2>Educación (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Historial Educativo</legend>
+                    <div class="form-group">
+                        <label>¿Ha tenido alguna educación post-secundaria (incluyendo universidad, colegio o formación profesional)?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.education.postSecondaryYes" name="canada.imm5257e.education.postSecondary" value="Si">
+                            <label for="canada.imm5257e.education.postSecondaryYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.education.postSecondaryNo" name="canada.imm5257e.education.postSecondary" value="No" checked>
+                            <label for="canada.imm5257e.education.postSecondaryNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaPostSecondaryDetails" class="conditional-section">
+                        <div id="canadaPostSecondaryContainer" class="dynamic-fields-container">
+                        </div>
+                        <button type="button" id="canadaAddPostSecondaryBtn" class="add-btn">Añadir Educación Post-Secundaria</button>
+                    </div>
+                </fieldset>
+
+                <h2>Empleo (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Historial de Empleo</legend>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentActivity">Actividad/Ocupación Actual:</label>
+                        <input type="text" id="canada.imm5257e.employment.currentActivity" name="canada.imm5257e.employment.currentActivity" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentFromYear">Desde (Año - AAAA):</label>
+                        <input type="number" id="canada.imm5257e.employment.currentFromYear" name="canada.imm5257e.employment.currentFromYear" required data-validation-type="year" placeholder="AAAA">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentFromMonth">Desde (Mes - MM):</label>
+                        <input type="number" id="canada.imm5257e.employment.currentFromMonth" name="canada.imm5257e.employment.currentFromMonth" required data-validation-type="month" placeholder="MM">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentToYear">Hasta (Año - AAAA):</label>
+                        <input type="number" id="canada.imm5257e.employment.currentToYear" name="canada.imm5257e.employment.currentToYear" required data-validation-type="year" placeholder="AAAA">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentToMonth">Hasta (Mes - MM):</label>
+                        <input type="number" id="canada.imm5257e.employment.currentToMonth" name="canada.imm5257e.employment.currentToMonth" required data-validation-type="month" placeholder="MM">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentCityTown">Ciudad/Pueblo:</label>
+                        <input type="text" id="canada.imm5257e.employment.currentCityTown" name="canada.imm5257e.employment.currentCityTown" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                     <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentCountryTerritory">País o Territorio:</label>
+                        <input type="text" id="canada.imm5257e.employment.currentCountryTerritory" name="canada.imm5257e.employment.currentCountryTerritory" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentCompanyEmployerFacilityName">Nombre de la Compañía/Empleador/Instalación:</label>
+                        <input type="text" id="canada.imm5257e.employment.currentCompanyEmployerFacilityName" name="canada.imm5257e.employment.currentCompanyEmployerFacilityName" required data-validation-type="text">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="canada.imm5257e.employment.currentProvinceState">Provincia/Estado (Opcional):</label>
+                        <input type="text" id="canada.imm5257e.employment.currentProvinceState" name="canada.imm5257e.employment.currentProvinceState" data-validation-type="text" data-optional="true">
+                        <div class="error-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Proporcione detalles de su empleo durante los últimos 10 años (excluyendo el actual, si aplica). No deje huecos. Si está jubilado, sin trabajar o estudiando, indíquelo. Si está jubilado, proporcione los 10 años anteriores a su jubilación.</label>
+                        <div id="canadaPreviousEmploymentContainer" class="dynamic-fields-container">
+                        </div>
+                        <button type="button" id="canadaAddPreviousEmployerBtn" class="add-btn">Añadir Empleo Anterior</button>
+                    </div>
+                </fieldset>
+
+                <h2>Información de Antecedentes (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Preguntas de Antecedentes (Mayores de 18 años)</legend>
+                    <p class="warning-text">Responda a todas las preguntas con "Sí" o "No". Si responde "Sí" a alguna, deberá proporcionar una explicación.</p>
+
+                    <div class="form-group">
+                        <label>1.a) ¿En los últimos dos años, usted o un miembro de su familia ha tenido tuberculosis pulmonar o ha estado en contacto cercano con una persona con tuberculosis?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.tuberculosisYes" name="canada.imm5257e.backgroundInfo.tuberculosis" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.tuberculosisYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.tuberculosisNo" name="canada.imm5257e.backgroundInfo.tuberculosis" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.tuberculosisNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaTuberculosisDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.tuberculosisExplanation">Detalles y nombre del familiar (si aplica):</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.tuberculosisExplanation" name="canada.imm5257e.backgroundInfo.tuberculosisExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>1.b) ¿Tiene algún trastorno físico o mental que requiera servicios sociales y/o de salud, aparte de medicación, durante una estancia en Canadá?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.physicalMentalDisorderYes" name="canada.imm5257e.backgroundInfo.physicalMentalDisorder" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.physicalMentalDisorderYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.physicalMentalDisorderNo" name="canada.imm5257e.backgroundInfo.physicalMentalDisorder" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.physicalMentalDisorderNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaPhysicalMentalDisorderDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.physicalMentalDisorderExplanation">Detalles:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.physicalMentalDisorderExplanation" name="canada.imm5257e.backgroundInfo.physicalMentalDisorderExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2.a) ¿Alguna vez ha permanecido más allá de la validez de su estatus, asistido a la escuela sin autorización o trabajado sin autorización en Canadá?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.violatedStatusCanadaYes" name="canada.imm5257e.backgroundInfo.violatedStatusCanada" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.violatedStatusCanadaYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.violatedStatusCanadaNo" name="canada.imm5257e.backgroundInfo.violatedStatusCanada" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.violatedStatusCanadaNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaViolatedStatusCanadaDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.violatedStatusCanadaExplanation">Detalles:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.violatedStatusCanadaExplanation" name="canada.imm5257e.backgroundInfo.violatedStatusCanadaExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2.b) ¿Alguna vez le han denegado una visa o permiso, le han negado la entrada o le han ordenado salir de Canadá o de cualquier otro país o territorio?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.refusedDeniedOrderedYes" name="canada.imm5257e.backgroundInfo.refusedDeniedOrdered" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.refusedDeniedOrderedYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.refusedDeniedOrderedNo" name="canada.imm5257e.backgroundInfo.refusedDeniedOrdered" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.refusedDeniedOrderedNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaRefusedDeniedOrderedDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.refusedDeniedOrderedExplanation">Detalles de la denegación/orden:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.refusedDeniedOrderedExplanation" name="canada.imm5257e.backgroundInfo.refusedDeniedOrderedExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2.c) ¿Ha solicitado previamente entrar o permanecer en Canadá?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.previouslyAppliedCanadaYes" name="canada.imm5257e.backgroundInfo.previouslyAppliedCanada" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.previouslyAppliedCanadaYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.previouslyAppliedCanadaNo" name="canada.imm5257e.backgroundInfo.previouslyAppliedCanada" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.previouslyAppliedCanadaNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaPreviouslyAppliedCanadaDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.previouslyAppliedCanadaExplanation">Detalles de la solicitud anterior:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.previouslyAppliedCanadaExplanation" name="canada.imm5257e.backgroundInfo.previouslyAppliedCanadaExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>3.a) ¿Alguna vez ha cometido, sido arrestado, acusado o condenado por cualquier delito criminal en cualquier país o territorio?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.criminalOffenceYes" name="canada.imm5257e.backgroundInfo.criminalOffence" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.criminalOffenceYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.criminalOffenceNo" name="canada.imm5257e.backgroundInfo.criminalOffence" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.criminalOffenceNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaCriminalOffenceDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.criminalOffenceExplanation">Detalles:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.criminalOffenceExplanation" name="canada.imm5257e.backgroundInfo.criminalOffenceExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>4.a) ¿Sirvió en alguna unidad militar, milicia o de defensa civil o sirvió en una organización de seguridad o fuerza policial (incluido el servicio nacional no obligatorio, unidades de reserva o voluntarias)?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.militaryOrPoliceServiceYes" name="canada.imm5257e.backgroundInfo.militaryOrPoliceService" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.militaryOrPoliceServiceYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.militaryOrPoliceServiceNo" name="canada.imm5257e.backgroundInfo.militaryOrPoliceService" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.militaryOrPoliceServiceNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaMilitaryOrPoliceServiceDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.militaryServiceDatesAndCountries">Fechas de servicio y países o territorios donde sirvió:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.militaryServiceDatesAndCountries" name="canada.imm5257e.backgroundInfo.militaryServiceDatesAndCountries" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>5. ¿Es usted, o ha sido alguna vez, miembro o asociado con algún partido político, u otro grupo u organización que haya participado o defendido la violencia como medio para lograr un objetivo político o religioso, o que haya estado asociado con actividades criminales en algún momento?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.violentOrgAffiliationYes" name="canada.imm5257e.backgroundInfo.violentOrgAffiliation" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.violentOrgAffiliationYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.violentOrgAffiliationNo" name="canada.imm5257e.backgroundInfo.violentOrgAffiliation" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.violentOrgAffiliationNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaViolentOrgAffiliationDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.violentOrgAffiliationExplanation">Detalles:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.violentOrgAffiliationExplanation" name="canada.imm5257e.backgroundInfo.violentOrgAffiliationExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>6. ¿Alguna vez ha presenciado o participado en el maltrato a prisioneros o civiles, saqueos o profanación de edificios religiosos?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.illTreatmentOrDesecrationYes" name="canada.imm5257e.backgroundInfo.illTreatmentOrDesecration" value="Si">
+                            <label for="canada.imm5257e.backgroundInfo.illTreatmentOrDesecrationYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.backgroundInfo.illTreatmentOrDesecrationNo" name="canada.imm5257e.backgroundInfo.illTreatmentOrDesecration" value="No" checked>
+                            <label for="canada.imm5257e.backgroundInfo.illTreatmentOrDesecrationNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaIllTreatmentOrDesecrationDetails" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5257e.backgroundInfo.illTreatmentOrDesecrationExplanation">Detalles:</label>
+                            <textarea id="canada.imm5257e.backgroundInfo.illTreatmentOrDesecrationExplanation" name="canada.imm5257e.backgroundInfo.illTreatmentOrDesecrationExplanation" rows="3" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <h2>Información Familiar Adicional (IMM5707e)</h2>
+                <fieldset class="form-card">
+                    <legend>Detalles de la Familia (IMM5707e)</legend>
+
+                    <h3>Su Cónyuge, Pareja o Compañero/a de Hecho</h3>
+                    <div class="form-group">
+                        <label>¿Su cónyuge, pareja o compañero/a de hecho le acompañará a Canadá?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5707e.spouse.accompanyToCanadaYes" name="canada.imm5707e.spouse.accompanyToCanada" value="Si">
+                            <label for="canada.imm5707e.spouse.accompanyToCanadaYes">Sí</label>
+                            <input type="radio" id="canada.imm5707e.spouse.accompanyToCanadaNo" name="canada.imm5707e.spouse.accompanyToCanada" value="No" checked>
+                            <label for="canada.imm5707e.spouse.accompanyToCanadaNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaSpouseDetailsIMM5707e" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.surname">Apellidos:</label>
+                            <input type="text" id="canada.imm5707e.spouse.surname" name="canada.imm5707e.spouse.surname" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.givenName">Nombres:</label>
+                            <input type="text" id="canada.imm5707e.spouse.givenName" name="canada.imm5707e.spouse.givenName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.nativeLanguage">Nombre en idioma nativo (si aplica):</label>
+                            <input type="text" id="canada.imm5707e.spouse.nativeLanguage" name="canada.imm5707e.spouse.nativeLanguage" data-validation-type="text" data-optional="true">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.dob">Fecha de Nacimiento (AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5707e.spouse.dob" name="canada.imm5707e.spouse.dob" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.pobCountry">País o Territorio de Nacimiento:</label>
+                            <input type="text" id="canada.imm5707e.spouse.pobCountry" name="canada.imm5707e.spouse.pobCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.presentAddress">Dirección Actual (si fallecido, Ciudad, País, Fecha de Fallecimiento):</label>
+                            <textarea id="canada.imm5707e.spouse.presentAddress" name="canada.imm5707e.spouse.presentAddress" rows="2" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.maritalStatus">Estado Civil:</label>
+                            <select id="canada.imm5707e.spouse.maritalStatus" name="canada.imm5707e.spouse.maritalStatus">
+                                <option value="">Seleccione...</option>
+                                <option value="Annulled Marriage">Matrimonio Anulado</option>
+                                <option value="Common-Law">Unión Libre</option>
+                                <option value="Divorced">Divorciado</option>
+                                <option value="Legally Separated">Separado Legalmente</option>
+                                <option value="Married">Casado</option>
+                                <option value="Single">Soltero</option>
+                                <option value="Widowed">Viudo</option>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.spouse.occupation">Ocupación Actual:</label>
+                            <input type="text" id="canada.imm5707e.spouse.occupation" name="canada.imm5707e.spouse.occupation" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <h3>Su Padre (Madre o Padre)</h3>
+                    <div class="form-group">
+                        <label>¿Su Padre (Madre/Padre) le acompañará a Canadá?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5707e.parent1.accompanyToCanadaYes" name="canada.imm5707e.parent1.accompanyToCanada" value="Si">
+                            <label for="canada.imm5707e.parent1.accompanyToCanadaYes">Sí</label>
+                            <input type="radio" id="canada.imm5707e.parent1.accompanyToCanadaNo" name="canada.imm5707e.parent1.accompanyToCanada" value="No" checked>
+                            <label for="canada.imm5707e.parent1.accompanyToCanadaNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaParent1DetailsIMM5707e" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.surname">Apellidos:</label>
+                            <input type="text" id="canada.imm5707e.parent1.surname" name="canada.imm5707e.parent1.surname" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.givenName">Nombres:</label>
+                            <input type="text" id="canada.imm5707e.parent1.givenName" name="canada.imm5707e.parent1.givenName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.nativeLanguage">Nombre en idioma nativo (si aplica):</label>
+                            <input type="text" id="canada.imm5707e.parent1.nativeLanguage" name="canada.imm5707e.parent1.nativeLanguage" data-validation-type="text" data-optional="true">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.dob">Fecha de Nacimiento (AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5707e.parent1.dob" name="canada.imm5707e.parent1.dob" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.pobCountry">País o Territorio de Nacimiento:</label>
+                            <input type="text" id="canada.imm5707e.parent1.pobCountry" name="canada.imm5707e.parent1.pobCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.presentAddress">Dirección Actual (si fallecido, Ciudad, País, Fecha de Fallecimiento):</label>
+                            <textarea id="canada.imm5707e.parent1.presentAddress" name="canada.imm5707e.parent1.presentAddress" rows="2" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.maritalStatus">Estado Civil:</label>
+                            <select id="canada.imm5707e.parent1.maritalStatus" name="canada.imm5707e.parent1.maritalStatus">
+                                <option value="">Seleccione...</option>
+                                <option value="Annulled Marriage">Matrimonio Anulado</option>
+                                <option value="Common-Law">Unión Libre</option>
+                                <option value="Divorced">Divorciado</option>
+                                <option value="Legally Separated">Separado Legalmente</option>
+                                <option value="Married">Casado</option>
+                                <option value="Single">Soltero</option>
+                                <option value="Widowed">Viudo</option>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent1.occupation">Ocupación Actual:</label>
+                            <input type="text" id="canada.imm5707e.parent1.occupation" name="canada.imm5707e.parent1.occupation" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <h3>Su Segundo Padre (Madre o Padre)</h3>
+                    <div class="form-group">
+                        <label>¿Su Segundo Padre (Madre/Padre) le acompañará a Canadá?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5707e.parent2.accompanyToCanadaYes" name="canada.imm5707e.parent2.accompanyToCanada" value="Si">
+                            <label for="canada.imm5707e.parent2.accompanyToCanadaYes">Sí</label>
+                            <input type="radio" id="canada.imm5707e.parent2.accompanyToCanadaNo" name="canada.imm5707e.parent2.accompanyToCanada" value="No" checked>
+                            <label for="canada.imm5707e.parent2.accompanyToCanadaNo">No</label>
+                        </div>
+                    </div>
+                    <div id="canadaParent2DetailsIMM5707e" class="conditional-section">
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.surname">Apellidos:</label>
+                            <input type="text" id="canada.imm5707e.parent2.surname" name="canada.imm5707e.parent2.surname" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.givenName">Nombres:</label>
+                            <input type="text" id="canada.imm5707e.parent2.givenName" name="canada.imm5707e.parent2.givenName" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.nativeLanguage">Nombre en idioma nativo (si aplica):</label>
+                            <input type="text" id="canada.imm5707e.parent2.nativeLanguage" name="canada.imm5707e.parent2.nativeLanguage" data-validation-type="text" data-optional="true">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.dob">Fecha de Nacimiento (AAAA-MM-DD):</label>
+                            <input type="date" id="canada.imm5707e.parent2.dob" name="canada.imm5707e.parent2.dob" data-validation-type="date">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.pobCountry">País o Territorio de Nacimiento:</label>
+                            <input type="text" id="canada.imm5707e.parent2.pobCountry" name="canada.imm5707e.parent2.pobCountry" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.presentAddress">Dirección Actual (si fallecido, Ciudad, País, Fecha de Fallecimiento):</label>
+                            <textarea id="canada.imm5707e.parent2.presentAddress" name="canada.imm5707e.parent2.presentAddress" rows="2" data-validation-type="text"></textarea>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.maritalStatus">Estado Civil:</label>
+                            <select id="canada.imm5707e.parent2.maritalStatus" name="canada.imm5707e.parent2.maritalStatus">
+                                <option value="">Seleccione...</option>
+                                <option value="Annulled Marriage">Matrimonio Anulado</option>
+                                <option value="Common-Law">Unión Libre</option>
+                                <option value="Divorced">Divorciado</option>
+                                <option value="Legally Separated">Separado Legalmente</option>
+                                <option value="Married">Casado</option>
+                                <option value="Single">Soltero</option>
+                                <option value="Widowed">Viudo</option>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="canada.imm5707e.parent2.occupation">Ocupación Actual:</label>
+                            <input type="text" id="canada.imm5707e.parent2.occupation" name="canada.imm5707e.parent2.occupation" data-validation-type="text">
+                            <div class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <h3>Hijos (Incluya todos los hijos e hijas, adoptados y/o hijastros/as, sin importar su edad o lugar de residencia.)</h3>
+                    <div class="form-group">
+                        <label>¿No tiene hijos?</label>
+                        <input type="checkbox" id="canada.imm5707e.children.noChildren" name="canada.imm5707e.children.noChildren" value="Si">
+                        <div class="error-message"></div>
+                    </div>
+                    <div id="canadaChildrenDetailsIMM5707e" class="conditional-section">
+                        <div id="canadaChildrenContainerIMM5707e" class="dynamic-fields-container">
+                        </div>
+                        <button type="button" id="canadaAddChildBtnIMM5707e" class="add-btn">Añadir Hijo</button>
+                    </div>
+                </fieldset>
+
+                <h2>Declaración y Consentimiento (IMM5257e)</h2>
+                <fieldset class="form-card">
+                    <legend>Declaración Final</legend>
+                    <div class="form-group">
+                        <label>¿Da su consentimiento para ser contactado por IRCC, o una organización a solicitud de IRCC, en el futuro?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="canada.imm5257e.signature.consentContactYes" name="canada.imm5257e.signature.consentContact" value="Si" checked>
+                            <label for="canada.imm5257e.signature.consentContactYes">Sí</label>
+                            <input type="radio" id="canada.imm5257e.signature.consentContactNo" name="canada.imm5257e.signature.consentContact" value="No">
+                            <label for="canada.imm5257e.signature.consentContactNo">No</label>
+                        </div>
+                    </div>
+                    <p class="info-text">Al enviar este formulario, usted declara que ha respondido todas las preguntas de manera completa y veraz.</p>
                 </fieldset>
             </div>
 
@@ -1072,7 +1971,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2025 Formulario recopilador de informacion. Dev - SBERNARD.</p>
+        <p>&copy; 2024 Solicitud de Visado. Todos los derechos reservados.</p>
     </footer>
 
     <div id="customModal" class="modal">
