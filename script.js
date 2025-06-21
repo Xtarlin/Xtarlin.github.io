@@ -182,16 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return re.test(String(value)) ? '' : 'Formato de pasaporte inválido (6-20 caracteres alfanuméricos).';
         },
         zipcode: (value) => {
-            const usaRe = /^\d{5}(?:[-\s]\d{4})?$/; // USA zip code regex
-            const canRe = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/; // Canadian postal code regex
-            // Check which country's form is active and validate accordingly
-            const selectedVisaType = document.querySelector('input[name="visaType"]:checked')?.value;
-            if (selectedVisaType === 'USA') {
-                return usaRe.test(String(value)) ? '' : 'Formato de código postal de EE. UU. inválido (ej: 12345 o 12345-6789).';
-            } else if (selectedVisaType === 'Canada') {
-                return canRe.test(String(value)) ? '' : 'Formato de código postal canadiense inválido (ej: A1A 1A1).';
-            }
-            return 'Formato de código postal inválido.'; // Default if no country selected
+            // Flexible: alfanumérico, espacios, guiones, de 4 a 10 caracteres
+            const re = /^[a-zA-Z0-9\s-]{4,10}$/;
+            return re.test(String(value)) ? '' : 'Formato de código postal inválido (ej: 10101 o A1A 1A1).';
         },
         year: (value) => {
             if (!value) return 'Este campo de año es requerido.';
@@ -254,9 +247,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica de Mostrar/Ocultar Secciones Condicionales ---
     // Configura la visibilidad de un div basada en la selección de un radio button o un select.
     // `isInverse` es para lógicas donde "Sí" oculta la sección (ej. "misma dirección").
-    function setupConditionalDisplay(controlName, targetDivId, requiredInputSelectors = ['input', 'select', 'textarea'], isInverse = false) {
-        const controlElements = document.querySelectorAll(`input[name="${controlName}"], select[name="${controlName}"]`);
+    function setupConditionalDisplay(controlName, targetDivId, requiredInputSelectors = ['input', 'select', 'textarea'], isInverse = false, affectedButtonId = null) {
+        const controlElements = document.querySelectorAll(`input[name="${controlName}"], select[name="${controlName}"], input[type="checkbox"][name="${controlName}"]`);
         const targetDiv = document.getElementById(targetDivId);
+        const affectedButton = affectedButtonId ? document.getElementById(affectedButtonId) : null;
 
         if (!targetDiv) {
             console.warn(`Target div con ID '${targetDivId}' no encontrado para el control '${controlName}'.`);
@@ -266,29 +260,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetInputs = requiredInputSelectors.map(selector => Array.from(targetDiv.querySelectorAll(selector))).flat();
 
         const updateVisibility = (controlValue) => {
-            let isYesChecked = false;
-            // Determine if the "yes" condition is met based on control type
-            if (controlElements.length > 0 && controlElements[0].type === 'radio') {
-                isYesChecked = document.querySelector(`input[name="${controlName}"][value="Si"]`)?.checked;
-            } else if (controlElements.length > 0 && controlElements[0].tagName === 'SELECT') {
-                // Special handling for select elements, if the logic depends on specific values
-                if (controlName === 'canada.imm5257e.personalInfo.maritalStatus') {
-                    isYesChecked = (controlValue === 'Married' || controlValue === 'Common-Law');
-                } else if (controlName === 'usa.workEduInfo.highestEducation') { // Example for USA section
-                    isYesChecked = (controlValue === 'Otro' || controlValue === 'Universidad');
-                } else {
-                    isYesChecked = (controlValue === 'Si'); // Default for select if it behaves like a "Yes/No"
-                }
+            let isYesConditionMet = false;
+            if (controlElements.length > 0 && (controlElements[0].type === 'radio' || controlElements[0].tagName === 'SELECT')) {
+                // For radios, it's 'Si' value. For selects, it depends on specific values if special logic is needed.
+                isYesConditionMet = (controlValue === 'Si' || controlValue === 'Married' || controlValue === 'Common-Law' || controlValue === 'Otro' || controlValue === 'Universidad');
             } else if (controlElements.length > 0 && controlElements[0].type === 'checkbox') {
-                 // For checkboxes that control visibility, like "No Children"
-                 // If `isInverse` is true (e.g., 'No Children' checkbox), `shouldShow` is true if checkbox is UNCHECKED
-                isYesChecked = controlValue; // For a checkbox, value is its checked state
+                isYesConditionMet = controlValue; // For a checkbox, value is its checked state (true/false)
             }
 
-
-            const shouldShow = isInverse ? !isYesChecked : isYesChecked;
+            const shouldShow = isInverse ? !isYesConditionMet : isYesConditionMet;
             targetDiv.style.display = shouldShow ? 'block' : 'none';
-            console.log(`Control '${controlName}' changed. Value: ${controlValue}. Section '${targetDivId}' ${shouldShow ? 'shown' : 'hidden'}.`);
+
+            if (affectedButton) {
+                affectedButton.style.display = shouldShow ? 'block' : 'none';
+            }
 
             targetInputs.forEach(input => {
                 if (shouldShow) {
@@ -389,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupConditionalDisplay('usa.familyInfo.spouse.addressSame', 'spouseAddressDetails', ['input', 'select', 'textarea'], true); // Inverse logic
 
 
-    // Canada (IMM5257e) Conditional Sections - Updated from PDF
+    // Canada (IMM5257e) Conditional Sections
     setupConditionalDisplay('canada.imm5257e.personalInfo.otherNamesUsed', 'canadaOtherNamesDetails');
     setupConditionalDisplay('canada.imm5257e.personalInfo.prevResidenceCountries', 'canadaPrevResidenceCountriesDetails');
     setupConditionalDisplay('canada.imm5257e.personalInfo.maritalStatus', 'canadaMarriageDateDetails'); // Handled by specific event listener below for select
@@ -449,13 +434,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trigger initial state for marital status on load
     document.getElementById('canada.imm5257e.personalInfo.maritalStatus')?.dispatchEvent(new Event('change'));
 
-    // Canada (IMM5707e) Conditional Sections - Assuming these are checkboxes or radios
-    // For IMM5707e, Family Information
-    setupConditionalDisplay('canada.imm5707e.familyInfo.hasSpouse', 'canadaSpouseDetailsIMM5707e');
-    setupConditionalDisplay('canada.imm5707e.familyInfo.hasMother', 'canadaMotherDetailsIMM5707e');
-    setupConditionalDisplay('canada.imm5707e.familyInfo.hasFather', 'canadaFatherDetailsIMM5707e');
-    // Children logic: if "No Children" is checked, hide dynamic children section.
-    setupConditionalDisplay('canada.imm5707e.familyInfo.noChildren', 'canadaChildrenDetailsIMM5707e', ['input', 'select', 'textarea'], true); // Inverse logic
+    // Canada (IMM5707e) Conditional Sections
+    setupConditionalDisplay('canada.imm5707e.spouse.accompanyToCanada', 'canadaSpouseDetailsIMM5707e');
+    setupConditionalDisplay('canada.imm5707e.parent1.accompanyToCanada', 'canadaParent1DetailsIMM5707e');
+    setupConditionalDisplay('canada.imm5707e.parent2.accompanyToCanada', 'canadaParent2DetailsIMM5707e');
+    // Children logic: if "No Children" is checked, hide dynamic children section and disable add button.
+    setupConditionalDisplay('canada.imm5707e.children.noChildren', 'canadaChildrenDetailsIMM5707e', ['input', 'select', 'textarea'], true, 'canadaAddChildBtnIMM5707e');
 
 
     // --- Funciones para Campos Dinámicos ---
@@ -678,6 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ], 'Otro Nombre (Canadá)');
     });
 
+    // Fix for "Añadir País de Residencia Anterior" button
     document.getElementById('canadaAddPrevResidenceCountryBtn')?.addEventListener('click', () => {
         createDynamicEntry('canadaPrevResidenceCountriesContainer', 'canada.imm5257e.personalInfo.prevResidenceHistory', [
             { idPrefix: 'canadaPrevResCountry', nameSuffix: 'country', label: 'País o Territorio', type: 'text', required: true, validationType: 'text' },
@@ -825,11 +810,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isRequired) {
                     // Trigger change events for radios and selects to re-evaluate conditional sections
-                    section.querySelectorAll('input[type="radio"], select').forEach(control => {
+                    section.querySelectorAll('input[type="radio"], select, input[type="checkbox"]').forEach(control => {
                         if (control.type === 'radio' && control.checked) {
                             control.dispatchEvent(new Event('change'));
                         } else if (control.tagName === 'SELECT') {
                             control.dispatchEvent(new Event('change'));
+                        } else if (control.type === 'checkbox') {
+                             control.dispatchEvent(new Event('change'));
                         }
                     });
                 }
@@ -961,7 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Iterar sobre todos los elementos de entrada dentro de la sección activa
         currentFormSection.querySelectorAll('input, select, textarea').forEach(input => {
             const parentConditionalSection = input.closest('.conditional-section');
-            // Solo validar si el campo no está en una sección condicional oculta
+            // Solo validar si el campo no está en una sección condicional actualmente oculta
             if (!parentConditionalSection || parentConditionalSection.style.display !== 'none') {
                 // Solo validar campos requeridos o con tipo de validación específico y no opcionales
                 if (input.hasAttribute('required') || (input.dataset.validationType && !input.hasAttribute('data-optional'))) {
@@ -1194,7 +1181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ]
                     },
                     { idPrefix: 'childOccupation', nameSuffix: 'occupation', label: 'Ocupación Actual', type: 'text', required: true, validationType: 'text' },
-                ], titlePrefix: 'Hijo', controllingRadioName: 'canada.imm5707e.familyInfo.noChildren', inverseControllingRadio: true}, // inverse logic: if noChildren is true, hide
+                ], titlePrefix: 'Hijo', controllingRadioName: 'canada.imm5707e.children.noChildren', inverseControllingRadio: true}, // inverse logic: if noChildren is true, hide
             };
 
             // Función recursiva para recorrer y poblar el formulario desde los datos cargados.
@@ -1255,8 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Disparar eventos de cambio para radios y selects para asegurar visibilidad de condicionales
             // Esto es un paso de seguridad para los casos que no fueron cubiertos por el populateField
-            form.querySelectorAll('input[type="radio"]:checked').forEach(radio => radio.dispatchEvent(new Event('change')));
-            form.querySelectorAll('select').forEach(select => select.dispatchEvent(new Event('change')));
+            form.querySelectorAll('input[type="radio"]:checked, select, input[type="checkbox"]').forEach(control => control.dispatchEvent(new Event('change')));
 
             updateProgressBar();
             showModal("Progreso Cargado", "Sus datos guardados han sido cargados exitosamente.");
@@ -1451,109 +1437,101 @@ document.addEventListener('DOMContentLoaded', () => {
         'publicChargeExplanation': 'Explicación de carga pública',
 
         // Canada IMM5257e Fields
-        'currentMailingAddress.poBox': 'P.O. box (Dirección Actual)',
-        'currentMailingAddress.aptUnit': 'Apt/Unit (Dirección Actual)',
-        'currentMailingAddress.streetNo': 'Street no. (Dirección Actual)',
-        'currentMailingAddress.streetName': 'Street name (Dirección Actual)',
-        'currentMailingAddress.cityTown': 'Ciudad/Pueblo (Dirección Actual)',
-        'currentMailingAddress.countryTerritory': 'País o Territorio (Dirección Actual)',
-        'currentMailingAddress.provinceState': 'Provincia/Estado (Dirección Actual)',
-        'currentMailingAddress.postalCode': 'Código Postal (Dirección Actual)',
-        'currentMailingAddress.district': 'Distrito (Dirección Actual)',
+        'currentResidenceCountry': 'País o Territorio de Residencia Actual',
+        'currentResidenceStatus': 'Estatus en el País de Residencia Actual',
+        'currentResidenceFrom': 'Desde (Residencia Actual)',
+        'currentResidenceTo': 'Hasta (Residencia Actual)',
+        'prevResidenceCountries': '¿Ha vivido en otros países en los últimos 5 años?',
+        'applyingCountrySame': '¿País de solicitud es el mismo que el de residencia actual?',
+        'applyingCountry': 'País o Territorio donde aplica',
+        'applyingCountryStatus': 'Estatus en el país donde aplica',
+        'applyingCountryFrom': 'Desde (Aplicando)',
+        'applyingCountryTo': 'Hasta (Aplicando)',
+        'marriageDate': 'Fecha de Matrimonio/Unión Libre',
+        'spouseSurname': 'Apellidos del Cónyuge/Pareja Actual',
+        'spouseGivenName': 'Nombres del Cónyuge/Pareja Actual',
+        'prevMarried': '¿Ha estado casado/a o en unión libre anteriormente?',
+        'mailingAddressPOBox': 'P.O. box (Dirección de Correo)',
+        'mailingAddressAptUnit': 'Apto./Unidad (Dirección de Correo)',
+        'mailingAddressStreetNo': 'Número de Calle (Dirección de Correo)',
+        'mailingAddressStreetName': 'Nombre de la Calle (Dirección de Correo)',
+        'mailingAddressCity': 'Ciudad/Pueblo (Dirección de Correo)',
+        'mailingAddressCountry': 'País o Territorio (Dirección de Correo)',
+        'mailingAddressProvinceState': 'Provincia/Estado (Dirección de Correo)',
+        'mailingAddressPostalCode': 'Código Postal (Dirección de Correo)',
+        'mailingAddressDistrict': 'Distrito (Dirección de Correo)',
         'residentialAddressSame': '¿Dirección residencial es la misma que la de correo?',
-        'residentialAddress.aptUnit': 'Apt/Unit (Dirección Residencial)',
-        'residentialAddress.streetNo': 'Street no. (Dirección Residencial)',
-        'residentialAddress.streetName': 'Street name (Dirección Residencial)',
-        'residentialAddress.cityTown': 'Ciudad/Pueblo (Dirección Residencial)',
-        'residentialAddress.countryTerritory': 'País o Territorio (Dirección Residencial)',
-        'residentialAddress.provinceState': 'Provincia/Estado (Dirección Residencial)',
-        'residentialAddress.postalCode': 'Código Postal (Dirección Residencial)',
-        'residentialAddress.district': 'Distrito (Dirección Residencial)',
-        'telephoneNo.type': 'Tipo de Teléfono Principal',
-        'telephoneNo.countryCode': 'Código de País (Teléfono Principal)',
-        'telephoneNo.number': 'Número de Teléfono Principal',
-        'telephoneNo.ext': 'Ext. (Teléfono Principal)',
-        'alternateTelephoneNo.type': 'Tipo de Teléfono Alternativo',
-        'alternateTelephoneNo.countryCode': 'Código de País (Teléfono Alternativo)',
-        'alternateTelephoneNo.number': 'Número de Teléfono Alternativo',
-        'alternateTelephoneNo.ext': 'Ext. (Teléfono Alternativo)',
-        'faxNo.countryCode': 'Código de País (Fax)',
-        'faxNo.number': 'Número de Fax',
-        'faxNo.ext': 'Ext. (Fax)',
-        'emailAddress': 'Correo Electrónico',
-        'purposeOfVisit': 'Propósito de la Visita',
+        'residentialAddressAptUnit': 'Apto./Unidad (Dirección Residencial)',
+        'residentialAddressStreetNo': 'Número de Calle (Dirección Residencial)',
+        'residentialAddressStreetName': 'Nombre de la Calle (Dirección Residencial)',
+        'residentialAddressCity': 'Ciudad/Pueblo (Dirección Residencial)',
+        'residentialAddressCountry': 'País o Territorio (Dirección Residencial)',
+        'residentialAddressProvinceState': 'Provincia/Estado (Residencial)',
+        'residentialAddressPostalCode': 'Código Postal (Residencial)',
+        'residentialAddressDistrict': 'Distrito (Residencial)',
+        'primaryPhoneType': 'Tipo de Teléfono Principal',
+        'primaryPhoneCountryCode': 'Código de País (Teléfono Principal)',
+        'primaryPhoneNumber': 'Número de Teléfono Principal',
+        'primaryPhoneExt': 'Extensión (Teléfono Principal)',
+        'alternatePhoneType': 'Tipo de Teléfono Alternativo',
+        'alternatePhoneCountryCode': 'Código de País (Teléfono Alternativo)',
+        'alternatePhoneNumber': 'Número de Teléfono Alternativo',
+        'alternatePhoneExt': 'Extensión (Teléfono Alternativo)',
+        'faxNumber': 'Número de Fax',
+        'nativeLanguage': 'Idioma Nativo/Lengua Materna',
+        'canCommunicateEnFr': '¿Puede comunicarse en inglés y/o francés?',
+        'mostAtEaseLanguage': 'Idioma en que se siente más cómodo',
+        'takenLanguageTest': '¿Ha realizado prueba de dominio del idioma?',
+        'issueCountry': 'País o Territorio de Emisión (Pasaporte)',
+        'issueDate': 'Fecha de Emisión (Pasaporte)',
+        'expiryDate': 'Fecha de Caducidad (Pasaporte)',
+        'taiwanPassportWithId': '¿Usa pasaporte de Taiwán con ID personal?',
+        'nationalIsraeliPassport': '¿Usa pasaporte Nacional Israelí?',
+        'hasNationalId': '¿Tiene documento de identidad nacional?',
+        'documentNumber': 'Número de Documento (ID Nacional/Green Card)',
+        'usprCard.expiryDate': 'Fecha de Caducidad (Green Card)',
+        'isUsPermanentResident': '¿Es Residente Permanente Legal de EE. UU.?',
+        'purposeOfVisit': 'Propósito de su visita a Canadá',
         'otherPurpose': 'Otro Propósito',
-        'stayFromDate': 'Desde (Estancia)',
-        'stayToDate': 'Hasta (Estancia)',
-        'fundsAvailable': 'Fondos Disponibles para la Estancia (CAD)',
+        'fromDate': 'Desde (Visita)',
+        'toDate': 'Hasta (Visita)',
+        'fundsAvailableCAD': 'Fondos disponibles (CAD)',
         'postSecondary': '¿Ha tenido educación post-secundaria?',
-        'currentActivityOccupation': 'Actividad/Ocupación Actual',
-        'programStartDate': 'Fecha de Inicio del Programa',
-        'programEndDate': 'Fecha de Fin del Programa',
-        'companyEmployerFacilityName': 'Nombre de la Compañía/Empleador/Facilidad',
-        'currentCityTown': 'Ciudad/Pueblo Actual',
-        'currentCountryTerritory': 'País o Territorio Actual',
-        'currentProvinceState': 'Provincia/Estado Actual',
+        'currentActivity': 'Actividad/Ocupación Actual',
+        'currentFromYear': 'Desde (Año - Actual Empleo)',
+        'currentFromMonth': 'Desde (Mes - Actual Empleo)',
+        'currentToYear': 'Hasta (Año - Actual Empleo)',
+        'currentToMonth': 'Hasta (Mes - Actual Empleo)',
+        'currentCityTown': 'Ciudad/Pueblo (Actual Empleo)',
+        'currentCountryTerritory': 'País o Territorio (Actual Empleo)',
+        'currentCompanyEmployerFacilityName': 'Nombre de la Compañía/Empleador/Instalación (Actual Empleo)',
+        'currentProvinceState': 'Provincia/Estado (Actual Empleo)',
         'tuberculosis': '¿Ha tenido tuberculosis o contacto cercano?',
         'tuberculosisExplanation': 'Detalles de tuberculosis/contacto',
-        'physicalMentalDisorder': '¿Tiene algún trastorno físico o mental que requiera servicios de salud/sociales en Canadá?',
+        'physicalMentalDisorder': '¿Tiene trastorno físico/mental que requiera servicios de salud/sociales en Canadá?',
         'physicalMentalDisorderExplanation': 'Detalles de trastorno físico/mental',
-        'violatedStatusCanada': '¿Ha excedido la validez de su estatus, asistido a la escuela o trabajado sin autorización en Canadá?',
+        'violatedStatusCanada': '¿Ha violado estatus en Canadá?',
         'violatedStatusCanadaExplanation': 'Detalles de violación de estatus en Canadá',
-        'refusedDeniedOrdered': '¿Se le ha denegado visa/permiso, entrada u ordenado abandonar Canadá o cualquier otro país?',
+        'refusedDeniedOrdered': '¿Se le ha denegado/ordenado salir de Canadá/otro país?',
         'refusedDeniedOrderedExplanation': 'Detalles de denegación/orden de salida',
         'previouslyAppliedCanada': '¿Ha solicitado previamente entrar o permanecer en Canadá?',
         'previouslyAppliedCanadaExplanation': 'Detalles de solicitud previa a Canadá',
-        'criminalOffence': '¿Ha cometido, sido arrestado, acusado o condenado por algún delito penal?',
+        'criminalOffence': '¿Ha cometido/sido acusado de delito criminal?',
         'criminalOffenceExplanation': 'Detalles de delito penal',
-        'militaryOrPoliceService': '¿Sirvió en alguna unidad militar, milicia, defensa civil, organización de seguridad o fuerza policial?',
-        'militaryOrPoliceServiceExplanation': 'Fechas y países/territorios donde sirvió en servicio militar/policial',
-        'violentOrgAffiliation': '¿Es o ha sido miembro o asociado a algún partido político o grupo/organización que haya participado o abogado por la violencia?',
+        'militaryOrPoliceService': '¿Sirvió en servicio militar/policial?',
+        'militaryServiceDatesAndCountries': 'Fechas y países/territorios de servicio militar/policial',
+        'violentOrgAffiliation': '¿Miembro/asociado a grupo violento/criminal?',
         'violentOrgAffiliationExplanation': 'Detalles de afiliación a organización violenta',
-        'illTreatmentOrDesecration': '¿Ha presenciado o participado en maltrato a prisioneros/civiles, saqueo o profanación de edificios religiosos?',
+        'illTreatmentOrDesecration': '¿Presenció/participó en maltrato a prisioneros/civiles, saqueo o profanación?',
         'illTreatmentOrDesecrationExplanation': 'Detalles de maltrato/profanación',
-        'consentContactCIC': '¿Consiente ser contactado por CIC en el futuro?',
-        'signatureDate': 'Fecha de Firma',
+        'consentContact': '¿Consiente ser contactado por IRCC en el futuro?',
 
         // Canada IMM5707e Fields
-        'familyInfo.hasSpouse': '¿Tiene cónyuge/pareja de unión libre?',
-        'familyInfo.spouse.accompanyToCanada': '¿Acompañará a Canadá?',
-        'familyInfo.spouse.relationship': 'Parentesco (Cónyuge/Pareja)',
-        'familyInfo.spouse.surname': 'Apellidos (Cónyuge/Pareja)',
-        'familyInfo.spouse.givenName': 'Nombres (Cónyuge/Pareja)',
-        'familyInfo.spouse.dob': 'Fecha de Nacimiento (Cónyuge/Pareja)',
-        'familyInfo.spouse.pobCountry': 'País de Nacimiento (Cónyuge/Pareja)',
-        'familyInfo.spouse.presentAddress': 'Dirección Actual (Cónyuge/Pareja)',
-        'familyInfo.spouse.maritalStatus': 'Estado Civil (Cónyuge/Pareja)',
-        'familyInfo.spouse.occupation': 'Ocupación Actual (Cónyuge/Pareja)',
-
-        'familyInfo.hasMother': '¿Tiene madre?',
-        'familyInfo.mother.accompanyToCanada': '¿Acompañará a Canadá?',
-        'familyInfo.mother.relationship': 'Parentesco (Madre)',
-        'familyInfo.mother.surname': 'Apellidos (Madre)',
-        'familyInfo.mother.givenName': 'Nombres (Madre)',
-        'familyInfo.mother.dob': 'Fecha de Nacimiento (Madre)',
-        'familyInfo.mother.pobCountry': 'País de Nacimiento (Madre)',
-        'familyInfo.mother.presentAddress': 'Dirección Actual (Madre)',
-        'familyInfo.mother.maritalStatus': 'Estado Civil (Madre)',
-        'familyInfo.mother.occupation': 'Ocupación Actual (Madre)',
-
-        'familyInfo.hasFather': '¿Tiene padre?',
-        'familyInfo.father.accompanyToCanada': '¿Acompañará a Canadá?',
-        'familyInfo.father.relationship': 'Parentesco (Padre)',
-        'familyInfo.father.surname': 'Apellidos (Padre)',
-        'familyInfo.father.givenName': 'Nombres (Padre)',
-        'familyInfo.father.dob': 'Fecha de Nacimiento (Padre)',
-        'familyInfo.father.pobCountry': 'País de Nacimiento (Padre)',
-        'familyInfo.father.presentAddress': 'Dirección Actual (Padre)',
-        'familyInfo.father.maritalStatus': 'Estado Civil (Padre)',
-        'familyInfo.father.occupation': 'Ocupación Actual (Padre)',
-
-        'familyInfo.noChildren': '¿No tiene hijos?',
-        'accompanyToCanada': '¿Acompañará a Canadá?', // For dynamic children
-        'relationship': 'Parentesco', // For dynamic children
-        'presentAddress': 'Dirección Actual', // For dynamic children
-        'occupation': 'Ocupación Actual', // For dynamic children
+        'accompanyToCanada': '¿Acompañará a Canadá?',
+        'nativeLanguage': 'Nombre en idioma nativo',
+        'presentAddress': 'Dirección Actual (si aplica)',
+        'occupation': 'Ocupación Actual',
+        'noChildren': '¿No tiene hijos?',
     };
 
     // Formatea el valor para mostrarlo en el resumen.
@@ -1582,7 +1560,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const displayTitle = fieldTitleMap[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
                 if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                    html += `<h3>${displayTitle}</h3>`;
+                    // Check if the object is part of a dynamic array, if so, it's already handled by Array.isArray
+                    // This prevents showing a redundant heading for nested objects that are part of dynamic entries.
+                    const parentKeyParts = currentPath.split('.');
+                    const isDynamicSubObject = parentKeyParts.length > 0 && parentKeyParts[parentKeyParts.length - 1].match(/\[\d+\]$/);
+                    
+                    if (!isDynamicSubObject) {
+                        html += `<h3>${displayTitle}</h3>`;
+                    }
                     html += generateSummaryHtml(value, fullPath);
                 } else if (Array.isArray(value)) {
                     if (value.length > 0) {
