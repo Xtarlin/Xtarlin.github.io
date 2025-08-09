@@ -5,19 +5,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const visaTypeRadios = document.querySelectorAll('input[name="visaType"]');
     const countrySelectionError = document.getElementById('countrySelectionError');
     const saveProgressBtn = document.getElementById('saveProgressBtn');
-    const reviewAndSubmitBtn = document.getElementById('reviewAndSubmitBtn');
+    const reviewAndSubmitBtn = document.getElementById('reviewAndSubmitBtn'); // Cambiado de submit-btn
 
     // Modal de Mensajes Generales
     const customModal = document.getElementById('customModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalMessage = document.getElementById('modalMessage');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
-    const closeButtonSpan = customModal.querySelector('.close-button');
+    const closeButtonSpan = customModal.querySelector('.close-button'); // Específico para customModal
 
     // Modal de Resumen
     const summaryModal = document.getElementById('summaryModal');
     const summaryContent = document.getElementById('summaryContent');
-    const summaryCloseButton = document.getElementById('summaryCloseButton');
+    const summaryCloseButton = document.getElementById('summaryCloseButton'); // Específico para summaryModal
     const editFormBtn = document.getElementById('editFormBtn');
     const confirmAndDownloadBtn = document.getElementById('confirmAndDownloadBtn');
 
@@ -35,13 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (!form) {
         console.error("Error: Elemento con ID 'visaApplicationForm' no encontrado en el HTML. El formulario principal es crucial.");
-        return;
+        return; // Detener la ejecución si el formulario principal no se encuentra.
     }
     console.log("Elementos principales del formulario encontrados.");
 
 
     // --- Funciones de Utilidad para Modales ---
-    // Muestra el modal general con un título, mensaje y opcionalmente botones de confirmación.
+
+    // Muestra el modal general
     function showModal(title, message, isConfirmation = false, onConfirm = null) {
         modalTitle.textContent = title;
         modalMessage.textContent = message;
@@ -53,13 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isConfirmation) {
             const confirmBtn = document.createElement('button');
             confirmBtn.id = 'modalConfirmBtn';
-            confirmBtn.classList.add('modal-btn', 'primary-btn');
+            confirmBtn.classList.add('modal-btn', 'primary-btn'); // Añadir clase para estilo primario
             confirmBtn.textContent = 'Sí, Cargar';
             confirmBtn.addEventListener('click', () => {
                 hideModal(customModal);
                 if (onConfirm) onConfirm();
             }, { once: true }); // Asegura que el evento se dispare solo una vez
-            modalCloseBtn.textContent = 'No, Empezar de Nuevo';
+            modalCloseBtn.textContent = 'No, Empezar de Nuevo'; // Cambiar texto del botón existente
             modalCloseBtn.parentNode.insertBefore(confirmBtn, modalCloseBtn); // Insertar antes del botón de cerrar
         } else {
             modalCloseBtn.textContent = 'Cerrar'; // Restablecer texto para alertas regulares
@@ -68,18 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
         customModal.classList.add('show'); // Usar clase para mostrar con transición
     }
 
-    // Oculta un modal específico eliminando la clase 'show'.
+    // Oculta un modal específico
     function hideModal(modalElement) {
         modalElement.classList.remove('show');
     }
 
-    // Event listeners para cerrar modales.
+    // Event listeners para cerrar modales
     modalCloseBtn.addEventListener('click', () => hideModal(customModal));
     closeButtonSpan.addEventListener('click', () => hideModal(customModal));
     summaryCloseButton.addEventListener('click', () => hideModal(summaryModal));
     editFormBtn.addEventListener('click', () => hideModal(summaryModal)); // Volver al formulario
 
-    // Cierra el modal si se hace clic fuera de él.
+    // Cierra el modal si se hace clic fuera de él
     window.addEventListener('click', (event) => {
         if (event.target === customModal) {
             hideModal(customModal);
@@ -90,14 +91,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Funciones para Manipulación de Datos ---
-    // Establece un valor anidado en un objeto usando una ruta de cadena (ej. "usa.personalInfo.surname").
+
+    // Establece un valor anidado en un objeto usando una ruta de cadena
     function setNestedValue(obj, path, value) {
         const parts = path.split('.');
         let current = obj;
 
         for (let i = 0; i < parts.length; i++) {
             let part = parts[i];
-            const arrayMatch = part.match(/\[(\d+)\]$/); // Verifica si es un elemento de array (ej. "items[0]")
+            const arrayMatch = part.match(/\[(\d+)\]$/);
 
             if (arrayMatch) {
                 const arrayName = part.substring(0, arrayMatch.index);
@@ -127,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Obtiene un valor anidado de un objeto usando una ruta de cadena.
+    // Obtiene un valor anidado de un objeto usando una ruta de cadena
     function getNestedValue(obj, path) {
         const parts = path.split('.');
         let current = obj;
@@ -154,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Funciones de Validación en Tiempo Real ---
+
     const validationRules = {
         email: (value) => {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -173,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return value.trim() === '' ? 'Este campo es requerido.' : '';
         },
         number: (value) => {
+            // Si el campo es opcional y está vacío, es válido. Si tiene valor, debe ser número.
             if (value.trim() === '') return '';
             return isNaN(parseFloat(value)) ? 'Debe ser un número válido.' : '';
         },
@@ -182,23 +186,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return re.test(String(value)) ? '' : 'Formato de pasaporte inválido (6-20 caracteres alfanuméricos).';
         },
         zipcode: (value) => {
-            // Flexible: alfanumérico, espacios, guiones, de 4 a 10 caracteres
-            const re = /^[a-zA-Z0-9\s-]{4,10}$/;
-            return re.test(String(value)) ? '' : 'Formato de código postal inválido (ej: 10101 o A1A 1A1).';
-        },
-        year: (value) => {
-            if (!value) return 'Este campo de año es requerido.';
-            const year = parseInt(value, 10);
-            return (year >= 1900 && year <= 2100) ? '' : 'Año inválido (AAAA).';
-        },
-        month: (value) => {
-            if (!value) return 'Este campo de mes es requerido.';
-            const month = parseInt(value, 10);
-            return (month >= 1 && month <= 12) ? '' : 'Mes inválido (MM).';
+            // Ejemplo básico: 5 dígitos o 5 dígitos-4 dígitos
+            const re = /^\d{5}(?:[-\s]\d{4})?$/;
+            return re.test(String(value)) ? '' : 'Formato de código postal inválido (ej: 12345 o 12345-6789).';
         }
     };
 
-    // Valida un elemento de entrada individual y muestra/oculta el mensaje de error.
     function validateInput(inputElement) {
         const validationType = inputElement.dataset.validationType;
         const errorMessageElement = inputElement.nextElementSibling; // Asume que el div.error-message es el siguiente hermano
@@ -208,14 +201,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let errorMessage = '';
-        const isOptional = inputElement.hasAttribute('data-optional');
-        const isEmpty = inputElement.value.trim() === '';
-
-        // Si el campo es requerido y está vacío y no es opcional, mostrar error de requerido.
-        if (inputElement.hasAttribute('required') && isEmpty && !isOptional) {
+        // Si el campo es opcional y está vacío, es válido.
+        if (inputElement.hasAttribute('data-optional') && inputElement.value.trim() === '') {
+            errorMessage = '';
+        } else if (inputElement.hasAttribute('required') && inputElement.value.trim() === '') {
             errorMessage = 'Este campo es requerido.';
-        } else if (isEmpty && isOptional) {
-            errorMessage = ''; // Los campos opcionales pueden estar vacíos
         } else if (validationRules[validationType]) {
             errorMessage = validationRules[validationType](inputElement.value);
         }
@@ -233,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Adjuntar validación en tiempo real a todos los campos con el atributo `data-validation-type`.
+    // Adjuntar validación a todos los campos con data-validation-type
     form.querySelectorAll('[data-validation-type]').forEach(input => {
         input.addEventListener('blur', () => validateInput(input)); // Valida al perder el foco
         input.addEventListener('input', () => { // Limpia el error al empezar a escribir
@@ -245,103 +235,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Lógica de Mostrar/Ocultar Secciones Condicionales ---
-    // Configura la visibilidad de un div basada en la selección de un radio button o un select.
-    // `isInverse` es para lógicas donde "Sí" oculta la sección (ej. "misma dirección").
-    function setupConditionalDisplay(controlName, targetDivId, requiredInputSelectors = ['input', 'select', 'textarea'], isInverse = false, affectedButtonId = null) {
-        const controlElements = document.querySelectorAll(`input[name="${controlName}"], select[name="${controlName}"], input[type="checkbox"][name="${controlName}"]`);
+
+    // Configura la visibilidad de un div basada en la selección de un radio button
+    function setupConditionalDisplay(radioName, targetDivId, requiredInputSelectors = ['input', 'select', 'textarea']) {
+        const radios = document.querySelectorAll(`input[name="${radioName}"]`);
         const targetDiv = document.getElementById(targetDivId);
-        const affectedButton = affectedButtonId ? document.getElementById(affectedButtonId) : null;
 
         if (!targetDiv) {
-            console.warn(`Target div con ID '${targetDivId}' no encontrado para el control '${controlName}'.`);
+            console.warn(`Target div con ID '${targetDivId}' no encontrado para el grupo de radio '${radioName}'.`);
             return;
         }
 
         const targetInputs = requiredInputSelectors.map(selector => Array.from(targetDiv.querySelectorAll(selector))).flat();
 
-        const updateVisibility = (controlValue) => {
-            let isYesConditionMet = false;
-            if (controlElements.length > 0 && (controlElements[0].type === 'radio' || controlElements[0].tagName === 'SELECT')) {
-                // For radios, it's 'Si' value. For selects, it depends on specific values if special logic is needed.
-                isYesConditionMet = (controlValue === 'Si' || controlValue === 'Married' || controlValue === 'Common-Law' || controlValue === 'Otro' || controlValue === 'Universidad');
-            } else if (controlElements.length > 0 && controlElements[0].type === 'checkbox') {
-                isYesConditionMet = controlValue; // For a checkbox, value is its checked state (true/false)
-            }
-
-            const shouldShow = isInverse ? !isYesConditionMet : isYesConditionMet;
-            targetDiv.style.display = shouldShow ? 'block' : 'none';
-
-            if (affectedButton) {
-                affectedButton.style.display = shouldShow ? 'block' : 'none';
-            }
-
-            targetInputs.forEach(input => {
-                if (shouldShow) {
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const isYes = document.querySelector(`input[name="${radioName}"][value="Si"]`)?.checked;
+                console.log(`Radio ${radioName} cambiado. Valor 'Si' seleccionado: ${isYes}`);
+                if (isYes) {
+                    targetDiv.style.display = 'block';
+                    console.log(`Sección condicional '${targetDivId}' mostrada.`);
+                    // Solo establece 'required' si la sección principal del formulario es visible Y el campo no es opcional
                     const parentFormSection = targetDiv.closest('#usaFormSections, #canadaFormSections');
-                    if (parentFormSection && parentFormSection.style.display !== 'none' && input.dataset.validationType && !input.hasAttribute('data-optional')) {
-                        input.setAttribute('required', 'required');
+                    if (parentFormSection && parentFormSection.style.display !== 'none') {
+                        targetInputs.forEach(input => {
+                            if (input.dataset.validationType && !input.hasAttribute('data-optional')) {
+                                input.setAttribute('required', 'required');
+                            }
+                        });
                     }
                 } else {
-                    input.removeAttribute('required');
-                    input.value = '';
-                    if (input.type === 'radio') {
-                        // Find the 'No' radio button in the same group and check it, if available
-                        const noRadio = input.closest('.radio-group')?.querySelector(`input[name="${input.name}"][value="No"]`);
-                        if (noRadio) {
-                            noRadio.checked = true;
-                        } else { // If no 'No' option, just uncheck
+                    targetDiv.style.display = 'none';
+                    console.log(`Sección condicional '${targetDivId}' oculta.`);
+                    targetInputs.forEach(input => {
+                        input.removeAttribute('required');
+                        input.value = ''; // Limpia valores cuando se oculta
+                        if (input.type === 'radio' || input.type === 'checkbox') {
                             input.checked = false;
                         }
-                    } else if (input.type === 'checkbox') {
-                        input.checked = false;
-                    } else if (input.tagName === 'SELECT') {
-                        input.selectedIndex = 0; // Reset select to first option
-                    }
-                    input.classList.remove('invalid');
-                    const errorMessageElement = input.nextElementSibling;
-                    if (errorMessageElement && errorMessageElement.classList.contains('error-message')) {
-                        errorMessageElement.textContent = '';
-                        errorMessageElement.style.display = 'none';
+                        input.classList.remove('invalid'); // Limpia el estado de validación
+                        const errorMessageElement = input.nextElementSibling;
+                        if (errorMessageElement && errorMessageElement.classList.contains('error-message')) {
+                            errorMessageElement.textContent = '';
+                            errorMessageElement.style.display = 'none';
+                        }
+                    });
+                    if (targetDiv.id.includes('Container')) {
+                        targetDiv.innerHTML = ''; // Limpia contenido dinámico
                     }
                 }
-            });
-
-            if (!shouldShow && targetDiv.id.includes('Container')) { // Clear dynamic children if container is hidden
-                targetDiv.innerHTML = '';
-            }
-            updateProgressBar();
-        };
-
-        controlElements.forEach(control => {
-            control.addEventListener('change', (event) => {
-                let valueToCheck;
-                if (event.target.type === 'radio' || event.target.tagName === 'SELECT') {
-                    valueToCheck = event.target.value;
-                } else if (event.target.type === 'checkbox') {
-                    valueToCheck = event.target.checked;
-                }
-                updateVisibility(valueToCheck);
+                updateProgressBar(); // Actualiza la barra de progreso
             });
         });
 
-        // Initial state
-        let initialValue;
-        if (controlElements.length > 0 && controlElements[0].type === 'radio') {
-            const initialCheckedRadio = document.querySelector(`input[name="${controlName}"]:checked`);
-            initialValue = initialCheckedRadio ? initialCheckedRadio.value : '';
-        } else if (controlElements.length > 0 && controlElements[0].tagName === 'SELECT') {
-            initialValue = controlElements[0].value;
-        } else if (controlElements.length > 0 && controlElements[0].type === 'checkbox') {
-            initialValue = controlElements[0].checked;
+        // Estado inicial: ocultar y desmarcar requerido si no hay "Sí" seleccionado
+        const initialCheckedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
+        if (!initialCheckedRadio || initialCheckedRadio.value === 'No') {
+            targetDiv.style.display = 'none';
+            targetInputs.forEach(input => input.removeAttribute('required'));
+        } else if (initialCheckedRadio.value === 'Si') {
+             targetDiv.style.display = 'block';
+             const parentFormSection = targetDiv.closest('#usaFormSections, #canadaFormSections');
+             if (parentFormSection && parentFormSection.style.display !== 'none') {
+                 targetInputs.forEach(input => {
+                    if (input.dataset.validationType && !input.hasAttribute('data-optional')) {
+                        input.setAttribute('required', 'required');
+                    }
+                 });
+             }
         }
-        updateVisibility(initialValue);
     }
 
-
-    // Common (USA) Conditional Sections
+    // Configuración de todas las secciones condicionales para USA
     setupConditionalDisplay('usa.personalInfo.otherNationality', 'otherNationalityDetails');
     setupConditionalDisplay('usa.personalInfo.otherNamesUsed', 'otherNamesDetails');
     setupConditionalDisplay('usa.personalInfo.telecodeName', 'telecodeNameDetails');
+
     setupConditionalDisplay('usa.passportInfo.lostPassport', 'lostPassportDetails');
     setupConditionalDisplay('usa.travelInfo.personPayingTravel', 'otherPayerDetails');
     setupConditionalDisplay('usa.travelInfo.travelingWithOthers', 'travelingWithOthersDetails');
@@ -349,15 +318,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setupConditionalDisplay('usa.travelInfo.previousUsVisa', 'previousUsVisaDetails');
     setupConditionalDisplay('usa.travelInfo.deniedUsVisa', 'deniedUsVisaDetails');
     setupConditionalDisplay('usa.travelInfo.visaCancelled', 'visaCancelledDetails');
+
     setupConditionalDisplay('usa.familyInfo.hasSpouse', 'spouseDetails');
     setupConditionalDisplay('usa.familyInfo.hasChildren', 'childrenDetails');
     setupConditionalDisplay('usa.familyInfo.usFamily', 'usFamilyDetails');
+
     setupConditionalDisplay('usa.workEduInfo.previousEmployment', 'previousEmploymentDetails');
-    setupConditionalDisplay('usa.workEduInfo.highestEducation', 'educationDetails');
+    setupConditionalDisplay('usa.workEduInfo.highestEducation', 'educationDetails'); // Note: This is a select, not a radio group, but the logic still applies if "Otro" shows a section.
     setupConditionalDisplay('usa.workEduInfo.countriesVisited', 'countriesVisitedDetails');
     setupConditionalDisplay('usa.workEduInfo.specializedSkills', 'specializedSkillsDetails');
     setupConditionalDisplay('usa.workEduInfo.militaryService', 'militaryServiceDetails');
+
     setupConditionalDisplay('usa.securityInfo.health', 'healthDetails');
+    setupConditionalDisplay('usa.securityInfo.drugAbuse', 'drugAbuseDetails');
+    setupConditionalDisplay('usa.securityInfo.criminal', 'criminalDetails');
     setupConditionalDisplay('usa.securityInfo.drugs', 'drugsDetails');
     setupConditionalDisplay('usa.securityInfo.prostitution', 'prostitutionDetails');
     setupConditionalDisplay('usa.securityInfo.moneyLaundering', 'moneyLaunderingDetails');
@@ -369,77 +343,71 @@ document.addEventListener('DOMContentLoaded', () => {
     setupConditionalDisplay('usa.securityInfo.intendTerrorism', 'intendTerrorismDetails');
     setupConditionalDisplay('usa.securityInfo.terroristOrgMember', 'terroristOrgMemberDetails');
     setupConditionalDisplay('usa.securityInfo.publicCharge', 'publicChargeDetails');
-    setupConditionalDisplay('usa.familyInfo.fatherAddressSame', 'fatherAddressDetails', ['input', 'select', 'textarea'], true); // Inverse logic
-    setupConditionalDisplay('usa.familyInfo.motherAddressSame', 'motherAddressDetails', ['input', 'select', 'textarea'], true); // Inverse logic
-    setupConditionalDisplay('usa.familyInfo.spouse.addressSame', 'spouseAddressDetails', ['input', 'select', 'textarea'], true); // Inverse logic
 
+    // Configuración de secciones condicionales para Canadá
+    setupConditionalDisplay('canada.travelInfo.hasFunds', 'canFundsDetails');
+    setupConditionalDisplay('canada.securityInfo.criminal', 'canCriminalDetails');
 
-    // Canada (IMM5257e) Conditional Sections
-    setupConditionalDisplay('canada.imm5257e.personalInfo.otherNamesUsed', 'canadaOtherNamesDetails');
-    setupConditionalDisplay('canada.imm5257e.personalInfo.prevResidenceCountries', 'canadaPrevResidenceCountriesDetails');
-    setupConditionalDisplay('canada.imm5257e.personalInfo.maritalStatus', 'canadaMarriageDateDetails'); // Handled by specific event listener below for select
-    setupConditionalDisplay('canada.imm5257e.personalInfo.prevMarried', 'canadaPrevMarriedDetails');
-    setupConditionalDisplay('canada.imm5257e.personalInfo.applyingCountrySame', 'canadaApplyingCountryDetails', ['input', 'select', 'textarea'], true); // Inverse logic
+    // Lógica inversa para "misma dirección" (cuando "Sí" oculta la sección)
+    function setupAddressSameLogic(radioName, targetDivId) {
+        const radios = document.querySelectorAll(`input[name="${radioName}"]`);
+        const targetDiv = document.getElementById(targetDivId);
+        if (!targetDiv) return;
 
-    setupConditionalDisplay('canada.imm5257e.contactInfo.residentialAddressSame', 'canadaResidentialAddressDetails', ['input', 'select', 'textarea'], true); // Inverse logic
+        const targetInputs = Array.from(targetDiv.querySelectorAll('input, select, textarea'));
 
-    setupConditionalDisplay('canada.imm5257e.languages.canCommunicateEnFr', 'canadaCanCommunicateEnFrDetails');
-    setupConditionalDisplay('canada.imm5257e.languages.takenLanguageTest', 'canadaTakenLanguageTestDetails');
-
-    setupConditionalDisplay('canada.imm5257e.nationalId.hasNationalId', 'canadaNationalIdDetails');
-    setupConditionalDisplay('canada.imm5257e.usprCard.isUsPermanentResident', 'canadaUsprCardDetails');
-
-    setupConditionalDisplay('canada.imm5257e.education.postSecondary', 'canadaPostSecondaryDetails');
-    
-    // Background Info (IMM5257e)
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.tuberculosis', 'canadaTuberculosisDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.physicalMentalDisorder', 'canadaPhysicalMentalDisorderDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.violatedStatusCanada', 'canadaViolatedStatusCanadaDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.refusedDeniedOrdered', 'canadaRefusedDeniedOrderedDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.previouslyAppliedCanada', 'canadaPreviouslyAppliedCanadaDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.criminalOffence', 'canadaCriminalOffenceDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.militaryOrPoliceService', 'canadaMilitaryOrPoliceServiceDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.violentOrgAffiliation', 'canadaViolentOrgAffiliationDetails');
-    setupConditionalDisplay('canada.imm5257e.backgroundInfo.illTreatmentOrDesecration', 'canadaIllTreatmentOrDesecrationDetails');
-
-
-    // Special handling for marital status select (IMM5257e)
-    document.getElementById('canada.imm5257e.personalInfo.maritalStatus')?.addEventListener('change', (event) => {
-        const maritalStatus = event.target.value;
-        const marriageDateDetailsDiv = document.getElementById('canadaMarriageDateDetails');
-        const spouseInputs = marriageDateDetailsDiv ? Array.from(marriageDateDetailsDiv.querySelectorAll('input, select, textarea')) : [];
-
-        if (maritalStatus === 'Married' || maritalStatus === 'Common-Law') {
-            marriageDateDetailsDiv.style.display = 'block';
-            spouseInputs.forEach(input => {
-                if (input.dataset.validationType && !input.hasAttribute('data-optional')) {
-                    input.setAttribute('required', 'required');
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const isSameAddress = document.querySelector(`input[name="${radioName}"][value="Si"]`)?.checked;
+                if (isSameAddress) {
+                    targetDiv.style.display = 'none';
+                    targetInputs.forEach(input => {
+                        input.removeAttribute('required');
+                        input.value = '';
+                        if (input.type === 'radio' || input.type === 'checkbox') {
+                            input.checked = false;
+                        }
+                        input.classList.remove('invalid');
+                        const errorMessageElement = input.nextElementSibling;
+                        if (errorMessageElement && errorMessageElement.classList.contains('error-message')) {
+                            errorMessageElement.textContent = '';
+                            errorMessageElement.style.display = 'none';
+                        }
+                    });
+                } else {
+                    targetDiv.style.display = 'block';
+                    const parentFormSection = targetDiv.closest('#usaFormSections, #canadaFormSections');
+                    if (parentFormSection && parentFormSection.style.display !== 'none') {
+                        targetInputs.forEach(input => {
+                            if (input.dataset.validationType && !input.hasAttribute('data-optional')) {
+                                input.setAttribute('required', 'required');
+                            }
+                        });
+                    }
                 }
+                updateProgressBar();
             });
-        } else {
-            marriageDateDetailsDiv.style.display = 'none';
-            spouseInputs.forEach(input => {
-                input.removeAttribute('required');
-                input.value = '';
-                input.classList.remove('invalid');
-                const errorMessageElement = input.nextElementSibling;
-                if (errorMessageElement && errorMessageElement.classList.contains('error-message')) {
-                    errorMessageElement.textContent = '';
-                    errorMessageElement.style.display = 'none';
-                }
-            });
+        });
+        // Estado inicial
+        const initialCheckedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
+        if (!initialCheckedRadio || initialCheckedRadio.value === 'Si') {
+            targetDiv.style.display = 'none';
+            targetInputs.forEach(input => input.removeAttribute('required'));
+        } else if (initialCheckedRadio.value === 'No') {
+            targetDiv.style.display = 'block';
+            const parentFormSection = targetDiv.closest('#usaFormSections, #canadaFormSections');
+            if (parentFormSection && parentFormSection.style.display !== 'none') {
+                targetInputs.forEach(input => {
+                    if (input.dataset.validationType && !input.hasAttribute('data-optional')) {
+                        input.setAttribute('required', 'required');
+                    }
+                });
+            }
         }
-        updateProgressBar();
-    });
-    // Trigger initial state for marital status on load
-    document.getElementById('canada.imm5257e.personalInfo.maritalStatus')?.dispatchEvent(new Event('change'));
-
-    // Canada (IMM5707e) Conditional Sections
-    setupConditionalDisplay('canada.imm5707e.spouse.accompanyToCanada', 'canadaSpouseDetailsIMM5707e');
-    setupConditionalDisplay('canada.imm5707e.parent1.accompanyToCanada', 'canadaParent1DetailsIMM5707e');
-    setupConditionalDisplay('canada.imm5707e.parent2.accompanyToCanada', 'canadaParent2DetailsIMM5707e');
-    // Children logic: if "No Children" is checked, hide dynamic children section and disable add button.
-    setupConditionalDisplay('canada.imm5707e.children.noChildren', 'canadaChildrenDetailsIMM5707e', ['input', 'select', 'textarea'], true, 'canadaAddChildBtnIMM5707e');
+    }
+    setupAddressSameLogic('usa.familyInfo.fatherAddressSame', 'fatherAddressDetails');
+    setupAddressSameLogic('usa.familyInfo.motherAddressSame', 'motherAddressDetails');
+    setupAddressSameLogic('usa.familyInfo.spouse.addressSame', 'spouseAddressDetails');
 
 
     // --- Funciones para Campos Dinámicos ---
@@ -455,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let htmlContent = `<h3>${titlePrefix} ${counter}</h3>`;
         fields.forEach(field => {
-            const fieldId = `${containerId.replace('Container', '')}_${field.nameSuffix}_${counter}`; // Unique ID for dynamic fields
+            const fieldId = `${field.idPrefix}_${counter}`;
             const fieldName = `${namePrefix}[${counter-1}].${field.nameSuffix}`;
             const parentFormSection = container.closest('#usaFormSections, #canadaFormSections');
             const isParentSectionVisible = parentFormSection && parentFormSection.style.display !== 'none';
@@ -472,14 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
                              </select>`;
             } else if (field.tag === 'textarea') {
                 inputHtml = `<textarea id="${fieldId}" name="${fieldName}" ${isRequired} ${field.rows ? `rows="${field.rows}"` : ''} ${field.placeholder ? `placeholder="${field.placeholder}"` : ''} ${validationTypeAttr} ${optionalAttr}>${fieldValue}</textarea>`;
-            } else if (field.type === 'radio') {
-                // For radio groups within dynamic fields
-                inputHtml = `<div class="radio-group">${field.options.map(opt => `
-                    <input type="radio" id="${fieldId}${opt.value}" name="${fieldName}" value="${opt.value}" ${fieldValue === opt.value ? 'checked' : ''} ${isRequired} ${optionalAttr}>
-                    <label for="${fieldId}${opt.value}">${opt.text}</label>
-                `).join('')}</div>`;
-            }
-            else {
+            } else {
                 inputHtml = `<input id="${fieldId}" name="${fieldName}" type="${field.type || 'text'}" ${isRequired} ${field.placeholder ? `placeholder="${field.placeholder}"` : ''} value="${fieldValue}" ${validationTypeAttr} ${optionalAttr}>`;
             }
 
@@ -509,18 +470,13 @@ document.addEventListener('DOMContentLoaded', () => {
         entryDiv.querySelector('.remove-btn').addEventListener('click', () => {
             entryDiv.remove();
             reIndexDynamicEntries(containerId, namePrefix);
-            updateProgressBar();
-        });
-
-        // If the added dynamic field contains radios or selects, ensure their change events also trigger progress bar update
-        entryDiv.querySelectorAll('input[type="radio"], select').forEach(control => {
-            control.addEventListener('change', updateProgressBar);
+            updateProgressBar(); // Actualiza la barra de progreso
         });
 
         return entryDiv;
     }
 
-    // Re-indexa los campos dinámicos después de añadir/eliminar para mantener nombres únicos y ordenados.
+    // Re-indexa los campos dinámicos después de añadir/eliminar
     function reIndexDynamicEntries(containerId, namePrefix) {
         const container = document.getElementById(containerId);
         Array.from(container.children).forEach((entryDiv, index) => {
@@ -532,55 +488,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
             entryDiv.querySelectorAll('[name]').forEach(input => {
                 const oldName = input.getAttribute('name');
-                // Ensure the name starts with the namePrefix to avoid re-indexing unrelated elements
-                if (oldName && oldName.startsWith(namePrefix)) {
-                    const parts = oldName.split('.');
-                    // Find the part that contains the array index (e.g., 'otherNames[0]')
-                    const arrayPartIndex = parts.findIndex(part => part.match(/^(.+)\[\d+\]$/));
+                const parts = oldName.split('.');
+                const lastPart = parts.pop();
+                const arrayPartMatch = parts[parts.length - 1].match(/^(.+)\[\d+\]$/);
 
-                    if (arrayPartIndex !== -1) {
-                        const arrayPart = parts[arrayPartIndex];
-                        const arrayNameMatch = arrayPart.match(/^(.+)\[\d+\]$/);
-                        const arrayName = arrayNameMatch ? arrayNameMatch[1] : '';
-
-                        if (arrayName) {
-                             // Reconstruct the new name with the correct index
-                            let newNameParts = [...parts];
-                            newNameParts[arrayPartIndex] = `${arrayName}[${index}]`;
-                            const newName = newNameParts.join('.');
-                            input.setAttribute('name', newName);
-
-                            // Update ID as well if it follows a similar pattern
-                            // This specifically targets IDs like "containerPrefix_fieldSuffix_index"
-                            const oldId = input.id;
-                            const idParts = oldId.split('_');
-                            if (idParts.length >= 3) { // Expect at least prefix, suffix, and index
-                                const idSuffix = idParts[idParts.length - 2]; // Get the field suffix part
-                                const idPrefix = idParts.slice(0, idParts.length - 2).join('_'); // Get the container prefix
-                                input.id = `${idPrefix}_${idSuffix}_${index + 1}`;
-                                const label = entryDiv.querySelector(`label[for="${oldId}"]`);
-                                if (label) label.setAttribute('for', input.id);
-
-                                // If it's a radio button within a dynamic group, update its label 'for' attribute
-                                if (input.type === 'radio') {
-                                     const radioLabel = entryDiv.querySelector(`label[for="${oldId}"]`);
-                                     if(radioLabel) radioLabel.setAttribute('for', input.id);
-                                }
-                            }
-                        }
+                if (arrayPartMatch) {
+                    const arrayName = arrayPartMatch[1];
+                    const newName = `${arrayName}[${index}].${lastPart}`;
+                    input.setAttribute('name', newName);
+                    // Update ID as well for consistency and label 'for' attributes
+                    const oldId = input.id;
+                    if (oldId && oldId.startsWith(field.idPrefix)) { // Check if it's a dynamic field ID
+                        input.id = `${field.idPrefix}_${index + 1}`;
+                        const label = entryDiv.querySelector(`label[for="${oldId}"]`);
+                        if (label) label.setAttribute('for', input.id);
                     }
                 }
             });
         });
     }
 
-    // Dynamic fields for USA (Existing)
+    // Event Listeners para añadir campos dinámicos
     document.getElementById('addOtherNameBtn')?.addEventListener('click', () => {
         createDynamicEntry('otherNamesContainer', 'usa.personalInfo.otherNames', [
             { idPrefix: 'otherNameSurname', nameSuffix: 'surname', label: 'Apellidos (Otros)', type: 'text', required: true, validationType: 'text' },
             { idPrefix: 'otherNameGivenName', nameSuffix: 'givenName', label: 'Nombres (Otros)', type: 'text', required: true, validationType: 'text' },
         ], 'Otro Nombre');
     });
+
     document.getElementById('addChildBtn')?.addEventListener('click', () => {
         createDynamicEntry('childrenContainer', 'usa.familyInfo.children', [
             { idPrefix: 'childSurname', nameSuffix: 'surname', label: 'Apellidos del Hijo', type: 'text', required: true, validationType: 'text' },
@@ -589,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { idPrefix: 'childPobCountry', nameSuffix: 'pobCountry', label: 'País de Nacimiento del Hijo', type: 'text', required: true, validationType: 'text' },
         ], 'Hijo');
     });
+
     document.getElementById('addPreviousUsTravelBtn')?.addEventListener('click', () => {
         createDynamicEntry('previousUsTravelContainer', 'usa.travelInfo.previousUsTravels', [
             { idPrefix: 'usTravelArrivalDate', nameSuffix: 'arrivalDate', label: 'Fecha de Llegada', type: 'date', required: true, validationType: 'date' },
@@ -596,6 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { idPrefix: 'usTravelStayDuration', nameSuffix: 'stayDuration', label: 'Duración de la Estancia', type: 'text', placeholder: 'Ej: 1 mes', validationType: 'text' },
         ], 'Viaje Anterior');
     });
+
     document.getElementById('addTravelCompanionBtn')?.addEventListener('click', () => {
         createDynamicEntry('travelCompanionsContainer', 'usa.travelInfo.travelCompanions', [
             { idPrefix: 'companionSurname', nameSuffix: 'surname', label: 'Apellidos del Compañero', type: 'text', required: true, validationType: 'text' },
@@ -612,6 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         ], 'Compañero');
     });
+
     document.getElementById('addUsFamilyBtn')?.addEventListener('click', () => {
         createDynamicEntry('usFamilyContainer', 'usa.familyInfo.usFamilyMembers', [
             { idPrefix: 'usFamilySurname', nameSuffix: 'surname', label: 'Apellidos del Familiar', type: 'text', required: true, validationType: 'text' },
@@ -627,6 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         ], 'Familiar en EE. UU.');
     });
+
     document.getElementById('addPreviousEmployerBtn')?.addEventListener('click', () => {
         createDynamicEntry('previousEmploymentContainer', 'usa.workEduInfo.previousEmployers', [
             { idPrefix: 'prevEmployerName', nameSuffix: 'name', label: 'Nombre de la Empresa', type: 'text', required: true, validationType: 'text' },
@@ -637,6 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { idPrefix: 'prevJobDescription', nameSuffix: 'description', label: 'Descripción de Funciones', tag: 'textarea', rows: 2, validationType: 'text', optional: true },
         ], 'Empleo Anterior');
     });
+
     document.getElementById('addEducationBtn')?.addEventListener('click', () => {
         createDynamicEntry('educationContainer', 'usa.workEduInfo.educationHistory', [
             { idPrefix: 'eduSchoolName', nameSuffix: 'schoolName', label: 'Nombre de la Institución', type: 'text', required: true, validationType: 'text' },
@@ -646,6 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { idPrefix: 'eduEndDate', nameSuffix: 'endDate', label: 'Fecha de Fin', type: 'date', validationType: 'date', optional: true },
         ], 'Educación');
     });
+
     document.getElementById('addCountryVisitedBtn')?.addEventListener('click', () => {
         createDynamicEntry('countriesVisitedContainer', 'usa.workEduInfo.countriesVisitedList', [
             { idPrefix: 'countryName', nameSuffix: 'name', label: 'Nombre del País', type: 'text', required: true, validationType: 'text' },
@@ -654,104 +595,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // Dynamic fields for Canada (New/Updated)
-    document.getElementById('canadaAddOtherNameBtn')?.addEventListener('click', () => {
-        createDynamicEntry('canadaOtherNamesContainer', 'canada.imm5257e.personalInfo.otherNames', [
-            { idPrefix: 'canadaOtherNameSurname', nameSuffix: 'surname', label: 'Apellidos (Otros)', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'canadaOtherNameGivenName', nameSuffix: 'givenName', label: 'Nombres (Otros)', type: 'text', required: true, validationType: 'text' },
-        ], 'Otro Nombre (Canadá)');
-    });
-
-    // Fix for "Añadir País de Residencia Anterior" button
-    document.getElementById('canadaAddPrevResidenceCountryBtn')?.addEventListener('click', () => {
-        createDynamicEntry('canadaPrevResidenceCountriesContainer', 'canada.imm5257e.personalInfo.prevResidenceHistory', [
-            { idPrefix: 'canadaPrevResCountry', nameSuffix: 'country', label: 'País o Territorio', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'canadaPrevResStatus', nameSuffix: 'status', label: 'Estatus', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'canadaPrevResOther', nameSuffix: 'other', label: 'Otro (si aplica)', type: 'text', optional: true, validationType: 'text' },
-            { idPrefix: 'canadaPrevResFrom', nameSuffix: 'from', label: 'Desde (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-            { idPrefix: 'canadaPrevResTo', nameSuffix: 'to', label: 'Hasta (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-        ], 'País de Residencia Anterior');
-    });
-
-    document.getElementById('canadaAddPrevMarriedBtn')?.addEventListener('click', () => {
-        createDynamicEntry('canadaPrevMarriedContainer', 'canada.imm5257e.personalInfo.previousMarriages', [
-            { idPrefix: 'prevSpouseSurname', nameSuffix: 'surname', label: 'Apellidos del Cónyuge/Pareja', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'prevSpouseGivenName', nameSuffix: 'givenName', label: 'Nombres del Cónyuge/Pareja', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'prevSpouseDob', nameSuffix: 'dob', label: 'Fecha de Nacimiento (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-            { idPrefix: 'prevSpouseRelationshipType', nameSuffix: 'relationshipType', label: 'Tipo de Relación', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'prevSpouseFromDate', nameSuffix: 'fromDate', label: 'Desde (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-            { idPrefix: 'prevSpouseToDate', nameSuffix: 'toDate', label: 'Hasta (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-        ], 'Pareja/Cónyuge Anterior');
-    });
-
-    document.getElementById('canadaAddVisitContactBtn')?.addEventListener('click', () => {
-        createDynamicEntry('canadaVisitContactsContainer', 'canada.imm5257e.travelInfo.visitContacts', [
-            { idPrefix: 'visitContactName', nameSuffix: 'name', label: 'Nombre', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'visitContactRelationship', nameSuffix: 'relationship', label: 'Relación', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'visitContactAddress', nameSuffix: 'address', label: 'Dirección en Canadá', type: 'text', required: true, validationType: 'text' },
-        ], 'Contacto a Visitar');
-    });
-
-    document.getElementById('canadaAddPostSecondaryBtn')?.addEventListener('click', () => {
-        createDynamicEntry('canadaPostSecondaryContainer', 'canada.imm5257e.education.postSecondaryHistory', [
-            { idPrefix: 'eduFromYear', nameSuffix: 'fromYear', label: 'Desde (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-            { idPrefix: 'eduFromMonth', nameSuffix: 'fromMonth', label: 'Desde (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-            { idPrefix: 'eduToYear', nameSuffix: 'toYear', label: 'Hasta (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-            { idPrefix: 'eduToMonth', nameSuffix: 'toMonth', label: 'Hasta (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-            { idPrefix: 'eduFieldOfStudy', nameSuffix: 'fieldOfStudy', label: 'Campo de Estudio', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'eduSchoolName', nameSuffix: 'schoolName', label: 'Nombre de la Institución', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'eduCityTown', nameSuffix: 'cityTown', label: 'Ciudad/Pueblo', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'eduCountryTerritory', nameSuffix: 'countryTerritory', label: 'País o Territorio', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'eduProvinceState', nameSuffix: 'provinceState', label: 'Provincia/Estado (Opcional)', type: 'text', optional: true, validationType: 'text' },
-        ], 'Educación Post-Secundaria');
-    });
-
-    document.getElementById('canadaAddPreviousEmployerBtn')?.addEventListener('click', () => {
-        createDynamicEntry('canadaPreviousEmploymentContainer', 'canada.imm5257e.employment.previousEmploymentHistory', [
-            { idPrefix: 'prevEmpFromYear', nameSuffix: 'fromYear', label: 'Desde (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-            { idPrefix: 'prevEmpFromMonth', nameSuffix: 'fromMonth', label: 'Desde (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-            { idPrefix: 'prevEmpToYear', nameSuffix: 'toYear', label: 'Hasta (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-            { idPrefix: 'prevEmpToMonth', nameSuffix: 'toMonth', label: 'Hasta (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-            { idPrefix: 'prevEmpActivity', nameSuffix: 'activityOccupation', label: 'Actividad/Ocupación', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'prevEmpCityTown', nameSuffix: 'cityTown', label: 'Ciudad/Pueblo', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'prevEmpCountryTerritory', nameSuffix: 'countryTerritory', label: 'País o Territorio', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'prevEmpCompanyName', nameSuffix: 'companyEmployerFacilityName', label: 'Nombre de la Compañía/Empleador', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'prevEmpProvinceState', nameSuffix: 'provinceState', label: 'Provincia/Estado (Opcional)', type: 'text', optional: true, validationType: 'text' },
-        ], 'Empleo Anterior');
-    });
-
-    // Dynamic fields for IMM5707e family details
-    document.getElementById('canadaAddChildBtnIMM5707e')?.addEventListener('click', () => {
-        createDynamicEntry('canadaChildrenContainerIMM5707e', 'canada.imm5707e.familyInfo.children', [
-            {
-                idPrefix: 'childAccompany', nameSuffix: 'accompanyToCanada', label: '¿Acompañará a Canadá?', type: 'radio', required: true,
-                options: [{ value: 'Si', text: 'Sí' }, { value: 'No', text: 'No' }]
-            },
-            { idPrefix: 'childRelationship', nameSuffix: 'relationship', label: 'Parentesco', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'childSurname', nameSuffix: 'surname', label: 'Apellidos', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'childGivenName', nameSuffix: 'givenName', label: 'Nombres', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'childDob', nameSuffix: 'dob', label: 'Fecha de Nacimiento (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-            { idPrefix: 'childPobCountry', nameSuffix: 'pobCountry', label: 'País o Territorio de Nacimiento', type: 'text', required: true, validationType: 'text' },
-            { idPrefix: 'childPresentAddress', nameSuffix: 'presentAddress', label: 'Dirección Actual (si fallecido, Ciudad, País, Fecha de Fallecimiento)', tag: 'textarea', rows: 2, required: true, validationType: 'text' },
-            {
-                idPrefix: 'childMaritalStatus', nameSuffix: 'maritalStatus', label: 'Estado Civil', tag: 'select', required: true,
-                options: [
-                    { value: '', text: 'Seleccione...' },
-                    { value: 'Annulled Marriage', text: 'Matrimonio Anulado' },
-                    { value: 'Common-Law', text: 'Unión Libre' },
-                    { value: 'Divorced', text: 'Divorciado' },
-                    { value: 'Legally Separated', text: 'Separado Legalmente' },
-                    { value: 'Married', text: 'Casado' },
-                    { value: 'Single', text: 'Soltero' },
-                    { value: 'Widowed', text: 'Viudo' },
-                ]
-            },
-            { idPrefix: 'childOccupation', nameSuffix: 'occupation', label: 'Ocupación Actual', type: 'text', required: true, validationType: 'text' },
-        ], 'Hijo');
-    });
-
-
     // --- Lógica de Selección de País y Barra de Progreso ---
+
     visaTypeRadios.forEach(radio => {
         radio.addEventListener('change', () => {
             console.log(`Evento 'change' en radio de tipo de visa. Valor seleccionado: ${radio.value}`);
@@ -766,16 +611,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`Alternando 'required' para la sección: ${section.id}, isRequired: ${isRequired}`);
 
                 section.querySelectorAll('input, select, textarea').forEach(el => {
+                    // Si el elemento es parte de una sección condicional, su 'required' lo maneja setupConditionalDisplay
                     const parentConditionalSection = el.closest('.conditional-section');
                     if (parentConditionalSection) {
+                        // Si la sección condicional está oculta, el campo no debe ser requerido
                         if (parentConditionalSection.style.display === 'none') {
                             el.removeAttribute('required');
                         } else {
+                            // Si la sección condicional está visible y el campo no es opcional, se establece requerido
                             if (el.dataset.validationType && !el.hasAttribute('data-optional')) {
                                 el.setAttribute('required', 'required');
                             }
                         }
-                    } else {
+                    } else { // Si no es parte de una sección condicional, se maneja directamente
                         if (isRequired) {
                             if (el.dataset.validationType && !el.hasAttribute('data-optional')) {
                                 el.setAttribute('required', 'required');
@@ -785,19 +633,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
+                    // Limpiar valores y estados de validación si la sección se oculta
                     if (!isRequired) {
                         el.value = '';
-                        if (el.type === 'radio') {
-                            const noRadio = el.closest('.radio-group')?.querySelector(`input[name="${el.name}"][value="No"]`);
-                            if (noRadio) {
-                                noRadio.checked = true;
-                            } else {
-                                el.checked = false;
-                            }
-                        } else if (el.type === 'checkbox') {
+                        if (el.type === 'radio' || el.type === 'checkbox') {
                             el.checked = false;
-                        } else if (el.tagName === 'SELECT') {
-                             el.selectedIndex = 0; // Reset select to first option
                         }
                         el.classList.remove('invalid');
                         const errorMessageElement = el.nextElementSibling;
@@ -808,49 +648,59 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                if (isRequired) {
-                    // Trigger change events for radios and selects to re-evaluate conditional sections
-                    section.querySelectorAll('input[type="radio"], select, input[type="checkbox"]').forEach(control => {
-                        if (control.type === 'radio' && control.checked) {
-                            control.dispatchEvent(new Event('change'));
-                        } else if (control.tagName === 'SELECT') {
-                            control.dispatchEvent(new Event('change'));
-                        } else if (control.type === 'checkbox') {
-                             control.dispatchEvent(new Event('change'));
-                        }
-                    });
-                }
+                // Disparar eventos 'change' en radios de la sección para activar condicionales
+                section.querySelectorAll('input[type="radio"]').forEach(radioInput => {
+                    // Solo disparar si el radio está marcado, para evitar bucles infinitos con setupConditionalDisplay
+                    if (radioInput.checked) {
+                        radioInput.dispatchEvent(new Event('change'));
+                    }
+                });
             };
 
             if (document.getElementById('visaTypeUSA').checked) {
                 if (usaFormSections) {
                     usaFormSections.style.display = 'block';
+                    console.log('usaFormSections.style.display establecido a:', usaFormSections.style.display);
                     toggleRequiredAndValidation(usaFormSections, true);
+                } else {
+                    console.error("usaFormSections no encontrado al intentar mostrarlo.");
                 }
                 if (canadaFormSections) {
                     canadaFormSections.style.display = 'none';
+                    console.log('canadaFormSections.style.display establecido a:', canadaFormSections.style.display);
                     toggleRequiredAndValidation(canadaFormSections, false);
                 }
             } else if (document.getElementById('visaTypeCanada').checked) {
                 if (usaFormSections) {
                     usaFormSections.style.display = 'none';
+                    console.log('usaFormSections.style.display establecido a:', usaFormSections.style.display);
                     toggleRequiredAndValidation(usaFormSections, false);
                 }
                 if (canadaFormSections) {
                     canadaFormSections.style.display = 'block';
+                    console.log('canadaFormSections.style.display establecido a:', canadaFormSections.style.display);
                     toggleRequiredAndValidation(canadaFormSections, true);
+                } else {
+                    console.error("canadaFormSections no encontrado al intentar mostrarlo.");
                 }
             }
             updateProgressBar();
         });
     });
 
-    // Estado inicial: ocultar formularios y barra de progreso al cargar la página.
-    if (usaFormSections) usaFormSections.style.display = 'none';
-    if (canadaFormSections) canadaFormSections.style.display = 'none';
+    // Estado inicial: ocultar formularios y barra de progreso
+    if (usaFormSections) {
+        usaFormSections.style.display = 'none';
+        console.log('usaFormSections.style.display inicial:', usaFormSections.style.display);
+    }
+    if (canadaFormSections) {
+        canadaFormSections.style.display = 'none';
+        console.log('canadaFormSections.style.display inicial:', canadaFormSections.style.display);
+    }
     if (progressBarContainer) progressBarContainer.style.display = 'none';
 
-    // Actualiza la barra de progreso en función de los campos visibles y requeridos.
+
+    // Actualiza la barra de progreso
     function updateProgressBar() {
         const selectedVisaType = document.querySelector('input[name="visaType"]:checked');
         if (!selectedVisaType) {
@@ -869,7 +719,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalVisibleRequiredFields = 0;
         let filledVisibleRequiredFields = 0;
         const radioGroupNames = new Set(); // Para evitar contar grupos de radio varias veces
-        const selectGroupNames = new Set(); // Para evitar contar select múltiples veces si la lógica lo requiriera (actualmente no lo hace)
 
         // Obtener todos los elementos de entrada relevantes dentro de la sección de formulario activa
         const formElements = Array.from(currentFormSection.querySelectorAll('input, select, textarea'));
@@ -901,17 +750,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } else if (element.type === 'checkbox') {
-                totalVisibleRequiredFields++; // Each checkbox counts as one field for simplicity
+                totalVisibleRequiredFields++;
                 if (element.checked) {
                     filledVisibleRequiredFields++;
                 }
-            } else if (element.tagName === 'SELECT') {
-                totalVisibleRequiredFields++;
-                if (element.value.trim() !== '' && element.value !== element.querySelector('option[value=""]').value) { // Check if a meaningful option is selected
-                    filledVisibleRequiredFields++;
-                }
-            }
-            else { // Text, number, date, textarea, etc.
+            } else {
                 totalVisibleRequiredFields++;
                 if (element.value.trim() !== '') {
                     filledVisibleRequiredFields++;
@@ -932,7 +775,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Validación General del Formulario y Control del Botón de Envío ---
 
-    // Valida todo el formulario y devuelve el primer campo inválido (si existe).
     function checkFormValidityAndGetFirstInvalid() {
         const selectedVisaType = document.querySelector('input[name="visaType"]:checked');
         if (!selectedVisaType) {
@@ -945,16 +787,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentFormSection = selectedVisaType.value === 'USA' ? usaFormSections : canadaFormSections;
         let firstInvalidField = null;
 
-        // Iterar sobre todos los elementos de entrada dentro de la sección activa
         currentFormSection.querySelectorAll('input, select, textarea').forEach(input => {
             const parentConditionalSection = input.closest('.conditional-section');
-            // Solo validar si el campo no está en una sección condicional actualmente oculta
             if (!parentConditionalSection || parentConditionalSection.style.display !== 'none') {
-                // Solo validar campos requeridos o con tipo de validación específico y no opcionales
                 if (input.hasAttribute('required') || (input.dataset.validationType && !input.hasAttribute('data-optional'))) {
                     if (!validateInput(input)) {
                         if (!firstInvalidField) {
-                            firstInvalidField = input; // Guardar el primer campo inválido encontrado
+                            firstInvalidField = input;
                         }
                     }
                 }
@@ -966,7 +805,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Guardar y Cargar Progreso ---
 
-    // Guarda el progreso del formulario en localStorage.
     saveProgressBtn.addEventListener('click', () => {
         const formDataToSave = {};
         const elements = form.elements;
@@ -984,7 +822,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setNestedValue(formDataToSave, name, element.value);
                 }
             } else if (element.type === 'checkbox') {
-                setNestedValue(formDataToSave, name, element.checked ? element.value : ''); // Guardar true/false o valor
+                setNestedValue(formDataToSave, name, element.checked ? element.value : '');
             } else if (element.tagName === 'SELECT' || element.tagName === 'TEXTAREA' || (element.tagName === 'INPUT')) {
                 setNestedValue(formDataToSave, name, element.value);
             }
@@ -1000,7 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Carga los datos del formulario guardados desde localStorage.
+    // Carga los datos del formulario guardados
     function loadFormData() {
         try {
             const savedData = localStorage.getItem('visaFormData');
@@ -1025,26 +863,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Función auxiliar para poblar un campo individual.
             const populateField = (path, value) => {
                 const element = form.querySelector(`[name="${path}"]`);
                 if (element) {
                     if (element.type === 'radio') {
                         if (element.value === value) {
                             element.checked = true;
-                            // Do not dispatch change event here for conditional radios; will be handled later globally
+                            // No disparamos 'change' aquí para radios que controlan secciones condicionales
+                            // porque se manejarán en la segunda pasada o por el evento del visaTypeRadio.
                         }
                     } else if (element.type === 'checkbox') {
                         element.checked = (value === element.value || value === true);
                     } else {
                         element.value = value;
                     }
-                    // Trigger input event to update progress bar and potential real-time validation feedback
-                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.dispatchEvent(new Event('input', { bubbles: true })); // Para barra de progreso y validación
                 }
             };
 
-            // Mapeo para información de campos dinámicos para recrearlos correctamente.
             const dynamicFieldMaps = {
                 'usa.personalInfo.otherNames': { id: 'otherNamesContainer', fields: [
                     { idPrefix: 'otherNameSurname', nameSuffix: 'surname', label: 'Apellidos (Otros)', type: 'text', required: true, validationType: 'text' },
@@ -1064,29 +900,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 'usa.travelInfo.travelCompanions': { id: 'travelCompanionsContainer', fields: [
                     { idPrefix: 'companionSurname', nameSuffix: 'surname', label: 'Apellidos del Compañero', type: 'text', required: true, validationType: 'text' },
                     { idPrefix: 'companionGivenName', nameSuffix: 'givenName', label: 'Nombres del Compañero', type: 'text', required: true, validationType: 'text' },
-                    {
-                        idPrefix: 'companionRelationship', nameSuffix: 'relationship', label: 'Parentesco/Relación', tag: 'select', required: true,
-                        options: [
-                            { value: '', text: 'Seleccione...' },
-                            { value: 'FAMILIAR', text: 'FAMILIAR' },
-                            { value: 'AMIGO', text: 'AMIGO' },
-                            { value: 'COLEGA', text: 'COLEGA' },
-                            { value: 'OTRO', text: 'OTRO' }
-                        ]
-                    },
+                    { idPrefix: 'companionRelationship', nameSuffix: 'relationship', label: 'Parentesco/Relación', tag: 'select', required: true, options: [{ value: '', text: 'Seleccione...' }, { value: 'FAMILIAR', text: 'FAMILIAR' }, { value: 'AMIGO', text: 'AMIGO' }, { value: 'COLEGA', text: 'COLEGA' }, { value: 'OTRO', text: 'OTRO' }] },
                 ], titlePrefix: 'Compañero', controllingRadioName: 'usa.travelInfo.travelingWithOthers'},
                 'usa.familyInfo.usFamilyMembers': { id: 'usFamilyContainer', fields: [
                     { idPrefix: 'usFamilySurname', nameSuffix: 'surname', label: 'Apellidos del Familiar', type: 'text', required: true, validationType: 'text' },
                     { idPrefix: 'usFamilyGivenName', nameSuffix: 'givenName', label: 'Nombres del Familiar', type: 'text', required: true, validationType: 'text' },
                     { idPrefix: 'usFamilyRelationship', nameSuffix: 'relationship', label: 'Parentesco', type: 'text', required: true, placeholder: 'Ej: Padre, Hermano, Cónyuge', validationType: 'text' },
-                    {
-                        idPrefix: 'usFamilyStatus', nameSuffix: 'status', label: 'Estatus en EE. UU.', tag: 'select', required: true,
-                        options: [
-                            { value: '', text: 'Seleccione...' },
-                            { value: 'Ciudadano', text: 'Ciudadano Estadounidense' },
-                            { value: 'Residente Permanente', text: 'Residente Permanente Legal (Green Card)' }
-                        ]
-                    },
+                    { idPrefix: 'usFamilyStatus', nameSuffix: 'status', label: 'Estatus en EE. UU.', tag: 'select', required: true, options: [{ value: '', text: 'Seleccione...' }, { value: 'Ciudadano', text: 'Ciudadano Estadounidense' }, { value: 'Residente Permanente', text: 'Residente Permanente Legal (Green Card)' }] },
                 ], titlePrefix: 'Familiar en EE. UU.', controllingRadioName: 'usa.familyInfo.usFamily'},
                 'usa.workEduInfo.previousEmployers': { id: 'previousEmploymentContainer', fields: [
                     { idPrefix: 'prevEmployerName', nameSuffix: 'name', label: 'Nombre de la Empresa', type: 'text', required: true, validationType: 'text' },
@@ -1107,84 +927,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     { idPrefix: 'countryName', nameSuffix: 'name', label: 'Nombre del País', type: 'text', required: true, validationType: 'text' },
                     { idPrefix: 'countryVisitDate', nameSuffix: 'date', label: 'Fecha de Visita (aprox.)', type: 'date', validationType: 'date', optional: true },
                 ], titlePrefix: 'País Visitado', controllingRadioName: 'usa.workEduInfo.countriesVisited'},
-
-                // Canada Dynamic Fields (IMM5257e)
-                'canada.imm5257e.personalInfo.otherNames': { id: 'canadaOtherNamesContainer', fields: [
-                    { idPrefix: 'canadaOtherNameSurname', nameSuffix: 'surname', label: 'Apellidos (Otros)', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'canadaOtherNameGivenName', nameSuffix: 'givenName', label: 'Nombres (Otros)', type: 'text', required: true, validationType: 'text' },
-                ], titlePrefix: 'Otro Nombre (Canadá)', controllingRadioName: 'canada.imm5257e.personalInfo.otherNamesUsed'},
-                'canada.imm5257e.personalInfo.prevResidenceHistory': { id: 'canadaPrevResidenceCountriesContainer', fields: [
-                    { idPrefix: 'canadaPrevResCountry', nameSuffix: 'country', label: 'País o Territorio', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'canadaPrevResStatus', nameSuffix: 'status', label: 'Estatus', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'canadaPrevResOther', nameSuffix: 'other', label: 'Otro (si aplica)', type: 'text', optional: true, validationType: 'text' },
-                    { idPrefix: 'canadaPrevResFrom', nameSuffix: 'from', label: 'Desde (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-                    { idPrefix: 'canadaPrevResTo', nameSuffix: 'to', label: 'Hasta (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-                ], titlePrefix: 'País de Residencia Anterior', controllingRadioName: 'canada.imm5257e.personalInfo.prevResidenceCountries'},
-                 'canada.imm5257e.personalInfo.previousMarriages': { id: 'canadaPrevMarriedContainer', fields: [
-                    { idPrefix: 'prevSpouseSurname', nameSuffix: 'surname', label: 'Apellidos del Cónyuge/Pareja', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'prevSpouseGivenName', nameSuffix: 'givenName', label: 'Nombres del Cónyuge/Pareja', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'prevSpouseDob', nameSuffix: 'dob', label: 'Fecha de Nacimiento (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-                    { idPrefix: 'prevSpouseRelationshipType', nameSuffix: 'relationshipType', label: 'Tipo de Relación', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'prevSpouseFromDate', nameSuffix: 'fromDate', label: 'Desde (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-                    { idPrefix: 'prevSpouseToDate', nameSuffix: 'toDate', label: 'Hasta (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-                ], titlePrefix: 'Pareja/Cónyuge Anterior', controllingRadioName: 'canada.imm5257e.personalInfo.prevMarried'},
-                'canada.imm5257e.travelInfo.visitContacts': { id: 'canadaVisitContactsContainer', fields: [
-                    { idPrefix: 'visitContactName', nameSuffix: 'name', label: 'Nombre', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'visitContactRelationship', nameSuffix: 'relationship', label: 'Relación', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'visitContactAddress', nameSuffix: 'address', label: 'Dirección en Canadá', type: 'text', required: true, validationType: 'text' },
-                ], titlePrefix: 'Contacto a Visitar', controllingRadioName: null}, // No direct radio controlling this
-                'canada.imm5257e.education.postSecondaryHistory': { id: 'canadaPostSecondaryContainer', fields: [
-                    { idPrefix: 'eduFromYear', nameSuffix: 'fromYear', label: 'Desde (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-                    { idPrefix: 'eduFromMonth', nameSuffix: 'fromMonth', label: 'Desde (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-                    { idPrefix: 'eduToYear', nameSuffix: 'toYear', label: 'Hasta (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-                    { idPrefix: 'eduToMonth', nameSuffix: 'toMonth', label: 'Hasta (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-                    { idPrefix: 'eduFieldOfStudy', nameSuffix: 'fieldOfStudy', label: 'Campo de Estudio', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'eduSchoolName', nameSuffix: 'schoolName', label: 'Nombre de la Institución', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'eduCityTown', nameSuffix: 'cityTown', label: 'Ciudad/Pueblo', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'eduCountryTerritory', nameSuffix: 'countryTerritory', label: 'País o Territorio', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'eduProvinceState', nameSuffix: 'provinceState', label: 'Provincia/Estado (Opcional)', type: 'text', optional: true, validationType: 'text' },
-                ], titlePrefix: 'Educación Post-Secundaria', controllingRadioName: 'canada.imm5257e.education.postSecondary'},
-                'canada.imm5257e.employment.previousEmploymentHistory': { id: 'canadaPreviousEmploymentContainer', fields: [
-                    { idPrefix: 'prevEmpFromYear', nameSuffix: 'fromYear', label: 'Desde (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-                    { idPrefix: 'prevEmpFromMonth', nameSuffix: 'fromMonth', label: 'Desde (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-                    { idPrefix: 'prevEmpToYear', nameSuffix: 'toYear', label: 'Hasta (Año - AAAA)', type: 'number', required: true, validationType: 'year', placeholder: 'AAAA' },
-                    { idPrefix: 'prevEmpToMonth', nameSuffix: 'toMonth', label: 'Hasta (Mes - MM)', type: 'number', required: true, validationType: 'month', placeholder: 'MM' },
-                    { idPrefix: 'prevEmpActivity', nameSuffix: 'activityOccupation', label: 'Actividad/Ocupación', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'prevEmpCityTown', nameSuffix: 'cityTown', label: 'Ciudad/Pueblo', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'prevEmpCountryTerritory', nameSuffix: 'countryTerritory', label: 'País o Territorio', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'prevEmpCompanyName', nameSuffix: 'companyEmployerFacilityName', label: 'Nombre de la Compañía/Empleador', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'prevEmpProvinceState', nameSuffix: 'provinceState', label: 'Provincia/Estado (Opcional)', type: 'text', optional: true, validationType: 'text' },
-                ], titlePrefix: 'Empleo Anterior', controllingRadioName: 'canada.imm5257e.employment.previousEmployment'},
-                // Canada Dynamic Fields (IMM5707e)
-                'canada.imm5707e.familyInfo.children': { id: 'canadaChildrenContainerIMM5707e', fields: [
-                    {
-                        idPrefix: 'childAccompany', nameSuffix: 'accompanyToCanada', label: '¿Acompañará a Canadá?', type: 'radio', required: true,
-                        options: [{ value: 'Si', text: 'Sí' }, { value: 'No', text: 'No' }]
-                    },
-                    { idPrefix: 'childRelationship', nameSuffix: 'relationship', label: 'Parentesco', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'childSurname', nameSuffix: 'surname', label: 'Apellidos', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'childGivenName', nameSuffix: 'givenName', label: 'Nombres', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'childDob', nameSuffix: 'dob', label: 'Fecha de Nacimiento (AAAA-MM-DD)', type: 'date', required: true, validationType: 'date' },
-                    { idPrefix: 'childPobCountry', nameSuffix: 'pobCountry', label: 'País o Territorio de Nacimiento', type: 'text', required: true, validationType: 'text' },
-                    { idPrefix: 'childPresentAddress', nameSuffix: 'presentAddress', label: 'Dirección Actual (si fallecido, Ciudad, País, Fecha de Fallecimiento)', tag: 'textarea', rows: 2, required: true, validationType: 'text' },
-                    {
-                        idPrefix: 'childMaritalStatus', nameSuffix: 'maritalStatus', label: 'Estado Civil', tag: 'select', required: true,
-                        options: [
-                            { value: '', text: 'Seleccione...' },
-                            { value: 'Annulled Marriage', text: 'Matrimonio Anulado' },
-                            { value: 'Common-Law', text: 'Unión Libre' },
-                            { value: 'Divorced', text: 'Divorciado' },
-                            { value: 'Legally Separated', text: 'Separado Legalmente' },
-                            { value: 'Married', text: 'Casado' },
-                            { value: 'Single', text: 'Soltero' },
-                            { value: 'Widowed', text: 'Viudo' },
-                        ]
-                    },
-                    { idPrefix: 'childOccupation', nameSuffix: 'occupation', label: 'Ocupación Actual', type: 'text', required: true, validationType: 'text' },
-                ], titlePrefix: 'Hijo', controllingRadioName: 'canada.imm5707e.children.noChildren', inverseControllingRadio: true}, // inverse logic: if noChildren is true, hide
             };
 
-            // Función recursiva para recorrer y poblar el formulario desde los datos cargados.
+
             const traverseAndPopulate = (obj, currentPath = '') => {
                 for (const key in obj) {
                     if (obj.hasOwnProperty(key)) {
@@ -1200,21 +945,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                     value.forEach(itemData => {
                                         createDynamicEntry(dynamicInfo.id, newPath, dynamicInfo.fields, dynamicInfo.titlePrefix, itemData);
                                     });
-                                    // Asegurar que el radio/checkbox que controla esta sección dinámica esté marcado/desmarcado
+                                    // Asegurar que el radio "Sí" que controla esta sección dinámica esté marcado
                                     if (dynamicInfo.controllingRadioName) {
-                                        const controllingElement = document.querySelector(`[name="${dynamicInfo.controllingRadioName}"]`);
-                                        if (controllingElement) {
-                                            if (controllingElement.type === 'radio') {
-                                                const radioYes = document.querySelector(`input[name="${dynamicInfo.controllingRadioName}"][value="Si"]`);
-                                                if(radioYes) radioYes.checked = true;
-                                            } else if (controllingElement.type === 'checkbox') {
-                                                if (dynamicInfo.inverseControllingRadio) {
-                                                    controllingElement.checked = false; // Uncheck 'No Children' to show children
-                                                } else {
-                                                    controllingElement.checked = true;
-                                                }
-                                            }
-                                            controllingElement.dispatchEvent(new Event('change')); // Trigger change to show/hide section
+                                        const controllingRadio = document.querySelector(`input[name="${dynamicInfo.controllingRadioName}"][value="Si"]`);
+                                        if (controllingRadio) {
+                                            controllingRadio.checked = true;
+                                            controllingRadio.dispatchEvent(new Event('change'));
                                         }
                                     }
                                 } else {
@@ -1242,7 +978,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Disparar eventos de cambio para radios y selects para asegurar visibilidad de condicionales
             // Esto es un paso de seguridad para los casos que no fueron cubiertos por el populateField
-            form.querySelectorAll('input[type="radio"]:checked, select, input[type="checkbox"]').forEach(control => control.dispatchEvent(new Event('change')));
+            form.querySelectorAll('input[type="radio"]:checked').forEach(radio => radio.dispatchEvent(new Event('change')));
+            form.querySelectorAll('select').forEach(select => select.dispatchEvent(new Event('change')));
 
             updateProgressBar();
             showModal("Progreso Cargado", "Sus datos guardados han sido cargados exitosamente.");
@@ -1254,7 +991,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Verificar si hay datos guardados al cargar la página y preguntar al usuario si desea cargarlos.
+    // Verificar si hay datos guardados al cargar la página
     const savedDataExists = localStorage.getItem('visaFormData');
     if (savedDataExists) {
         showModal(
@@ -1270,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Lógica de Envío del Formulario (Revisar y Confirmar) ---
 
-    // Función para recolectar todos los datos del formulario (solo campos visibles y relevantes).
+    // Función para recolectar todos los datos del formulario (solo campos visibles y relevantes)
     function collectFormDataForSummary() {
         const collectedData = {};
         const selectedVisaType = document.querySelector('input[name="visaType"]:checked');
@@ -1309,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return collectedData;
     }
 
-    // Mapeo para formatear títulos de campos en el resumen (para una mejor legibilidad).
+    // Mapeo para formatear títulos de campos en el resumen
     const fieldTitleMap = {
         'surname': 'Apellidos',
         'givenName': 'Nombres',
@@ -1407,134 +1144,38 @@ document.addEventListener('DOMContentLoaded', () => {
         'militaryDuties': 'Funciones/especialidad militar',
         'militaryStartDate': 'Fecha de inicio del servicio militar',
         'militaryEndDate': 'Fecha de fin del servicio militar',
-        'health': '¿Tiene algún trastorno físico o mental, o es usted un consumidor de drogas o adicto?',
+        'health': '¿Tiene algún trastorno de salud o es adicto?',
         'healthExplanation': 'Explicación de trastorno de salud/adicción',
         'drugAbuse': '¿Es o ha sido drogadicto o consumidor de drogas?',
         'drugAbuseExplanation': 'Explicación de abuso de drogas',
-        'criminal': '¿Ha sido arrestado o condenado por algún delito, o ha cometido un delito?',
+        'criminal': '¿Ha sido arrestado/condenado por algún delito?',
         'criminalExplanation': 'Explicación de antecedentes penales',
-        'drugs': '¿Ha violado alguna ley relacionada con sustancias controladas?',
+        'drugs': '¿Ha violado leyes de sustancias controladas?',
         'drugsExplanation': 'Explicación de delitos de drogas',
-        'prostitution': '¿Alguna vez ha estado involucrado en la prostitución o la trata de personas?',
+        'prostitution': '¿Involucrado en prostitución o trata de personas?',
         'prostitutionExplanation': 'Explicación de prostitución/trata',
-        'moneyLaundering': '¿Ha estado involucrado en el lavado de dinero?',
+        'moneyLaundering': '¿Ha estado involucrado en lavado de dinero?',
         'moneyLaunderingExplanation': 'Explicación de lavado de dinero',
-        'humanTrafficking': '¿Ha estado involucrado en la trata de personas?',
+        'humanTrafficking': '¿Ha estado involucrado en trata de personas?',
         'humanTraffickingExplanation': 'Explicación de trata de personas',
-        'overstay': '¿Alguna vez se ha quedado más tiempo del permitido en EE. UU. o ha violado los términos de una visa de EE. UU.?',
+        'overstay': '¿Se ha quedado más tiempo del permitido en EE. UU.?',
         'overstayExplanation': 'Explicación de estancia excedida',
-        'misrepresentation': '¿Ha buscado obtener o ha ayudado a otros a obtener una visa o entrada a EE. UU. mediante fraude o tergiversación intencional de un hecho material?',
+        'misrepresentation': '¿Ha buscado obtener visa/entrada por fraude/tergiversación?',
         'misrepresentationExplanation': 'Explicación de fraude/tergiversación',
-        'deported': '¿Alguna vez ha sido deportado de EE. UU. o se le ha negado la entrada a EE. UU. y se le ha ordenado que se marche?',
+        'deported': '¿Ha sido deportado de EE. UU.?',
         'deportedExplanation': 'Explicación de deportación',
-        'terrorist': '¿Ha estado involucrado en actividades terroristas o es miembro de una organización terrorista?',
+        'terrorist': '¿Involucrado en actividades terroristas o miembro de organización terrorista?',
         'terroristExplanation': 'Explicación de actividades terroristas',
-        'intendTerrorism': '¿Tiene la intención de participar en actividades terroristas en EE. UU.?',
+        'intendTerrorism': '¿Tiene intención de participar en actividades terroristas en EE. UU.?',
         'intendTerrorismExplanation': 'Explicación de intención terrorista',
-        'terroristOrgMember': '¿Ha sido miembro o representante de una organización terrorista?',
+        'terroristOrgMember': '¿Ha sido miembro/representante de organización terrorista?',
         'terroristOrgMemberExplanation': 'Explicación de membresía terrorista',
-        'publicCharge': '¿Es usted sujeto de una "carga pública" en EE. UU.?',
+        'publicCharge': '¿Es sujeto de una "carga pública" en EE. UU.?',
         'publicChargeExplanation': 'Explicación de carga pública',
-
-        // Canada IMM5257e Fields
-        'currentResidenceCountry': 'País o Territorio de Residencia Actual',
-        'currentResidenceStatus': 'Estatus en el País de Residencia Actual',
-        'currentResidenceFrom': 'Desde (Residencia Actual)',
-        'currentResidenceTo': 'Hasta (Residencia Actual)',
-        'prevResidenceCountries': '¿Ha vivido en otros países en los últimos 5 años?',
-        'applyingCountrySame': '¿País de solicitud es el mismo que el de residencia actual?',
-        'applyingCountry': 'País o Territorio donde aplica',
-        'applyingCountryStatus': 'Estatus en el país donde aplica',
-        'applyingCountryFrom': 'Desde (Aplicando)',
-        'applyingCountryTo': 'Hasta (Aplicando)',
-        'marriageDate': 'Fecha de Matrimonio/Unión Libre',
-        'spouseSurname': 'Apellidos del Cónyuge/Pareja Actual',
-        'spouseGivenName': 'Nombres del Cónyuge/Pareja Actual',
-        'prevMarried': '¿Ha estado casado/a o en unión libre anteriormente?',
-        'mailingAddressPOBox': 'P.O. box (Dirección de Correo)',
-        'mailingAddressAptUnit': 'Apto./Unidad (Dirección de Correo)',
-        'mailingAddressStreetNo': 'Número de Calle (Dirección de Correo)',
-        'mailingAddressStreetName': 'Nombre de la Calle (Dirección de Correo)',
-        'mailingAddressCity': 'Ciudad/Pueblo (Dirección de Correo)',
-        'mailingAddressCountry': 'País o Territorio (Dirección de Correo)',
-        'mailingAddressProvinceState': 'Provincia/Estado (Dirección de Correo)',
-        'mailingAddressPostalCode': 'Código Postal (Dirección de Correo)',
-        'mailingAddressDistrict': 'Distrito (Dirección de Correo)',
-        'residentialAddressSame': '¿Dirección residencial es la misma que la de correo?',
-        'residentialAddressAptUnit': 'Apto./Unidad (Dirección Residencial)',
-        'residentialAddressStreetNo': 'Número de Calle (Dirección Residencial)',
-        'residentialAddressStreetName': 'Nombre de la Calle (Dirección Residencial)',
-        'residentialAddressCity': 'Ciudad/Pueblo (Dirección Residencial)',
-        'residentialAddressCountry': 'País o Territorio (Dirección Residencial)',
-        'residentialAddressProvinceState': 'Provincia/Estado (Residencial)',
-        'residentialAddressPostalCode': 'Código Postal (Residencial)',
-        'residentialAddressDistrict': 'Distrito (Residencial)',
-        'primaryPhoneType': 'Tipo de Teléfono Principal',
-        'primaryPhoneCountryCode': 'Código de País (Teléfono Principal)',
-        'primaryPhoneNumber': 'Número de Teléfono Principal',
-        'primaryPhoneExt': 'Extensión (Teléfono Principal)',
-        'alternatePhoneType': 'Tipo de Teléfono Alternativo',
-        'alternatePhoneCountryCode': 'Código de País (Teléfono Alternativo)',
-        'alternatePhoneNumber': 'Número de Teléfono Alternativo',
-        'alternatePhoneExt': 'Extensión (Teléfono Alternativo)',
-        'faxNumber': 'Número de Fax',
-        'nativeLanguage': 'Idioma Nativo/Lengua Materna',
-        'canCommunicateEnFr': '¿Puede comunicarse en inglés y/o francés?',
-        'mostAtEaseLanguage': 'Idioma en que se siente más cómodo',
-        'takenLanguageTest': '¿Ha realizado prueba de dominio del idioma?',
-        'issueCountry': 'País o Territorio de Emisión (Pasaporte)',
-        'issueDate': 'Fecha de Emisión (Pasaporte)',
-        'expiryDate': 'Fecha de Caducidad (Pasaporte)',
-        'taiwanPassportWithId': '¿Usa pasaporte de Taiwán con ID personal?',
-        'nationalIsraeliPassport': '¿Usa pasaporte Nacional Israelí?',
-        'hasNationalId': '¿Tiene documento de identidad nacional?',
-        'documentNumber': 'Número de Documento (ID Nacional/Green Card)',
-        'usprCard.expiryDate': 'Fecha de Caducidad (Green Card)',
-        'isUsPermanentResident': '¿Es Residente Permanente Legal de EE. UU.?',
-        'purposeOfVisit': 'Propósito de su visita a Canadá',
-        'otherPurpose': 'Otro Propósito',
-        'fromDate': 'Desde (Visita)',
-        'toDate': 'Hasta (Visita)',
-        'fundsAvailableCAD': 'Fondos disponibles (CAD)',
-        'postSecondary': '¿Ha tenido educación post-secundaria?',
-        'currentActivity': 'Actividad/Ocupación Actual',
-        'currentFromYear': 'Desde (Año - Actual Empleo)',
-        'currentFromMonth': 'Desde (Mes - Actual Empleo)',
-        'currentToYear': 'Hasta (Año - Actual Empleo)',
-        'currentToMonth': 'Hasta (Mes - Actual Empleo)',
-        'currentCityTown': 'Ciudad/Pueblo (Actual Empleo)',
-        'currentCountryTerritory': 'País o Territorio (Actual Empleo)',
-        'currentCompanyEmployerFacilityName': 'Nombre de la Compañía/Empleador/Instalación (Actual Empleo)',
-        'currentProvinceState': 'Provincia/Estado (Actual Empleo)',
-        'tuberculosis': '¿Ha tenido tuberculosis o contacto cercano?',
-        'tuberculosisExplanation': 'Detalles de tuberculosis/contacto',
-        'physicalMentalDisorder': '¿Tiene trastorno físico/mental que requiera servicios de salud/sociales en Canadá?',
-        'physicalMentalDisorderExplanation': 'Detalles de trastorno físico/mental',
-        'violatedStatusCanada': '¿Ha violado estatus en Canadá?',
-        'violatedStatusCanadaExplanation': 'Detalles de violación de estatus en Canadá',
-        'refusedDeniedOrdered': '¿Se le ha denegado/ordenado salir de Canadá/otro país?',
-        'refusedDeniedOrderedExplanation': 'Detalles de denegación/orden de salida',
-        'previouslyAppliedCanada': '¿Ha solicitado previamente entrar o permanecer en Canadá?',
-        'previouslyAppliedCanadaExplanation': 'Detalles de solicitud previa a Canadá',
-        'criminalOffence': '¿Ha cometido/sido acusado de delito criminal?',
-        'criminalOffenceExplanation': 'Detalles de delito penal',
-        'militaryOrPoliceService': '¿Sirvió en servicio militar/policial?',
-        'militaryServiceDatesAndCountries': 'Fechas y países/territorios de servicio militar/policial',
-        'violentOrgAffiliation': '¿Miembro/asociado a grupo violento/criminal?',
-        'violentOrgAffiliationExplanation': 'Detalles de afiliación a organización violenta',
-        'illTreatmentOrDesecration': '¿Presenció/participó en maltrato a prisioneros/civiles, saqueo o profanación?',
-        'illTreatmentOrDesecrationExplanation': 'Detalles de maltrato/profanación',
-        'consentContact': '¿Consiente ser contactado por IRCC en el futuro?',
-
-        // Canada IMM5707e Fields
-        'accompanyToCanada': '¿Acompañará a Canadá?',
-        'nativeLanguage': 'Nombre en idioma nativo',
-        'presentAddress': 'Dirección Actual (si aplica)',
-        'occupation': 'Ocupación Actual',
-        'noChildren': '¿No tiene hijos?',
+        'hasFunds': '¿Dispone de fondos suficientes?',
+        'fundsExplanation': 'Explicación de financiación del viaje',
     };
 
-    // Formatea el valor para mostrarlo en el resumen.
     function formatSummaryValue(key, value) {
         if (value === 'Si') return 'Sí';
         if (value === 'No') return 'No';
@@ -1550,7 +1191,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return value || 'No proporcionado';
     }
 
-    // Genera el HTML para el resumen del formulario.
     function generateSummaryHtml(data, currentPath = '') {
         let html = '';
         for (const key in data) {
@@ -1560,20 +1200,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const displayTitle = fieldTitleMap[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
                 if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                    // Check if the object is part of a dynamic array, if so, it's already handled by Array.isArray
-                    // This prevents showing a redundant heading for nested objects that are part of dynamic entries.
-                    const parentKeyParts = currentPath.split('.');
-                    const isDynamicSubObject = parentKeyParts.length > 0 && parentKeyParts[parentKeyParts.length - 1].match(/\[\d+\]$/);
-                    
-                    if (!isDynamicSubObject) {
-                        html += `<h3>${displayTitle}</h3>`;
-                    }
+                    html += `<h3>${displayTitle}</h3>`;
                     html += generateSummaryHtml(value, fullPath);
                 } else if (Array.isArray(value)) {
                     if (value.length > 0) {
-                        html += `<h3>${displayTitle} (${value.length} entr${value.length === 1 ? 'ada' : 'adas'})</h3><ul>`;
+                        html += `<h3>${displayTitle}</h3><ul>`;
                         value.forEach((item, index) => {
-                            html += `<li><strong>${displayTitle.replace(/s$/, '')} ${index + 1}:</strong>`; // Remove 's' for singular
+                            html += `<li><strong>${displayTitle} ${index + 1}:</strong>`;
                             if (typeof item === 'object' && item !== null) {
                                 html += `<ul>`;
                                 for (const subKey in item) {
@@ -1599,7 +1232,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // Event listener para el botón de "Revisar y Enviar".
     reviewAndSubmitBtn.addEventListener('click', (event) => {
         event.preventDefault(); // Evitar el envío directo del formulario
 
@@ -1621,7 +1253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listener para el botón de "Confirmar y Descargar" dentro del modal de resumen.
     confirmAndDownloadBtn.addEventListener('click', () => {
         const selectedVisaType = document.querySelector('input[name="visaType"]:checked');
         const formData = collectFormDataForSummary(); // Recolectar de nuevo para asegurar la última versión
