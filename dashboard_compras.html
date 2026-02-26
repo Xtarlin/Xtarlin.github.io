@@ -537,18 +537,6 @@
                         populateFilters(parsedData);
                         processAndRender(parsedData);
                         
-                        // Determine Report Month/Year
-                        let reportDateStr = "";
-                        const firstValidDateRow = json.find(r => r['FECHA_EMISION_OC']);
-                        if (firstValidDateRow) {
-                            const dateObj = ExcelDateToJSDate(firstValidDateRow['FECHA_EMISION_OC']);
-                            if (dateObj) {
-                                const formatter = new Intl.DateTimeFormat('es-DO', { month: 'long', year: 'numeric' });
-                                reportDateStr = " | " + formatter.format(dateObj);
-                            }
-                        }
-                        document.getElementById('header-subtitle').innerText = "Dashboard de Compras" + reportDateStr;
-
                         // Switch screens
                         uploadScreen.classList.add('hidden');
                         dashboardContainer.classList.remove('hidden');
