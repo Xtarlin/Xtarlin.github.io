@@ -60,7 +60,7 @@
                 <img src="https://bronco2.grupoviamar.com/wp-content/uploads/2022/04/logo.png" alt="Logo" class="h-10 object-contain">
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 tracking-tight uppercase">Dashboard Personal Marlene Bernard</h1>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dashboard de Compras</p>
+                    <p id="header-subtitle" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dashboard de Compras</p>
                 </div>
             </div>
             <div class="hidden md:flex items-center gap-4 text-right">
@@ -108,6 +108,12 @@
             <!-- CONTROLES / FILTROS -->
             <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-wrap gap-4 items-end z-20 relative">
                 <div class="space-y-1 flex-1 min-w-[200px]">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mes y Año</label>
+                    <select id="filter-month" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
+                        <option value="ALL">Todo el Historial</option>
+                    </select>
+                </div>
+                <div class="space-y-1 flex-1 min-w-[200px]">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comprador</label>
                     <select id="filter-buyer" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
                         <option value="ALL">Todos</option>
@@ -131,6 +137,11 @@
                         <option value="20000-50000">$20,000 - $50,000</option>
                         <option value="50000+">Mayores a $50,000</option>
                     </select>
+                </div>
+                <!-- Búsqueda General -->
+                <div class="space-y-1 flex-1 min-w-[200px]">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buscador Específico</label>
+                    <input type="text" id="filter-search" placeholder="Orden, Solicitud, Suplidor" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-[11px] outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700 placeholder-slate-400">
                 </div>
             </div>
 
@@ -209,23 +220,34 @@
                     </div>
                 </div>
 
-                <!-- Tabla: Top Artículos -->
+                <!-- Tabla: Todos los Artículos (Paginado) -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm lg:col-span-2 overflow-hidden flex flex-col">
-                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Top 5 Artículos de Mayor Gasto</h3>
-                    <div class="flex-grow overflow-x-auto custom-scrollbar">
+                    <div class="flex justify-between items-end mb-6 gap-4">
+                        <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest leading-none pb-1">Desglose de Artículos</h3>
+                        <input type="text" id="filter-items-search" placeholder="Buscar Artículo o Desc..." class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs font-bold text-slate-700 w-full max-w-[200px]">
+                    </div>
+                    <div class="flex-grow overflow-x-auto custom-scrollbar h-[250px]">
                         <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-slate-50 border-b border-slate-100 rounded-xl">
+                            <thead class="bg-slate-50 border-b border-slate-100 sticky top-0 z-10">
                                 <tr>
-                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] rounded-l-xl">Artículo</th>
+                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] rounded-tl-xl">Artículo</th>
                                     <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px]">Descripción</th>
                                     <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] text-right">Cant.</th>
-                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] text-right rounded-r-xl">Total Gastado</th>
+                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] text-right">Precio Ud.</th>
+                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] text-right rounded-tr-xl">Total Gastado</th>
                                 </tr>
                             </thead>
                             <tbody id="top-items-tbody" class="divide-y divide-slate-50">
                                 <!-- Filas Dinámicas -->
                             </tbody>
                         </table>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center text-xs font-medium text-slate-500">
+                        <div>Mostrando <span id="items-pag-info" class="font-bold text-slate-700">0 - 0</span></div>
+                        <div class="flex gap-2">
+                            <button id="btn-items-prev" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded disabled:opacity-50 transition">Anterior</button>
+                            <button id="btn-items-next" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded disabled:opacity-50 transition">Siguiente</button>
+                        </div>
                     </div>
                 </div>
 
@@ -290,9 +312,16 @@
         let parsedData = [];
         let currentTableData = [];
         
-        // Paginación
+        let currentAllItemsData = [];
+        let currentItemsData = [];
+        
+        // Paginación Órdenes
         let currentPage = 1;
         const rowsPerPage = 50;
+
+        // Paginación Artículos
+        let currentItemsPage = 1;
+        const itemsPerPage = 10;
 
         const formatCurrency = (val) => new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(val);
         const formatNumber = (val) => new Intl.NumberFormat('es-DO').format(val);
@@ -363,6 +392,7 @@
             
             const wsData = currentTableData.map(r => ({
                 "Núm Orden": r.numOrden,
+                "Núm Solicitud": r.numSolicitud,
                 "Fecha Emisión": r.fecha,
                 "Fecha Solicitud": r.fechaSolicitud,
                 "Días de Proceso": r.diasProceso,
@@ -394,11 +424,18 @@
             saveAs(new Blob([wbout], {type:"application/octet-stream"}), 'Reporte_Compras_Filtrado.xlsx');
         });
 
+        document.getElementById('filter-month').addEventListener('change', applyFilters);
         document.getElementById('filter-buyer').addEventListener('change', applyFilters);
         document.getElementById('filter-status').addEventListener('change', applyFilters);
         document.getElementById('filter-amount').addEventListener('change', applyFilters);
+        document.getElementById('filter-search').addEventListener('input', applyFilters);
 
         function populateFilters(data) {
+            const months = [...new Set(data.map(d => d.mesAno))].sort();
+            const monthSelect = document.getElementById('filter-month');
+            monthSelect.innerHTML = '<option value="ALL">Todo el Historial</option>' + 
+                months.map(m => `<option value="${m}">${m}</option>`).join('');
+
             const buyers = [...new Set(data.map(d => d.comprador))].sort();
             const buyerSelect = document.getElementById('filter-buyer');
             buyerSelect.innerHTML = '<option value="ALL">Todos los Compradores</option>' + 
@@ -406,14 +443,18 @@
             
             document.getElementById('filter-status').value = 'ALL';
             document.getElementById('filter-amount').value = 'ALL';
+            document.getElementById('filter-search').value = '';
         }
 
         function applyFilters() {
+            const month = document.getElementById('filter-month').value;
             const buyer = document.getElementById('filter-buyer').value;
             const status = document.getElementById('filter-status').value;
             const amount = document.getElementById('filter-amount').value;
+            const searchText = document.getElementById('filter-search').value.toLowerCase().trim();
 
             let filtered = parsedData.filter(r => {
+                if(month !== 'ALL' && r.mesAno !== month) return false;
                 if(buyer !== 'ALL' && r.comprador !== buyer) return false;
                 if(status !== 'ALL' && r.estatusTiempo !== status) return false;
                 
@@ -421,6 +462,15 @@
                 if(amount === '5000-20000' && (r.total < 5000 || r.total >= 20000)) return false;
                 if(amount === '20000-50000' && (r.total < 20000 || r.total >= 50000)) return false;
                 if(amount === '50000+' && r.total < 50000) return false;
+
+                if(searchText) {
+                    const oStr = r.numOrden.toLowerCase();
+                    const sStr = r.numSolicitud.toLowerCase();
+                    const supStr = r.suplidor.toLowerCase();
+                    if(!oStr.includes(searchText) && !sStr.includes(searchText) && !supStr.includes(searchText)) {
+                        return false;
+                    }
+                }
 
                 return true;
             });
@@ -459,21 +509,27 @@
                             const compradorName = compradoresMap[compradorCode] 
                                 ? `${compradorCode} - ${compradoresMap[compradorCode]}`
                                 : `${compradorCode} - Desconocido`;
+                                
+                            const mesAno = fEmision 
+                                ? new Intl.DateTimeFormat('es-DO', { month: 'long', year: 'numeric' }).format(fEmision).toUpperCase() 
+                                : 'DESCONOCIDO';
 
                             return {
+                                mesAno: mesAno,
                                 comprador: compradorName,
                                 local: row['LOCAL'] || 'N/A',
-                                numOrden: row['NUM_ORDEN'] || 'N/A',
+                                numOrden: row['NUM_ORDEN']?.toString() || 'N/A',
+                                numSolicitud: row['NUM_SOLICITUD']?.toString() || 'N/A',
                                 fecha: fEmision ? fEmision.toLocaleDateString('es-DO') : 'N/D',
                                 fechaSolicitud: fSolicitud ? fSolicitud.toLocaleDateString('es-DO') : 'N/D',
                                 diasProceso: isNaN(diffDays) ? 0 : diffDays,
                                 estatusTiempo: estatusTiempo,
-                                articulo: row['ARTICULO'] || 'N/A',
+                                articulo: row['ARTICULO']?.toString() || 'N/A',
                                 descripcion: row['DESCRIPCION'] || 'N/A',
                                 cantidad: parseFloat(row['CANTIDAD']) || 0,
                                 costoUni: parseFloat(row['COSTO_UNI']) || 0,
                                 total: parseFloat(row['TOTAL']) || 0,
-                                suplidor: row['NUM_SUPLIDOR'] || 'N/A',
+                                suplidor: row['NUM_SUPLIDOR']?.toString() || 'N/A',
                                 formaPago: row['FORMA_PAGO'] || 'N/A'
                             };
                         });
@@ -481,6 +537,18 @@
                         populateFilters(parsedData);
                         processAndRender(parsedData);
                         
+                        // Determine Report Month/Year
+                        let reportDateStr = "";
+                        const firstValidDateRow = json.find(r => r['FECHA_EMISION_OC']);
+                        if (firstValidDateRow) {
+                            const dateObj = ExcelDateToJSDate(firstValidDateRow['FECHA_EMISION_OC']);
+                            if (dateObj) {
+                                const formatter = new Intl.DateTimeFormat('es-DO', { month: 'long', year: 'numeric' });
+                                reportDateStr = " | " + formatter.format(dateObj);
+                            }
+                        }
+                        document.getElementById('header-subtitle').innerText = "Dashboard de Compras" + reportDateStr;
+
                         // Switch screens
                         uploadScreen.classList.add('hidden');
                         dashboardContainer.classList.remove('hidden');
@@ -581,7 +649,7 @@
                 return acc;
             }, {});
 
-            // 4. Top Artículos
+            // 4. Todos los Artículos
             const gastoPorArticulo = {};
             cleanData.forEach(c => {
                 const key = c.articulo + ' | ' + c.descripcion;
@@ -597,17 +665,17 @@
                 gastoPorArticulo[key].total += c.total;
             });
 
-            const topItems = Object.values(gastoPorArticulo)
-                .sort((a, b) => b.total - a.total)
-                .slice(0, 5);
+            currentAllItemsData = Object.values(gastoPorArticulo).sort((a, b) => b.total - a.total);
+            currentItemsData = [...currentAllItemsData];
 
             renderCharts(gastoPorLocal, gastoPorComprador, gastoPorPago);
             
-            // Populate current table data and reset pagination
+            // Populate data and reset paginations
             currentTableData = cleanData;
             currentPage = 1;
+            currentItemsPage = 1;
             
-            renderTopTable(topItems);
+            renderTopTablePaginated();
             renderMainTablePaginated();
         }
 
@@ -618,6 +686,28 @@
         document.getElementById('btn-next').addEventListener('click', () => {
             const maxPage = Math.ceil(currentTableData.length / rowsPerPage);
             if(currentPage < maxPage) { currentPage++; renderMainTablePaginated(); }
+        });
+
+        document.getElementById('btn-items-prev').addEventListener('click', () => {
+            if(currentItemsPage > 1) { currentItemsPage--; renderTopTablePaginated(); }
+        });
+        document.getElementById('btn-items-next').addEventListener('click', () => {
+            const maxPage = Math.ceil(currentItemsData.length / itemsPerPage);
+            if(currentItemsPage < maxPage) { currentItemsPage++; renderTopTablePaginated(); }
+        });
+
+        document.getElementById('filter-items-search').addEventListener('input', (e) => {
+            const text = e.target.value.toLowerCase().trim();
+            if(text) {
+                currentItemsData = currentAllItemsData.filter(i => 
+                    i.articulo.toLowerCase().includes(text) || 
+                    i.descripcion.toLowerCase().includes(text)
+                );
+            } else {
+                currentItemsData = [...currentAllItemsData];
+            }
+            currentItemsPage = 1;
+            renderTopTablePaginated();
         });
 
         function createChart(ctxId, type, labels, data, colors, options = {}) {
@@ -708,14 +798,34 @@
             );
         }
 
-        function renderTopTable(topItems) {
+        function renderTopTablePaginated() {
             const topTbody = document.getElementById('top-items-tbody');
-            topTbody.innerHTML = topItems.map(it => `
+            const totalRows = currentItemsData.length;
+            const maxPage = Math.ceil(totalRows / itemsPerPage);
+            
+            if(currentItemsPage < 1) currentItemsPage = 1;
+            if(currentItemsPage > maxPage && maxPage > 0) currentItemsPage = maxPage;
+
+            const startIndex = (currentItemsPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const toRender = currentItemsData.slice(startIndex, endIndex);
+
+            document.getElementById('items-pag-info').innerText = totalRows === 0 ? '0 - 0' : `${startIndex + 1} - ${Math.min(endIndex, totalRows)}`;
+            document.getElementById('btn-items-prev').disabled = currentItemsPage === 1;
+            document.getElementById('btn-items-next').disabled = currentItemsPage === maxPage || maxPage === 0;
+
+            if (toRender.length === 0) {
+                topTbody.innerHTML = `<tr><td colspan="5" class="px-6 py-6 text-center text-xs font-black text-slate-400 italic">No se encontraron artículos.</td></tr>`;
+                return;
+            }
+
+            topTbody.innerHTML = toRender.map(it => `
                 <tr class="hover:bg-slate-50 transition group">
-                    <td class="px-6 py-4 font-bold text-slate-700">${it.articulo}</td>
-                    <td class="px-6 py-4 text-xs text-slate-500 max-w-[200px] truncate" title="${it.descripcion}">${it.descripcion}</td>
-                    <td class="px-6 py-4 text-right font-black text-slate-900">${formatNumber(it.cantidad)}</td>
-                    <td class="px-6 py-4 text-right font-black text-indigo-600">${formatCurrency(it.total)}</td>
+                    <td class="px-6 py-3 font-bold text-slate-700">${it.articulo}</td>
+                    <td class="px-6 py-3 text-xs text-slate-500 max-w-[200px] truncate" title="${it.descripcion}">${it.descripcion}</td>
+                    <td class="px-6 py-3 text-right font-black text-slate-900">${formatNumber(it.cantidad)}</td>
+                    <td class="px-6 py-3 text-right font-bold text-slate-500">${formatCurrency(it.cantidad > 0 ? (it.total / it.cantidad) : 0)}</td>
+                    <td class="px-6 py-3 text-right font-black text-indigo-600 border-l border-slate-50">${formatCurrency(it.total)}</td>
                 </tr>
             `).join('');
         }
