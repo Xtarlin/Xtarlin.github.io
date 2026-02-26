@@ -119,6 +119,7 @@
                         <option value="ALL">Todos los Estatus</option>
                         <option value="En Tiempo">En Tiempo</option>
                         <option value="Retrasada">Retrasadas</option>
+                        <option value="Faltan Fechas">Fechas Faltantes</option>
                     </select>
                 </div>
                 <div class="space-y-1 flex-1 min-w-[200px]">
@@ -290,7 +291,7 @@
 
         // Excel Date Serial to JS Date
         function ExcelDateToJSDate(serial) {
-            if(!serial || isNaN(serial)) return new Date();
+            if(!serial || isNaN(serial)) return null;
             let utc_days  = Math.floor(serial - 25569);
             let utc_value = utc_days * 86400;                                        
             let date_info = new Date(utc_value * 1000);
@@ -437,11 +438,13 @@
                             const fSolicitud = ExcelDateToJSDate(row['FECHA_SOLICITUD']);
                             
                             let diffDays = 0;
-                            if(fEmision && fSolicitud && !isNaN(fEmision) && !isNaN(fSolicitud)) {
+                            let estatusTiempo = "Faltan Fechas";
+
+                            if(fEmision && fSolicitud) {
                                 const diffTime = fEmision.getTime() - fSolicitud.getTime();
                                 diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                estatusTiempo = diffDays <= 5 ? "En Tiempo" : "Retrasada";
                             }
-                            const estatusTiempo = diffDays <= 5 ? "En Tiempo" : "Retrasada";
 
                             const compradorCode = row['COMPRADOR']?.toString().trim() || 'N/A';
                             const compradorName = compradoresMap[compradorCode] 
@@ -452,8 +455,8 @@
                                 comprador: compradorName,
                                 local: row['LOCAL'] || 'N/A',
                                 numOrden: row['NUM_ORDEN'] || 'N/A',
-                                fecha: fEmision.toLocaleDateString('es-DO'),
-                                fechaSolicitud: fSolicitud.toLocaleDateString('es-DO'),
+                                fecha: fEmision ? fEmision.toLocaleDateString('es-DO') : 'N/D',
+                                fechaSolicitud: fSolicitud ? fSolicitud.toLocaleDateString('es-DO') : 'N/D',
                                 diasProceso: isNaN(diffDays) ? 0 : diffDays,
                                 estatusTiempo: estatusTiempo,
                                 articulo: row['ARTICULO'] || 'N/A',
@@ -733,9 +736,14 @@
             }
 
             allTbody.innerHTML = toRender.map((r, i) => {
-                const estatusBadge = r.estatusTiempo === 'En Tiempo' 
-                                    ? `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] rounded font-black uppercase">${r.diasProceso} d - En Tiempo</span>`
-                                    : `<span class="px-2 py-0.5 bg-red-100 text-red-700 text-[9px] rounded font-black uppercase">${r.diasProceso} d - Retrasada</span>`;
+                let estatusBadge = '';
+                if(r.estatusTiempo === 'En Tiempo') {
+                    estatusBadge = `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] rounded font-black uppercase">${r.diasProceso} d - En Tiempo</span>`;
+                } else if(r.estatusTiempo === 'Retrasada') {
+                    estatusBadge = `<span class="px-2 py-0.5 bg-red-100 text-red-700 text-[9px] rounded font-black uppercase">${r.diasProceso} d - Retrasada</span>`;
+                } else {
+                    estatusBadge = `<span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[9px] rounded font-black uppercase">Fechas Faltantes</span>`;
+                }
 
                 return `
                 <tr class="hover:bg-slate-50 transition border-b border-slate-50">
