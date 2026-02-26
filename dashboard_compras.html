@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Personal - Marlene Bernard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- SheetJS for Excel Reading -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Chart.js for Graphics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .upload-dashed {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23CBD5E1FF' stroke-width='4' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            border-radius: 24px;
+        }
+        .upload-dashed:hover {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%234F46E5FF' stroke-width='4' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-20 text-slate-900">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="container mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <img src="https://bronco2.grupoviamar.com/wp-content/uploads/2022/04/logo.png" alt="Logo" class="h-10 object-contain">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight uppercase">Dashboard Personal Marlene Bernard</h1>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dashboard de Compras</p>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-4 text-right">
+                <button id="export-pdf-btn" class="hidden px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition flex items-center gap-2 border border-indigo-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> PDF (Dashboard)
+                </button>
+                <button id="reset-btn" class="hidden px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition">
+                    Cargar Otro Archivo
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+
+        <!-- PANTALLA DE CARGA -->
+        <div id="upload-screen" class="flex flex-col items-center justify-center min-h-[60vh] fade-in">
+            <div class="max-w-xl w-full text-center space-y-6">
+                <div class="inline-flex w-20 h-20 bg-indigo-50 text-indigo-500 rounded-3xl items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight">Cargar Reporte de Compras</h2>
+                <p class="text-sm text-slate-500 font-medium">Sube el archivo Excel (Ej: <span class="font-bold text-slate-700">OrdenesCompras Enero 2026 Reporte sistema.xlsx</span>) para visualizar las analíticas.</p>
+                
+                <div id="drop-zone" class="upload-dashed p-12 mt-8 cursor-pointer bg-slate-50 hover:bg-indigo-50/50 transition duration-300 relative group overflow-hidden">
+                    <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".xlsx, .xls">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-indigo-500 group-hover:scale-110 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <span class="text-sm font-bold text-slate-600 group-hover:text-indigo-600 transition">Haz clic para buscar o arrastra el archivo aquí</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Sólo formatos .xlsx</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD (Oculto inicialmente) -->
+        <div id="dashboard-container" class="hidden fade-in space-y-8">
+            
+            <!-- CONTROLES / FILTROS -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-wrap gap-4 items-end z-20 relative">
+                <div class="space-y-1 flex-1 min-w-[200px]">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comprador</label>
+                    <select id="filter-buyer" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
+                        <option value="ALL">Todos</option>
+                    </select>
+                </div>
+                <div class="space-y-1 flex-1 min-w-[200px]">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estatus de Órdenes</label>
+                    <select id="filter-status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
+                        <option value="ALL">Todos los Estatus</option>
+                        <option value="En Tiempo">En Tiempo</option>
+                        <option value="Retrasada">Retrasadas</option>
+                    </select>
+                </div>
+                <div class="space-y-1 flex-1 min-w-[200px]">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rango de Monto</label>
+                    <select id="filter-amount" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
+                        <option value="ALL">Cualquier Monto</option>
+                        <option value="0-5000">Líneas Menores a $5,000</option>
+                        <option value="5000-20000">$5,000 - $20,000</option>
+                        <option value="20000-50000">$20,000 - $50,000</option>
+                        <option value="50000+">Mayores a $50,000</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- KPIs Generales -->
+            <div class="flex flex-wrap gap-6">
+                <!-- KPI 1 -->
+                <div class="flex-1 min-w-[240px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-indigo-200 transition">
+                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                    <div class="relative z-10 w-full">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Gasto Total</h3>
+                        <p id="kpi-total-spend" class="text-xl font-black text-slate-900 tracking-tighter truncate">$0.00</p>
+                    </div>
+                </div>
+                <!-- KPI 2 -->
+                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-blue-200 transition">
+                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                    <div class="relative z-10 w-full">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total de Órdenes</h3>
+                        <p id="kpi-total-orders" class="text-xl font-black text-slate-900 tracking-tighter truncate">0</p>
+                    </div>
+                </div>
+                <!-- KPI 3 -->
+                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-200 transition">
+                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                    <div class="relative z-10 w-full">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Artículos</h3>
+                        <p id="kpi-total-items" class="text-xl font-black text-slate-900 tracking-tighter truncate">0</p>
+                    </div>
+                </div>
+                <!-- KPI 4 -->
+                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-purple-200 transition">
+                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                    <div class="relative z-10 w-full">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Promedio / Orden</h3>
+                        <p id="kpi-avg-order" class="text-xl font-black text-slate-900 tracking-tighter truncate">$0.00</p>
+                    </div>
+                </div>
+                <!-- KPI 5 -->
+                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-amber-200 transition">
+                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                    <div class="relative z-10 w-full">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Estatus vs Tiempo</h3>
+                        <p id="kpi-on-time" class="text-xl font-black text-slate-900 tracking-tighter truncate">0%</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">Órdenes a Tiempo</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos Principales -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Chart: Gasto por Local -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm col-span-1 flex flex-col">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Gasto por Local</h3>
+                    <div class="flex-grow flex items-center justify-center relative min-h-[300px]">
+                        <canvas id="chartLocal"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart: Gasto por Comprador -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm lg:col-span-2 flex flex-col">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Gasto por Comprador</h3>
+                    <div class="flex-grow w-full relative min-h-[300px]">
+                        <canvas id="chartComprador"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segunda Fila de Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Chart: Forma de Pago -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Forma de Pago</h3>
+                    <div class="flex-grow flex items-center justify-center relative min-h-[250px]">
+                        <canvas id="chartPago"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tabla: Top Artículos -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm lg:col-span-2 overflow-hidden flex flex-col">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Top 5 Artículos de Mayor Gasto</h3>
+                    <div class="flex-grow overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-slate-50 border-b border-slate-100 rounded-xl">
+                                <tr>
+                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] rounded-l-xl">Artículo</th>
+                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px]">Descripción</th>
+                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] text-right">Cant.</th>
+                                    <th class="px-6 py-4 font-black text-slate-400 uppercase text-[10px] text-right rounded-r-xl">Total Gastado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-items-tbody" class="divide-y divide-slate-50">
+                                <!-- Filas Dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Tabla Completa de Órdenes -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest">Órdenes Procesadas</h3>
+                        <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full" id="row-count-badge">0 registros</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="export-excel-btn" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-lg transition border border-emerald-200 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> EXPORTAR A EXCEL
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-grow overflow-x-auto custom-scrollbar h-[400px]">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-900 text-white sticky top-0 z-10">
+                            <tr>
+                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px] rounded-tl-xl">Núm. Orden</th>
+                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Fechas y Días</th>
+                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Local</th>
+                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Comprador</th>
+                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Descripción</th>
+                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px] text-right rounded-tr-xl">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-orders-tbody" class="divide-y divide-slate-100">
+                            <!-- Filas Dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 flex justify-between items-center text-xs font-medium text-slate-500">
+                    <div>Mostrando <span id="pag-start" class="font-bold text-slate-700">0</span> - <span id="pag-end" class="font-bold text-slate-700">0</span></div>
+                    <div class="flex gap-2">
+                        <button id="btn-prev" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded disabled:opacity-50 transition">Anterior</button>
+                        <button id="btn-next" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded disabled:opacity-50 transition">Siguiente</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // Variables globales
+        let parsedData = [];
+        let currentTableData = [];
+        
+        // Paginación
+        let currentPage = 1;
+        const rowsPerPage = 50;
+
+        const formatCurrency = (val) => new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(val);
+        const formatNumber = (val) => new Intl.NumberFormat('es-DO').format(val);
+        let chartsInstance = {};
+
+        // Excel Date Serial to JS Date
+        function ExcelDateToJSDate(serial) {
+            if(!serial || isNaN(serial)) return new Date();
+            let utc_days  = Math.floor(serial - 25569);
+            let utc_value = utc_days * 86400;                                        
+            let date_info = new Date(utc_value * 1000);
+            return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate());
+        }
+
+        // Elementos UI
+        const fileInput = document.getElementById('file-input');
+        const uploadScreen = document.getElementById('upload-screen');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const resetBtn = document.getElementById('reset-btn');
+        const exportPdfBtn = document.getElementById('export-pdf-btn');
+        const exportExcelBtn = document.getElementById('export-excel-btn');
+
+        // Event Listeners
+        fileInput.addEventListener('change', handleFileUpload);
+        resetBtn.addEventListener('click', () => {
+            dashboardContainer.classList.add('hidden');
+            uploadScreen.classList.remove('hidden');
+            resetBtn.classList.add('hidden');
+            exportPdfBtn.classList.add('hidden');
+            fileInput.value = '';
+            parsedData = [];
+            currentTableData = [];
+        });
+        
+        exportPdfBtn.addEventListener('click', () => {
+            const element = document.getElementById('dashboard-container');
+            
+            // Ocultar botones para la exportación limpia
+            const pdiv1 = document.querySelector('.z-20.relative');
+            const pdiv2 = document.getElementById('export-excel-btn');
+            if (pdiv1) pdiv1.style.display = 'none';
+            if (pdiv2) pdiv2.style.display = 'none';
+
+            // Remover clase fade-in para evitar opacidad en canvas
+            element.classList.remove('fade-in');
+
+            const opt = {
+                margin: 0.3,
+                filename: 'Dashboard_Compras.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#f8fafc' },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            
+            exportPdfBtn.innerText = 'Generando...';
+            html2pdf().set(opt).from(element).save().then(() => {
+                exportPdfBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> PDF (Dashboard)';
+               
+                // Restaurar UI
+                if (pdiv1) pdiv1.style.display = 'flex';
+                if (pdiv2) pdiv2.style.display = 'flex';
+                element.classList.add('fade-in');
+            });
+        });
+
+        exportExcelBtn.addEventListener('click', () => {
+            if(currentTableData.length === 0) return alert("No hay datos para exportar.");
+            
+            const wsData = currentTableData.map(r => ({
+                "Núm Orden": r.numOrden,
+                "Fecha Emisión": r.fecha,
+                "Fecha Solicitud": r.fechaSolicitud,
+                "Días de Proceso": r.diasProceso,
+                "Estatus Tiempo": r.estatusTiempo,
+                "Local": r.local,
+                "Cód/Nombre Comprador": r.comprador,
+                "Cod Artículo": r.articulo,
+                "Descripción": r.descripcion,
+                "Cantidad": r.cantidad,
+                "Costo Ud.": r.costoUni,
+                "Total Gastado": r.total,
+                "Suplidor": r.suplidor,
+                "Forma Pago": r.formaPago
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(wsData);
+            
+            // Ajustar ancho de las columnas
+            ws['!cols'] = [
+                {wch: 15}, {wch: 15}, {wch: 15}, {wch: 18}, {wch: 18}, 
+                {wch: 25}, {wch: 40}, {wch: 20}, {wch: 50}, {wch: 12}, 
+                {wch: 15}, {wch: 18}, {wch: 25}, {wch: 20}
+            ];
+            
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "FiltroCompras");
+            
+            const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+            saveAs(new Blob([wbout], {type:"application/octet-stream"}), 'Reporte_Compras_Filtrado.xlsx');
+        });
+
+        document.getElementById('filter-buyer').addEventListener('change', applyFilters);
+        document.getElementById('filter-status').addEventListener('change', applyFilters);
+        document.getElementById('filter-amount').addEventListener('change', applyFilters);
+
+        function populateFilters(data) {
+            const buyers = [...new Set(data.map(d => d.comprador))].sort();
+            const buyerSelect = document.getElementById('filter-buyer');
+            buyerSelect.innerHTML = '<option value="ALL">Todos los Compradores</option>' + 
+                buyers.map(b => `<option value="${b}">${b}</option>`).join('');
+            
+            document.getElementById('filter-status').value = 'ALL';
+            document.getElementById('filter-amount').value = 'ALL';
+        }
+
+        function applyFilters() {
+            const buyer = document.getElementById('filter-buyer').value;
+            const status = document.getElementById('filter-status').value;
+            const amount = document.getElementById('filter-amount').value;
+
+            let filtered = parsedData.filter(r => {
+                if(buyer !== 'ALL' && r.comprador !== buyer) return false;
+                if(status !== 'ALL' && r.estatusTiempo !== status) return false;
+                
+                if(amount === '0-5000' && r.total >= 5000) return false;
+                if(amount === '5000-20000' && (r.total < 5000 || r.total >= 20000)) return false;
+                if(amount === '20000-50000' && (r.total < 20000 || r.total >= 50000)) return false;
+                if(amount === '50000+' && r.total < 50000) return false;
+
+                return true;
+            });
+
+            processAndRender(filtered);
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if(json.length > 0) {
+                        parsedData = json.map(row => {
+                            const fEmision = ExcelDateToJSDate(row['FECHA_EMISION_OC']);
+                            const fSolicitud = ExcelDateToJSDate(row['FECHA_SOLICITUD']);
+                            
+                            let diffDays = 0;
+                            if(fEmision && fSolicitud && !isNaN(fEmision) && !isNaN(fSolicitud)) {
+                                const diffTime = fEmision.getTime() - fSolicitud.getTime();
+                                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            }
+                            const estatusTiempo = diffDays <= 5 ? "En Tiempo" : "Retrasada";
+
+                            const compradorCode = row['COMPRADOR']?.toString().trim() || 'N/A';
+                            const compradorName = compradoresMap[compradorCode] 
+                                ? `${compradorCode} - ${compradoresMap[compradorCode]}`
+                                : `${compradorCode} - Desconocido`;
+
+                            return {
+                                comprador: compradorName,
+                                local: row['LOCAL'] || 'N/A',
+                                numOrden: row['NUM_ORDEN'] || 'N/A',
+                                fecha: fEmision.toLocaleDateString('es-DO'),
+                                fechaSolicitud: fSolicitud.toLocaleDateString('es-DO'),
+                                diasProceso: isNaN(diffDays) ? 0 : diffDays,
+                                estatusTiempo: estatusTiempo,
+                                articulo: row['ARTICULO'] || 'N/A',
+                                descripcion: row['DESCRIPCION'] || 'N/A',
+                                cantidad: parseFloat(row['CANTIDAD']) || 0,
+                                costoUni: parseFloat(row['COSTO_UNI']) || 0,
+                                total: parseFloat(row['TOTAL']) || 0,
+                                suplidor: row['NUM_SUPLIDOR'] || 'N/A',
+                                formaPago: row['FORMA_PAGO'] || 'N/A'
+                            };
+                        });
+                        
+                        populateFilters(parsedData);
+                        processAndRender(parsedData);
+                        
+                        // Switch screens
+                        uploadScreen.classList.add('hidden');
+                        dashboardContainer.classList.remove('hidden');
+                        resetBtn.classList.remove('hidden');
+                        exportPdfBtn.classList.remove('hidden');
+                    } else {
+                        alert("El archivo está vacío o no tiene el formato correcto.");
+                    }
+                } catch(error) {
+                    console.error(error);
+                    alert("Error al leer el archivo. Asegúrese de que sea un archivo Excel válido (.xlsx o .xls).");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Color Palettes
+        const indigos = ['#4f46e5', '#818cf8', '#c7d2fe', '#e0e7ff', '#312e81', '#3730a3', '#4338ca'];
+        const slates = ['#0f172a', '#1e293b', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'];
+
+        const compradoresMap = {
+            "14": "JOSEPHINE CORONA",
+            "133": "MAITTE LORENZO",
+            "16": "MELVIN SANTOS",
+            "15": "CARLA CUESTA",
+            "31": "MARLENE BERNARD",
+            "63": "NICAURIS PANIAGUA",
+            "76": "WALDRY ECHENIQUE",
+            "84": "RONNIE MERCADO",
+            "49": "CARLOS MARTINEZ",
+            "104": "LORAINE VERAS",
+            "106": "SERGIO FELIX",
+            "105": "MIGUEL PICHARDO",
+            "103": "ALEXA NAUT",
+            "77": "STEPHANIE ABREU",
+            "39": "MARIA TEJEDA"
+        };
+
+        function processAndRender(cleanData) {
+            // KPIs
+            const totalSpend = cleanData.reduce((acc, curr) => acc + curr.total, 0);
+            
+            const uniqueOrdersSet = new Set();
+            let enTiempoCount = 0;
+            let retrasadaCount = 0;
+
+            cleanData.forEach(c => {
+                if(!uniqueOrdersSet.has(c.numOrden)) {
+                    uniqueOrdersSet.add(c.numOrden);
+                    if(c.estatusTiempo === "En Tiempo") enTiempoCount++;
+                    else retrasadaCount++;
+                }
+            });
+
+            const uniqueOrders = uniqueOrdersSet.size;
+            const totalItems = cleanData.reduce((acc, curr) => acc + curr.cantidad, 0);
+            const avgOrder = uniqueOrders > 0 ? (totalSpend / uniqueOrders) : 0;
+            const pctEnTiempo = uniqueOrders > 0 ? ((enTiempoCount / uniqueOrders) * 100).toFixed(1) : 0;
+
+            const k1 = document.getElementById('kpi-total-spend');
+            k1.innerText = formatCurrency(totalSpend);
+            k1.title = formatCurrency(totalSpend);
+            
+            const k2 = document.getElementById('kpi-total-orders');
+            k2.innerText = formatNumber(uniqueOrders);
+            k2.title = formatNumber(uniqueOrders);
+
+            const k3 = document.getElementById('kpi-total-items');
+            k3.innerText = formatNumber(totalItems);
+            k3.title = formatNumber(totalItems);
+
+            const k4 = document.getElementById('kpi-avg-order');
+            k4.innerText = formatCurrency(avgOrder);
+            k4.title = formatCurrency(avgOrder);
+
+            const k5 = document.getElementById('kpi-on-time');
+            k5.innerText = `${pctEnTiempo}%`;
+            k5.title = `${pctEnTiempo}%`;
+
+            document.getElementById('row-count-badge').innerText = `${formatNumber(cleanData.length)} registros`;
+
+            // Agrupaciones para gráficos
+            // 1. Gasto por Local
+            const gastoPorLocal = cleanData.reduce((acc, curr) => {
+                acc[curr.local] = (acc[curr.local] || 0) + curr.total;
+                return acc;
+            }, {});
+
+            // 2. Gasto por Comprador
+            const gastoPorComprador = cleanData.reduce((acc, curr) => {
+                acc[curr.comprador] = (acc[curr.comprador] || 0) + curr.total;
+                return acc;
+            }, {});
+
+            // 3. Gasto por Forma Pago
+            const gastoPorPago = cleanData.reduce((acc, curr) => {
+                acc[curr.formaPago] = (acc[curr.formaPago] || 0) + curr.total;
+                return acc;
+            }, {});
+
+            // 4. Top Artículos
+            const gastoPorArticulo = {};
+            cleanData.forEach(c => {
+                const key = c.articulo + ' | ' + c.descripcion;
+                if(!gastoPorArticulo[key]) {
+                    gastoPorArticulo[key] = {
+                        articulo: c.articulo,
+                        descripcion: c.descripcion,
+                        cantidad: 0,
+                        total: 0
+                    };
+                }
+                gastoPorArticulo[key].cantidad += c.cantidad;
+                gastoPorArticulo[key].total += c.total;
+            });
+
+            const topItems = Object.values(gastoPorArticulo)
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 5);
+
+            renderCharts(gastoPorLocal, gastoPorComprador, gastoPorPago);
+            
+            // Populate current table data and reset pagination
+            currentTableData = cleanData;
+            currentPage = 1;
+            
+            renderTopTable(topItems);
+            renderMainTablePaginated();
+        }
+
+        // --- Paginación Lógica API ----
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            if(currentPage > 1) { currentPage--; renderMainTablePaginated(); }
+        });
+        document.getElementById('btn-next').addEventListener('click', () => {
+            const maxPage = Math.ceil(currentTableData.length / rowsPerPage);
+            if(currentPage < maxPage) { currentPage++; renderMainTablePaginated(); }
+        });
+
+        function createChart(ctxId, type, labels, data, colors, options = {}) {
+            if (chartsInstance[ctxId]) chartsInstance[ctxId].destroy();
+            
+            const ctx = document.getElementById(ctxId).getContext('2d');
+            
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            chartsInstance[ctxId] = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 0,
+                        borderRadius: type === 'bar' ? 6 : 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: type === 'doughnut' || type === 'pie',
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { size: 10, weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { size: 13, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.raw !== null) { label += formatCurrency(context.raw); }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: (type === 'bar') ? {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: '#f1f5f9', borderDash: [5, 5] },
+                            ticks: { font: { size: 10, weight: 'bold' }, callback: function(value) { return '$' + value.toLocaleString(); }}
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { size: 10, weight: 'bold' } }
+                        }
+                    } : {}
+                }
+            });
+        }
+
+        function renderCharts(gastoPorLocal, gastoPorComprador, gastoPorPago) {
+            // Local (Doughnut)
+            createChart('chartLocal', 'doughnut', 
+                Object.keys(gastoPorLocal), 
+                Object.values(gastoPorLocal), 
+                [...indigos, ...slates]
+            );
+
+            // Comprador (Bar) - Sort by Value
+            const compSorted = Object.entries(gastoPorComprador).sort((a,b) => b[1] - a[1]);
+            createChart('chartComprador', 'bar', 
+                compSorted.map(x => x[0]), 
+                compSorted.map(x => x[1]), 
+                ['#0f172a']
+            );
+
+            // Pago (Pie)
+            createChart('chartPago', 'pie', 
+                Object.keys(gastoPorPago), 
+                Object.values(gastoPorPago), 
+                ['#4f46e5', '#cbd5e1', '#0f172a', '#94a3b8']
+            );
+        }
+
+        function renderTopTable(topItems) {
+            const topTbody = document.getElementById('top-items-tbody');
+            topTbody.innerHTML = topItems.map(it => `
+                <tr class="hover:bg-slate-50 transition group">
+                    <td class="px-6 py-4 font-bold text-slate-700">${it.articulo}</td>
+                    <td class="px-6 py-4 text-xs text-slate-500 max-w-[200px] truncate" title="${it.descripcion}">${it.descripcion}</td>
+                    <td class="px-6 py-4 text-right font-black text-slate-900">${formatNumber(it.cantidad)}</td>
+                    <td class="px-6 py-4 text-right font-black text-indigo-600">${formatCurrency(it.total)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderMainTablePaginated() {
+            const allTbody = document.getElementById('all-orders-tbody');
+            const totalRows = currentTableData.length;
+            const maxPage = Math.ceil(totalRows / rowsPerPage);
+            
+            // Check limits
+            if(currentPage < 1) currentPage = 1;
+            if(currentPage > maxPage && maxPage > 0) currentPage = maxPage;
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const toRender = currentTableData.slice(startIndex, endIndex);
+
+            // Update UI Pagination Info
+            document.getElementById('pag-start').innerText = totalRows === 0 ? 0 : startIndex + 1;
+            document.getElementById('pag-end').innerText = totalRows === 0 ? 0 : Math.min(endIndex, totalRows);
+            document.getElementById('btn-prev').disabled = currentPage === 1;
+            document.getElementById('btn-next').disabled = currentPage === maxPage || maxPage === 0;
+
+            if (toRender.length === 0) {
+                allTbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-xs font-black text-slate-400 italic">No hay órdenes para mostrar con este filtro.</td></tr>`;
+                return;
+            }
+
+            allTbody.innerHTML = toRender.map((r, i) => {
+                const estatusBadge = r.estatusTiempo === 'En Tiempo' 
+                                    ? `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] rounded font-black uppercase">${r.diasProceso} d - En Tiempo</span>`
+                                    : `<span class="px-2 py-0.5 bg-red-100 text-red-700 text-[9px] rounded font-black uppercase">${r.diasProceso} d - Retrasada</span>`;
+
+                return `
+                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                    <td class="px-6 py-3 font-bold text-slate-800">#${r.numOrden}</td>
+                    <td class="px-6 py-3">
+                        <div class="flex flex-col gap-1 items-start">
+                            <span class="text-[10px] text-slate-500 font-medium whitespace-nowrap">Sol: ${r.fechaSolicitud}</span>
+                            <span class="text-[10px] text-slate-500 font-medium whitespace-nowrap">OC: ${r.fecha}</span>
+                            <div class="mt-1">${estatusBadge}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-3 text-xs font-black text-slate-400 uppercase">${r.local}</td>
+                    <td class="px-6 py-3 text-xs font-bold text-slate-600">${r.comprador}</td>
+                    <td class="px-6 py-3 text-xs text-slate-500 max-w-[200px] truncate" title="${r.descripcion}">${r.descripcion}</td>
+                    <td class="px-6 py-3 text-right font-black text-slate-900">${formatCurrency(r.total)}</td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+    </script>
+</body>
+</html>
