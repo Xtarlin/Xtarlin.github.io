@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <!-- SheetJS for Excel Reading -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <!-- Export Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- ExcelJS for styled Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <!-- Chart.js for Graphics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,6 +49,278 @@
         .upload-dashed:hover {
             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%234F46E5FF' stroke-width='4' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
         }
+
+        /* ===== MULTI-SELECT GENÉRICO ===== */
+        .ms-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 999;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            min-width: 240px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 6px 0 8px;
+        }
+        .ms-panel.open { display: block; }
+        .ms-panel-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 14px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        .ms-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            transition: background 0.12s;
+        }
+        .ms-item:hover { background: #f8fafc; }
+        .ms-item input[type=checkbox] {
+            accent-color: #4f46e5;
+            width: 14px; height: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        /* ===== KPI TOOLTIP GLOBAL ===== */
+        .kpi-tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px; height: 15px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            font-size: 9px;
+            font-weight: 900;
+            cursor: pointer;
+            margin-left: 5px;
+            flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
+            user-select: none;
+        }
+        .kpi-tooltip-icon:hover { background: #6366f1; color: #fff; }
+        #kpi-global-tooltip {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            width: 230px;
+            font-size: 11px;
+            line-height: 1.6;
+            font-weight: 500;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            pointer-events: none;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        #kpi-global-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #0f172a;
+        }
+        #kpi-global-tooltip strong { color: #a5b4fc; display: block; margin-bottom: 5px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+        #kpi-global-tooltip code  { background: #1e293b; border-radius: 4px; padding: 1px 5px; font-family: monospace; font-size: 10px; color: #6ee7b7; }
+        /* Dark mode tooltip icon */
+        body.dark .kpi-tooltip-icon { background: #3a4459; color: #a0aec0; }
+        body.dark .kpi-tooltip-icon:hover { background: #6366f1; color: #fff; }
+        /* ================================================================
+           DARK MODE PREMIUM – paleta azul-grisácea cálida y legible
+           Base: #1a1f2e  |  Card: #242b3d  |  Elevated: #2d3448
+           ================================================================ */
+        body.dark { background-color: #1a1f2e !important; color: #f3f4f6; }
+        body.dark header { background-color: #242b3d !important; border-color: #3a4459 !important; }
+        body.dark footer { background-color: #242b3d !important; border-color: #3a4459 !important; }
+        body.dark footer p { color: #8b9ab5 !important; }
+
+        /* Tipografía */
+        body.dark h1,body.dark h2,body.dark h3 { color: #f3f4f6 !important; }
+        body.dark p   { color: #c8d3e8; }
+        body.dark label { color: #8b9ab5 !important; }
+        body.dark .text-slate-900 { color: #f3f4f6 !important; }
+        body.dark .text-slate-800 { color: #e8edf5 !important; }
+        body.dark .text-slate-700 { color: #c8d3e8 !important; }
+        body.dark .text-slate-600 { color: #a0aec0 !important; }
+        body.dark .text-slate-500 { color: #8b9ab5 !important; }
+        body.dark .text-slate-400 { color: #6b7a99 !important; }
+        body.dark .text-slate-300 { color: #a0aec0 !important; }
+        body.dark .text-indigo-600{ color: #a5b4fc !important; }
+        body.dark .text-indigo-700{ color: #a5b4fc !important; }
+
+        /* Fondos */
+        body.dark .bg-white     { background-color: #242b3d !important; }
+        body.dark .bg-slate-50  { background-color: #1a1f2e !important; }
+        body.dark .bg-slate-100 { background-color: #2d3448 !important; }
+        body.dark .bg-slate-200 { background-color: #3a4459 !important; }
+        body.dark .bg-slate-900 { background-color: #0f1320 !important; }
+        body.dark .shadow-sm    { box-shadow: 0 1px 4px rgba(0,0,0,0.5) !important; }
+
+        /* Bordes */
+        body.dark .border-slate-50  { border-color: #2d3448 !important; }
+        body.dark .border-slate-100 { border-color: #3a4459 !important; }
+        body.dark .border-slate-200 { border-color: #3a4459 !important; }
+        body.dark .divide-slate-50  > * { border-color: #2d3448 !important; }
+        body.dark .divide-slate-100 > * { border-color: #2d3448 !important; }
+
+        /* KPI cards */
+        body.dark [id^="kpi-"] { color: #f3f4f6 !important; }
+        body.dark .bg-indigo-50  { background-color: rgba(99,102,241,0.18)  !important; }
+        body.dark .bg-blue-50    { background-color: rgba(59,130,246,0.18)  !important; }
+        body.dark .bg-emerald-50 { background-color: rgba(16,185,129,0.18)  !important; }
+        body.dark .bg-purple-50  { background-color: rgba(139,92,246,0.18)  !important; }
+        body.dark .bg-amber-50   { background-color: rgba(245,158,11,0.18)  !important; }
+        body.dark .bg-rose-50    { background-color: rgba(244,63,94,0.12)   !important; }
+        body.dark .text-indigo-500  { color: #a5b4fc !important; }
+        body.dark .text-blue-500    { color: #93c5fd !important; }
+        body.dark .text-emerald-500 { color: #6ee7b7 !important; }
+        body.dark .text-purple-500  { color: #c4b5fd !important; }
+        body.dark .text-amber-500   { color: #fcd34d !important; }
+
+        /* Inputs */
+        body.dark input[type="text"],
+        body.dark input[type="search"],
+        body.dark select,
+        body.dark #filter-search,
+        body.dark #filter-items-search {
+            background-color: #1a1f2e !important;
+            border-color: #3a4459 !important;
+            color: #f3f4f6 !important;
+        }
+        body.dark input::placeholder { color: #6b7a99 !important; }
+
+        /* Multi-select triggers */
+        body.dark [id^="ms-btn-"] { background-color: #1a1f2e !important; border-color: #3a4459 !important; color: #c8d3e8 !important; }
+        body.dark [id^="ms-btn-"]:hover { border-color: #818cf8 !important; background-color: #242b3d !important; }
+
+        /* Multi-select panels */
+        body.dark .ms-panel { background: #242b3d !important; border-color: #3a4459 !important; }
+        body.dark .ms-panel-hdr { background: #2d3448 !important; border-color: #3a4459 !important; }
+        body.dark .ms-item { color: #c8d3e8 !important; }
+        body.dark .ms-item:hover { background: #1a1f2e !important; }
+        body.dark .ms-item input[type="checkbox"] { accent-color: #818cf8; }
+
+        /* Botones especializados */
+        body.dark #clear-filters-btn { background-color: rgba(244,63,94,0.12) !important; border-color: #e11d48 !important; color: #fda4af !important; }
+        body.dark #dark-mode-btn     { background-color: #2d3448 !important; border-color: #3a4459 !important; color: #c8d3e8 !important; }
+        body.dark #export-pdf-btn    { background-color: rgba(5,150,105,0.18) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
+        body.dark #export-excel-btn  { background-color: rgba(5,150,105,0.18) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
+        body.dark #reset-btn         { background-color: #2d3448 !important; border-color: #3a4459 !important; color: #c8d3e8 !important; }
+        body.dark button:disabled    { opacity: 0.3 !important; }
+
+        /* Tablas – headers */
+        body.dark thead.bg-slate-900 { background-color: #0f1320 !important; }
+        body.dark thead.bg-slate-900 th,
+        body.dark thead.bg-slate-900 th * { color: #c8d3e8 !important; }
+        body.dark thead.bg-slate-50  { background-color: #2d3448 !important; }
+        body.dark thead.bg-slate-50  th { color: #a0aec0 !important; }
+
+        /* Tablas – filas */
+        body.dark tbody tr { border-color: #2d3448 !important; }
+        body.dark tbody tr:hover { background-color: #2d3448 !important; }
+        body.dark tbody td { color: #c8d3e8 !important; border-color: #2d3448 !important; }
+        body.dark tbody td .font-black,
+        body.dark tbody td .font-bold,
+        body.dark tbody td .text-slate-900 { color: #f3f4f6 !important; }
+        body.dark tbody td .text-slate-800 { color: #e8edf5 !important; }
+        body.dark tbody td .text-slate-700 { color: #c8d3e8 !important; }
+        body.dark tbody td .text-slate-600 { color: #a0aec0 !important; }
+        body.dark tbody td .text-slate-500 { color: #8b9ab5 !important; }
+        body.dark tbody td .text-slate-400 { color: #6b7a99 !important; }
+        body.dark tbody td .text-indigo-600{ color: #a5b4fc !important; }
+
+        /* Badges de estatus */
+        body.dark .bg-emerald-100  { background-color: rgba(16,185,129,0.22) !important; }
+        body.dark .text-emerald-700{ color: #6ee7b7 !important; }
+        body.dark .bg-red-100      { background-color: rgba(239,68,68,0.22) !important; }
+        body.dark .text-red-700    { color: #fca5a5 !important; }
+        body.dark .bg-amber-100    { background-color: rgba(245,158,11,0.22) !important; }
+        body.dark .text-amber-700  { color: #fcd34d !important; }
+
+        /* Badge artículos */
+        body.dark tbody .bg-slate-100 { background-color: #3a4459 !important; }
+        body.dark tbody .text-slate-600{ color: #a0aec0 !important; }
+
+        /* Resumen Forma de Pago */
+        body.dark #pago-summary { background-color: #242b3d; }
+        body.dark #pago-summary > div { border-color: #2d3448 !important; }
+
+        /* Comparativa Anual */
+        body.dark #year-compare-section .bg-white     { background-color: #242b3d !important; }
+        body.dark #year-compare-section .bg-slate-50  { background-color: #1a1f2e !important; }
+        body.dark #year-compare-section .text-slate-700 { color: #c8d3e8 !important; }
+        body.dark #year-compare-section .text-slate-500 { color: #8b9ab5 !important; }
+        body.dark #year-compare-section .text-slate-400 { color: #6b7a99 !important; }
+        body.dark #year-compare-section .border-slate-200 { border-color: #3a4459 !important; }
+        body.dark #year-compare-section .border-slate-100 { border-color: #2d3448 !important; }
+        body.dark #year-compare-section tbody tr { border-color: #2d3448 !important; }
+        body.dark #year-compare-section tbody tr:hover { background-color: #2d3448 !important; }
+        body.dark #year-compare-section tbody td { color: #c8d3e8 !important; }
+        body.dark #pago-summary .text-slate-800,
+        body.dark #pago-summary .font-bold { color: #f3f4f6 !important; }
+        body.dark #pago-summary .text-slate-600 { color: #a0aec0 !important; }
+        body.dark #pago-summary .text-slate-400 { color: #8b9ab5 !important; }
+        body.dark #pago-summary .text-indigo-600{ color: #a5b4fc !important; }
+
+        /* Paginación / contadores */
+        body.dark #row-count-badge { background-color: #3a4459 !important; color: #a0aec0 !important; }
+        body.dark #pag-start, body.dark #pag-end { color: #f3f4f6 !important; }
+
+        /* Gráficos */
+        body.dark canvas { filter: brightness(0.92) contrast(1.05); }
+
+        /* Scrollbar */
+        body.dark .custom-scrollbar::-webkit-scrollbar-track { background: #1a1f2e; }
+        body.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #3a4459; border-radius: 4px; }
+        body.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4f5e7a; }
+
+        /* Upload screen */
+        body.dark #upload-screen { background-color: #1a1f2e !important; }
+        body.dark #upload-screen .bg-white   { background-color: #242b3d !important; }
+        body.dark #upload-screen .bg-slate-50{ background-color: #2d3448 !important; }
+        body.dark #upload-screen label { color: #c8d3e8 !important; }
+        body.dark #upload-screen p     { color: #8b9ab5 !important; }
+        body.dark #upload-screen h2    { color: #f3f4f6 !important; }
+        body.dark #upload-screen h3    { color: #c8d3e8 !important; }
+        body.dark #upload-screen .border-slate-200 { border-color: #3a4459 !important; }
+    
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-900">
@@ -59,16 +331,29 @@
             <div class="flex items-center gap-4">
                 <img src="https://bronco2.grupoviamar.com/wp-content/uploads/2022/04/logo.png" alt="Logo" class="h-10 object-contain">
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 tracking-tight uppercase">Dashboard Personal Marlene Bernard</h1>
-                    <p id="header-subtitle" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dashboard de Compras</p>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight uppercase">Dashboard Compras Locales</h1>
+                    <p id="header-subtitle" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Marlene Bernard</p>
                 </div>
             </div>
             <div class="hidden md:flex items-center gap-4 text-right">
-                <button id="export-pdf-btn" class="hidden px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition flex items-center gap-2 border border-indigo-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> PDF (Dashboard)
+                <button id="export-pdf-btn" class="hidden px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl transition flex items-center gap-2 border border-emerald-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Excel (Completo)
                 </button>
                 <button id="reset-btn" class="hidden px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition">
                     Cargar Otro Archivo
+                </button>
+                <!-- Dark Mode Toggle -->
+                <button id="dark-mode-btn" title="Modo Oscuro"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition border border-slate-200">
+                    <!-- Moon icon (light mode) -->
+                    <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                    </svg>
+                    <!-- Sun icon (dark mode) -->
+                    <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+                    </svg>
                 </button>
             </div>
         </div>
@@ -107,83 +392,180 @@
             
             <!-- CONTROLES / FILTROS -->
             <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-wrap gap-4 items-end z-20 relative">
-                <div class="space-y-1 flex-1 min-w-[200px]">
+
+                <!-- Mes y Año -->
+                <div class="space-y-1 flex-1 min-w-[200px] relative">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mes y Año</label>
-                    <select id="filter-month" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
-                        <option value="ALL">Todo el Historial</option>
-                    </select>
+                    <button id="ms-btn-month" type="button" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 flex items-center justify-between gap-2 hover:border-indigo-300 transition">
+                        <span id="ms-label-month" class="truncate text-left">Todo el Historial</span>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span id="ms-badge-month" class="hidden px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded-full"></span>
+                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </button>
+                    <div id="ms-panel-month" class="ms-panel">
+                        <div class="ms-panel-hdr">
+                            <button id="ms-all-month" type="button" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">Seleccionar Todo</button>
+                            <button id="ms-clear-month" type="button" class="text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-wide">Limpiar</button>
+                        </div>
+                        <div id="ms-list-month"></div>
+                    </div>
                 </div>
-                <div class="space-y-1 flex-1 min-w-[200px]">
+
+                <!-- Comprador -->
+                <div class="space-y-1 flex-1 min-w-[200px] relative">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comprador</label>
-                    <select id="filter-buyer" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
-                        <option value="ALL">Todos</option>
-                    </select>
+                    <button id="ms-btn-buyer" type="button" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 flex items-center justify-between gap-2 hover:border-indigo-300 transition">
+                        <span id="ms-label-buyer" class="truncate text-left">Todos los Compradores</span>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span id="ms-badge-buyer" class="hidden px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded-full"></span>
+                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </button>
+                    <div id="ms-panel-buyer" class="ms-panel">
+                        <div class="ms-panel-hdr">
+                            <button id="ms-all-buyer" type="button" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">Seleccionar Todo</button>
+                            <button id="ms-clear-buyer" type="button" class="text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-wide">Limpiar</button>
+                        </div>
+                        <div id="ms-list-buyer"></div>
+                    </div>
                 </div>
-                <div class="space-y-1 flex-1 min-w-[200px]">
+
+                <!-- Estatus -->
+                <div class="space-y-1 flex-1 min-w-[200px] relative">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estatus de Órdenes</label>
-                    <select id="filter-status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
-                        <option value="ALL">Todos los Estatus</option>
-                        <option value="En Tiempo">En Tiempo</option>
-                        <option value="Retrasada">Retrasadas</option>
-                        <option value="Faltan Fechas">Fechas Faltantes</option>
-                    </select>
+                    <button id="ms-btn-status" type="button" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 flex items-center justify-between gap-2 hover:border-indigo-300 transition">
+                        <span id="ms-label-status" class="truncate text-left">Todos los Estatus</span>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span id="ms-badge-status" class="hidden px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded-full"></span>
+                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </button>
+                    <div id="ms-panel-status" class="ms-panel">
+                        <div class="ms-panel-hdr">
+                            <button id="ms-all-status" type="button" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">Seleccionar Todo</button>
+                            <button id="ms-clear-status" type="button" class="text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-wide">Limpiar</button>
+                        </div>
+                        <div id="ms-list-status"></div>
+                    </div>
                 </div>
-                <div class="space-y-1 flex-1 min-w-[200px]">
+
+                <!-- Rango de Monto -->
+                <div class="space-y-1 flex-1 min-w-[200px] relative">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rango de Monto</label>
-                    <select id="filter-amount" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700">
-                        <option value="ALL">Cualquier Monto</option>
-                        <option value="0-5000">Líneas Menores a $5,000</option>
-                        <option value="5000-20000">$5,000 - $20,000</option>
-                        <option value="20000-50000">$20,000 - $50,000</option>
-                        <option value="50000+">Mayores a $50,000</option>
-                    </select>
+                    <button id="ms-btn-amount" type="button" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 flex items-center justify-between gap-2 hover:border-indigo-300 transition">
+                        <span id="ms-label-amount" class="truncate text-left">Cualquier Monto</span>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span id="ms-badge-amount" class="hidden px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded-full"></span>
+                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </button>
+                    <div id="ms-panel-amount" class="ms-panel">
+                        <div class="ms-panel-hdr">
+                            <button id="ms-all-amount" type="button" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">Seleccionar Todo</button>
+                            <button id="ms-clear-amount" type="button" class="text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-wide">Limpiar</button>
+                        </div>
+                        <div id="ms-list-amount"></div>
+                    </div>
                 </div>
-                <!-- Búsqueda General -->
+
+                <!-- Localidades -->
+                <div class="space-y-1 flex-1 min-w-[220px] relative">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Localidades</label>
+                    <button id="ms-btn-local" type="button" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 flex items-center justify-between gap-2 hover:border-indigo-300 transition">
+                        <span id="ms-label-local" class="truncate text-left">Todas las Localidades</span>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span id="ms-badge-local" class="hidden px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded-full"></span>
+                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </button>
+                    <div id="ms-panel-local" class="ms-panel">
+                        <div class="ms-panel-hdr">
+                            <button id="ms-all-local" type="button" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">Seleccionar Todo</button>
+                            <button id="ms-clear-local" type="button" class="text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-wide">Limpiar</button>
+                        </div>
+                        <div id="ms-list-local"></div>
+                    </div>
+                </div>
+
+                <!-- Buscador Específico -->
                 <div class="space-y-1 flex-1 min-w-[200px]">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buscador Específico</label>
-                    <input type="text" id="filter-search" placeholder="Orden, Solicitud, Suplidor" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-[11px] outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700 placeholder-slate-400">
+                    <input type="text" id="filter-search" placeholder="Orden, Solicitud, Suplidor, Artículo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-[11px] outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-bold text-slate-700 placeholder-slate-400">
+                </div>
+
+                <!-- Limpiar Filtros -->
+                <div class="flex items-end pb-0.5">
+                    <button id="clear-filters-btn" title="Limpiar todos los filtros"
+                        class="flex items-center gap-2 px-4 py-[11px] bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 text-xs font-black rounded-xl border border-rose-200 transition whitespace-nowrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Limpiar Filtros
+                    </button>
                 </div>
             </div>
 
             <!-- KPIs Generales -->
             <div class="flex flex-wrap gap-6">
                 <!-- KPI 1 -->
-                <div class="flex-1 min-w-[240px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-indigo-200 transition">
-                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                <div class="flex-1 min-w-[240px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative group hover:border-indigo-200 transition">
+                    <div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-150 transition duration-500 ease-out"></div>
+                    </div>
                     <div class="relative z-10 w-full">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Gasto Total</h3>
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center">
+                            Gasto Total
+                            <span class="kpi-tooltip-icon"
+                                data-tip-title="Gasto Total"
+                                data-tip-body="Suma del monto de &lt;em&gt;todos los art&iacute;culos&lt;/em&gt; de las &oacute;rdenes filtradas.&lt;br&gt;&lt;br&gt;&lt;code&gt;&amp;#x3A3; total de cada art&iacute;culo&lt;/code&gt;">?</span>
+                        </h3>
                         <p id="kpi-total-spend" class="text-xl font-black text-slate-900 tracking-tighter truncate">$0.00</p>
                     </div>
                 </div>
                 <!-- KPI 2 -->
-                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-blue-200 transition">
-                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative group hover:border-blue-200 transition">
+                    <div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-150 transition duration-500 ease-out"></div>
+                    </div>
                     <div class="relative z-10 w-full">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total de Órdenes</h3>
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center">
+                            Total de Órdenes
+                            <span class="kpi-tooltip-icon"
+                                data-tip-title="Total de Órdenes"
+                                data-tip-body="Cantidad de N&uacute;m. Orden &lt;em&gt;&uacute;nicos&lt;/em&gt; en los datos filtrados. Un n&uacute;mero de orden puede tener m&uacute;ltiples art&iacute;culos.&lt;br&gt;&lt;br&gt;&lt;code&gt;N&uacute;m. Orden distintos&lt;/code&gt;">?</span>
+                        </h3>
                         <p id="kpi-total-orders" class="text-xl font-black text-slate-900 tracking-tighter truncate">0</p>
                     </div>
                 </div>
                 <!-- KPI 3 -->
-                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-200 transition">
-                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative group hover:border-emerald-200 transition">
+                    <div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-50 rounded-full group-hover:scale-150 transition duration-500 ease-out"></div>
+                    </div>
                     <div class="relative z-10 w-full">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Artículos</h3>
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center">
+                            Total Artículos
+                            <span class="kpi-tooltip-icon"
+                                data-tip-title="Total Artículos"
+                                data-tip-body="Suma de las &lt;em&gt;cantidades&lt;/em&gt; de todos los renglones de art&iacute;culos en las &oacute;rdenes filtradas.&lt;br&gt;&lt;br&gt;&lt;code&gt;&amp;#x3A3; cantidad de cada art&iacute;culo&lt;/code&gt;">?</span>
+                        </h3>
                         <p id="kpi-total-items" class="text-xl font-black text-slate-900 tracking-tighter truncate">0</p>
                     </div>
                 </div>
-                <!-- KPI 4 -->
-                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-purple-200 transition">
-                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
-                    <div class="relative z-10 w-full">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Promedio / Orden</h3>
-                        <p id="kpi-avg-order" class="text-xl font-black text-slate-900 tracking-tighter truncate">$0.00</p>
-                    </div>
-                </div>
+
                 <!-- KPI 5 -->
-                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group hover:border-amber-200 transition">
-                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-50 rounded-full group-hover:scale-150 transition duration-500 ease-out z-0"></div>
+                <div class="flex-1 min-w-[200px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative group hover:border-amber-200 transition">
+                    <div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-50 rounded-full group-hover:scale-150 transition duration-500 ease-out"></div>
+                    </div>
                     <div class="relative z-10 w-full">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Estatus vs Tiempo</h3>
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center">
+                            Estatus vs Tiempo
+                            <span class="kpi-tooltip-icon"
+                                data-tip-title="Estatus vs Tiempo"
+                                data-tip-body="% de &oacute;rdenes procesadas &lt;em&gt;dentro del plazo&lt;/em&gt;. Una orden est&aacute; &laquo;En Tiempo&raquo; si fue emitida en &amp;le; d&iacute;as h&aacute;biles desde la solicitud.&lt;br&gt;&lt;br&gt;&lt;code&gt;(En Tiempo / Total) &amp;times; 100&lt;/code&gt;">?</span>
+                        </h3>
                         <p id="kpi-on-time" class="text-xl font-black text-slate-900 tracking-tighter truncate">0%</p>
                         <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">Órdenes a Tiempo</p>
                     </div>
@@ -191,17 +573,17 @@
             </div>
 
             <!-- Gráficos Principales -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 gap-6">
                 <!-- Chart: Gasto por Local -->
-                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm col-span-1 flex flex-col">
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col">
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Gasto por Local</h3>
-                    <div class="flex-grow flex items-center justify-center relative min-h-[300px]">
+                    <div class="w-full relative" style="height: 420px;">
                         <canvas id="chartLocal"></canvas>
                     </div>
                 </div>
 
                 <!-- Chart: Gasto por Comprador -->
-                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm lg:col-span-2 flex flex-col">
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col">
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Gasto por Comprador</h3>
                     <div class="flex-grow w-full relative min-h-[300px]">
                         <canvas id="chartComprador"></canvas>
@@ -214,16 +596,28 @@
                 
                 <!-- Chart: Forma de Pago -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col">
-                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Forma de Pago</h3>
-                    <div class="flex-grow flex items-center justify-center relative min-h-[250px]">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-4">Forma de Pago</h3>
+                    <div class="flex items-center justify-center relative" style="height:200px;">
                         <canvas id="chartPago"></canvas>
                     </div>
+                    <!-- Resumen por forma de pago -->
+                    <div id="pago-summary" class="mt-4 space-y-2"></div>
+                </div>
+
+                <!-- Chart: Estatus de Órdenes (Donut) -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-4">Órdenes por Estatus</h3>
+                    <div class="flex items-center justify-center relative" style="height:200px;">
+                        <canvas id="chartOnTime"></canvas>
+                    </div>
+                    <!-- Leyenda Estatus -->
+                    <div id="estatus-summary" class="mt-4 space-y-2"></div>
                 </div>
 
                 <!-- Tabla: Todos los Artículos (Paginado) -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm lg:col-span-2 overflow-hidden flex flex-col">
                     <div class="flex justify-between items-end mb-6 gap-4">
-                        <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest leading-none pb-1">Desglose de Artículos</h3>
+                        <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest leading-none pb-1">Desglose de Artículos (Valores sin ITBIS Incluido)</h3>
                         <input type="text" id="filter-items-search" placeholder="Buscar Artículo o Desc..." class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs font-bold text-slate-700 w-full max-w-[200px]">
                     </div>
                     <div class="flex-grow overflow-x-auto custom-scrollbar h-[250px]">
@@ -274,7 +668,7 @@
                                 <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Fechas y Días</th>
                                 <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Local</th>
                                 <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Comprador</th>
-                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Descripción</th>
+                                <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px]">Artículos</th>
                                 <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px] text-right rounded-tr-xl">Total</th>
                             </tr>
                         </thead>
@@ -294,23 +688,48 @@
 
             </div>
 
+            <!-- COMPARATIVA ANUAL (aparece solo cuando hay 2+ años) -->
+            <div id="year-compare-section" class="hidden fade-in space-y-6">
+                <div class="flex items-center gap-4 pt-2">
+                    <div class="h-px flex-1 bg-slate-200"></div>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">— Comparativa Anual —</span>
+                    <div class="h-px flex-1 bg-slate-200"></div>
+                </div>
+
+                <!-- KPIs Comparativos -->
+                <div id="year-kpi-row" class="flex flex-wrap gap-6"></div>
+
+                <!-- Gráfico barras agrupadas por mes -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Gasto Mensual Comparativo</h3>
+                    <div class="w-full relative" style="height:360px;">
+                        <canvas id="chartYearCompareMes"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tabla por Local -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm overflow-hidden">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Comparativa por Local</h3>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead id="year-local-thead" class="bg-slate-900 text-white sticky top-0 z-10"></thead>
+                            <tbody id="year-local-tbody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-200 mt-auto bg-white">
-        <div class="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center">
-            <p class="text-[10px] font-black tracking-widest text-slate-400 uppercase">
-                2026 &copy; Desarrollado por <span class="text-indigo-600">SBERNARD</span>
-            </p>
-        </div>
-    </footer>
+
 
     <script>
         // Variables globales
         let parsedData = [];
         let currentTableData = [];
+        let currentFilteredRaw = [];  // datos filtrados a nivel de item (mismos que usa el dashboard)
         
         let currentAllItemsData = [];
         let currentItemsData = [];
@@ -327,6 +746,27 @@
         const formatNumber = (val) => new Intl.NumberFormat('es-DO').format(val);
         let chartsInstance = {};
 
+        // ===== DARK MODE =====
+        const darkBtn  = document.getElementById('dark-mode-btn');
+        const iconMoon = document.getElementById('icon-moon');
+        const iconSun  = document.getElementById('icon-sun');
+
+        function applyDarkMode(isDark) {
+            document.body.classList.toggle('dark', isDark);
+            iconMoon.classList.toggle('hidden', isDark);
+            iconSun.classList.toggle('hidden', !isDark);
+            darkBtn.title = isDark ? 'Modo Claro' : 'Modo Oscuro';
+        }
+
+        // Restaurar preferencia guardada
+        applyDarkMode(localStorage.getItem('dashboard-dark') === '1');
+
+        darkBtn.addEventListener('click', () => {
+            const isDark = !document.body.classList.contains('dark');
+            applyDarkMode(isDark);
+            localStorage.setItem('dashboard-dark', isDark ? '1' : '0');
+        });
+
         // Excel Date Serial to JS Date
         function ExcelDateToJSDate(serial) {
             if(!serial || isNaN(serial)) return null;
@@ -334,6 +774,24 @@
             let utc_value = utc_days * 86400;                                        
             let date_info = new Date(utc_value * 1000);
             return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate());
+        }
+
+        // Cálculo de días hábiles: Lun-Vie = 1, Sáb = 0.5, Dom = 0
+        function calcWorkingDays(start, end) {
+            if (!start || !end) return 0;
+            let days = 0;
+            // Iterar desde el día siguiente al inicio hasta el fin (inclusive)
+            const cur = new Date(start);
+            cur.setDate(cur.getDate() + 1);
+            const endTime = end.getTime();
+            while (cur.getTime() <= endTime) {
+                const dow = cur.getDay(); // 0=Dom, 1=Lun, ..., 5=Vie, 6=Sáb
+                if (dow >= 1 && dow <= 5) days += 1;    // Lunes a Viernes
+                else if (dow === 6)        days += 0.5;  // Sábado = medio día
+                // Domingo = 0
+                cur.setDate(cur.getDate() + 1);
+            }
+            return days;
         }
 
         // Elementos UI
@@ -356,36 +814,228 @@
             currentTableData = [];
         });
         
-        exportPdfBtn.addEventListener('click', () => {
-            const element = document.getElementById('dashboard-container');
-            
-            // Ocultar botones para la exportación limpia
-            const pdiv1 = document.querySelector('.z-20.relative');
-            const pdiv2 = document.getElementById('export-excel-btn');
-            if (pdiv1) pdiv1.style.display = 'none';
-            if (pdiv2) pdiv2.style.display = 'none';
+        exportPdfBtn.addEventListener('click', async () => {
+            if (currentTableData.length === 0) return alert('No hay datos filtrados para exportar.');
 
-            // Remover clase fade-in para evitar opacidad en canvas
-            element.classList.remove('fade-in');
-
-            const opt = {
-                margin: 0.3,
-                filename: 'Dashboard_Compras.pdf',
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#f8fafc' },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
-            };
-            
             exportPdfBtn.innerText = 'Generando...';
-            html2pdf().set(opt).from(element).save().then(() => {
-                exportPdfBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> PDF (Dashboard)';
-               
-                // Restaurar UI
-                if (pdiv1) pdiv1.style.display = 'flex';
-                if (pdiv2) pdiv2.style.display = 'flex';
-                element.classList.add('fade-in');
+
+            const wb = new ExcelJS.Workbook();
+            wb.creator = 'Dashboard Compras'; wb.created = new Date();
+
+            const HDR_FILL  = { type:'pattern', pattern:'solid', fgColor:{argb:'FF0F172A'} };
+            const HDR_FONT  = { bold:true, color:{argb:'FFF1F5F9'}, size:10, name:'Calibri' };
+            const HDR_ALIGN = { vertical:'middle', horizontal:'center', wrapText:true };
+            const EVEN_FILL = { type:'pattern', pattern:'solid', fgColor:{argb:'FFF8FAFC'} };
+            const ODD_FILL  = { type:'pattern', pattern:'solid', fgColor:{argb:'FFFFFFFF'} };
+            const TOT_FILL  = { type:'pattern', pattern:'solid', fgColor:{argb:'FF4338CA'} };
+            const MONEY     = '"RD$"#,##0.00';
+            const BRD       = { style:'thin', color:{argb:'FFE2E8F0'} };
+            const BORDS     = { top:BRD, left:BRD, bottom:BRD, right:BRD };
+
+            function styleHdr(row) {
+                row.eachCell(c => { c.fill=HDR_FILL; c.font=HDR_FONT; c.alignment=HDR_ALIGN; c.border=BORDS; });
+                row.height = 22;
+            }
+            function styleRow(row, idx, mc=[]) {
+                row.eachCell({includeEmpty:true}, (c,col) => {
+                    c.fill = idx%2===0 ? EVEN_FILL : ODD_FILL;
+                    c.font = {size:9, name:'Calibri', color:{argb:'FF1E293B'}};
+                    c.border = BORDS; c.alignment = {vertical:'middle'};
+                    if (mc.includes(col)) { c.numFmt=MONEY; c.alignment={vertical:'middle',horizontal:'right'}; }
+                });
+                row.height = 18;
+            }
+            function styleTotal(row, mc=[]) {
+                row.eachCell({includeEmpty:true}, (c,col) => {
+                    c.fill  = TOT_FILL;
+                    c.font  = {bold:true, size:10, name:'Calibri', color:{argb:'FFFFFFFF'}};
+                    c.border= BORDS; c.alignment={vertical:'middle'};
+                    if (mc.includes(col)) { c.numFmt=MONEY; c.alignment={vertical:'middle',horizontal:'right'}; }
+                });
+                row.height = 20;
+            }
+
+            const filteredRaw = currentFilteredRaw;
+
+            // HOJA 1 – Órdenes
+            const sh1 = wb.addWorksheet('Órdenes');
+            sh1.columns = [
+                {header:'Núm. Orden',      key:'no',    width:14},
+                {header:'Núm. Solicitud',  key:'ns',    width:14},
+                {header:'Mes',             key:'mes',   width:16},
+                {header:'Fecha Solicitud', key:'fs',    width:16},
+                {header:'Fecha Emisión OC',key:'fo',    width:16},
+                {header:'Días Hábiles',    key:'dias',  width:12},
+                {header:'Estatus',         key:'est',   width:14},
+                {header:'Local',           key:'loc',   width:30},
+                {header:'Comprador',       key:'comp',  width:32},
+                {header:'Forma de Pago',   key:'fp',    width:16},
+                {header:'Artículos',       key:'art',   width:10},
+                {header:'Total (DOP)',     key:'tot',   width:18},
+            ];
+            styleHdr(sh1.getRow(1));
+            currentTableData.forEach((r,i) => {
+                const row = sh1.addRow({no:r.numOrden, ns:r.numSolicitud, mes:r.mesAno, fs:r.fechaSolicitud, fo:r.fecha,
+                    dias:r.diasProceso, est:r.estatusTiempo, loc:r.local, comp:r.comprador,
+                    fp:r.formaPago, art:r.numArticulos, tot:r.total });
+                styleRow(row, i+1, [12]);
+                const sc = row.getCell('est');
+                if (r.estatusTiempo==='En Tiempo') { sc.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD1FAE5'}}; sc.font={...sc.font,color:{argb:'FF065F46'},bold:true}; }
+                if (r.estatusTiempo==='Retrasada')  { sc.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFEE2E2'}}; sc.font={...sc.font,color:{argb:'FF991B1B'},bold:true}; }
             });
+            styleTotal(sh1.addRow({loc:'TOTAL', tot:currentTableData.reduce((s,r)=>s+r.total,0)}), [12]);
+            sh1.autoFilter={from:'A1',to:'L1'}; sh1.views=[{state:'frozen',ySplit:1}];
+
+            // HOJA 2 – Artículos
+            const sh2 = wb.addWorksheet('Artículos');
+            sh2.columns = [
+                {header:'Cód. Artículo', key:'cod',  width:14},
+                {header:'Descripción',   key:'desc', width:52},
+                {header:'Cantidad',      key:'cant', width:12},
+                {header:'Total (DOP)',   key:'tot',  width:18},
+            ];
+            styleHdr(sh2.getRow(1));
+            currentAllItemsData.forEach((a,i) => styleRow(sh2.addRow({cod:a.articulo,desc:a.descripcion,cant:a.cantidad,tot:a.total}), i+1, [4]));
+            styleTotal(sh2.addRow({desc:'TOTAL', tot:currentAllItemsData.reduce((s,a)=>s+a.total,0)}), [4]);
+            sh2.autoFilter={from:'A1',to:'D1'}; sh2.views=[{state:'frozen',ySplit:1}];
+
+            // HOJA 3 – Por Local (con desglose mensual)
+            const lMap={};
+            // lMapMes: { local: { mesAno: total } }
+            const lMapMes={};
+            filteredRaw.forEach(r=>{
+                lMap[r.local]=(lMap[r.local]||0)+r.total;
+                if(!lMapMes[r.local]) lMapMes[r.local]={};
+                lMapMes[r.local][r.mesAno]=(lMapMes[r.local][r.mesAno]||0)+r.total;
+            });
+            // Obtener todos los meses únicos ordenados
+            const allMonths=[...new Set(filteredRaw.map(r=>r.mesAno))].sort();
+            const sh3 = wb.addWorksheet('Por Local');
+            // Columnas dinámicas: Local + un col por mes + Total
+            const sh3Cols=[{header:'Local',key:'loc',width:36}];
+            allMonths.forEach(m=>sh3Cols.push({header:m,key:m,width:20}));
+            sh3Cols.push({header:'Total (DOP)',key:'tot',width:18});
+            sh3.columns=sh3Cols;
+            styleHdr(sh3.getRow(1));
+            const moneyCols3=allMonths.map((_,i)=>i+2).concat([allMonths.length+2]);
+            Object.entries(lMap).sort((a,b)=>b[1]-a[1]).forEach(([loc,tot],i)=>{
+                const rowObj={loc};
+                allMonths.forEach(m=>{ rowObj[m]=(lMapMes[loc]&&lMapMes[loc][m])||0; });
+                rowObj.tot=tot;
+                styleRow(sh3.addRow(rowObj),i+1,moneyCols3);
+            });
+            // Fila TOTAL
+            const totRowObj={loc:'TOTAL'};
+            let grandTotal3=0;
+            allMonths.forEach(m=>{
+                const mTot=filteredRaw.filter(r=>r.mesAno===m).reduce((s,r)=>s+r.total,0);
+                totRowObj[m]=mTot; grandTotal3+=mTot;
+            });
+            totRowObj.tot=grandTotal3;
+            styleTotal(sh3.addRow(totRowObj),moneyCols3);
+            sh3.views=[{state:'frozen',xSplit:1,ySplit:1}];
+
+            // HOJA 4 – Por Comprador
+            const cMap={};
+            filteredRaw.forEach(r=>{ cMap[r.comprador]=(cMap[r.comprador]||0)+r.total; });
+            const sh4 = wb.addWorksheet('Por Comprador');
+            sh4.columns=[{header:'Comprador',key:'comp',width:36},{header:'Total (DOP)',key:'tot',width:18}];
+            styleHdr(sh4.getRow(1));
+            Object.entries(cMap).sort((a,b)=>b[1]-a[1]).forEach(([comp,tot],i)=>styleRow(sh4.addRow({comp,tot}),i+1,[2]));
+            styleTotal(sh4.addRow({comp:'TOTAL',tot:Object.values(cMap).reduce((s,v)=>s+v,0)}),[2]);
+            sh4.views=[{state:'frozen',ySplit:1}];
+
+            // HOJA 5 – Forma de Pago
+            const pMap={}, pOrd={};
+            filteredRaw.forEach(r=>{
+                pMap[r.formaPago]=(pMap[r.formaPago]||0)+r.total;
+                if(!pOrd[r.formaPago]) pOrd[r.formaPago]=new Set();
+                pOrd[r.formaPago].add(r.numOrden);
+            });
+            const totOrd=Object.values(pOrd).reduce((s,st)=>s+st.size,0);
+            const sh5 = wb.addWorksheet('Forma de Pago');
+            sh5.columns=[
+                {header:'Forma de Pago',key:'forma',width:20},
+                {header:'Núm. Órdenes',key:'ords', width:14},
+                {header:'% Órdenes',   key:'pct',  width:12},
+                {header:'Total (DOP)', key:'tot',  width:18},
+            ];
+            styleHdr(sh5.getRow(1));
+            Object.entries(pMap).sort((a,b)=>b[1]-a[1]).forEach(([forma,tot],i)=>{
+                const c=pOrd[forma]?.size||0;
+                const p=totOrd>0?parseFloat((c/totOrd*100).toFixed(1)):0;
+                const row=sh5.addRow({forma,ords:c,pct:p,tot});
+                styleRow(row,i+1,[4]); row.getCell('pct').numFmt='0.0"%"';
+            });
+            styleTotal(sh5.addRow({forma:'TOTAL',ords:totOrd,tot:Object.values(pMap).reduce((s,v)=>s+v,0)}),[4]);
+            sh5.views=[{state:'frozen',ySplit:1}];
+
+            // HOJA 6 – Estatus de Órdenes (En Tiempo / Retrasada)
+            const sh6 = wb.addWorksheet('Estatus de Órdenes');
+            sh6.columns = [
+                {header:'Estatus',       key:'est', width:18},
+                {header:'Núm. Órdenes', key:'cnt', width:16},
+                {header:'% del Total',  key:'pct', width:14},
+            ];
+            styleHdr(sh6.getRow(1));
+            // Calcular desde los datos filtrados
+            const uniqueOrdSet6 = new Set();
+            let enT6 = 0, ret6 = 0;
+            filteredRaw.forEach(r => {
+                if (!uniqueOrdSet6.has(r.numOrden)) {
+                    uniqueOrdSet6.add(r.numOrden);
+                    if (r.estatusTiempo === 'En Tiempo') enT6++;
+                    else ret6++;
+                }
+            });
+            const totOrd6 = enT6 + ret6;
+            const estatusRows = [
+                { est: 'En Tiempo', cnt: enT6, pct: totOrd6 > 0 ? parseFloat((enT6/totOrd6*100).toFixed(1)) : 0 },
+                { est: 'Retrasada', cnt: ret6, pct: totOrd6 > 0 ? parseFloat((ret6/totOrd6*100).toFixed(1)) : 0 },
+            ];
+            estatusRows.forEach((r, i) => {
+                const row = sh6.addRow(r);
+                styleRow(row, i + 1);
+                row.getCell('pct').numFmt = '0.0"%"';
+            });
+            const totRow6 = sh6.addRow({ est: 'TOTAL', cnt: totOrd6, pct: 100 });
+            styleTotal(totRow6);
+            totRow6.getCell('pct').numFmt = '0.0"%"';
+            sh6.views = [{ state: 'frozen', ySplit: 1 }];
+
+            // Descargar
+            const buf = await wb.xlsx.writeBuffer();
+            const fecha = new Date().toLocaleDateString('es-DO').replace(/\//g,'-');
+            saveAs(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+                `Dashboard_Compras_${fecha}.xlsx`);
+            exportPdfBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> Excel (Completo)';
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         exportExcelBtn.addEventListener('click', () => {
             if(currentTableData.length === 0) return alert("No hay datos para exportar.");
@@ -393,6 +1043,7 @@
             const wsData = currentTableData.map(r => ({
                 "Núm Orden": r.numOrden,
                 "Núm Solicitud": r.numSolicitud,
+                "Mes": r.mesAno,
                 "Fecha Emisión": r.fecha,
                 "Fecha Solicitud": r.fechaSolicitud,
                 "Días de Proceso": r.diasProceso,
@@ -412,9 +1063,9 @@
             
             // Ajustar ancho de las columnas
             ws['!cols'] = [
-                {wch: 15}, {wch: 15}, {wch: 15}, {wch: 18}, {wch: 18}, 
-                {wch: 25}, {wch: 40}, {wch: 20}, {wch: 50}, {wch: 12}, 
-                {wch: 15}, {wch: 18}, {wch: 25}, {wch: 20}
+                {wch: 15}, {wch: 15}, {wch: 18}, {wch: 15}, {wch: 18}, 
+                {wch: 18}, {wch: 25}, {wch: 40}, {wch: 20}, {wch: 50}, 
+                {wch: 12}, {wch: 15}, {wch: 18}, {wch: 25}, {wch: 20}
             ];
             
             const wb = XLSX.utils.book_new();
@@ -424,52 +1075,172 @@
             saveAs(new Blob([wbout], {type:"application/octet-stream"}), 'Reporte_Compras_Filtrado.xlsx');
         });
 
-        document.getElementById('filter-month').addEventListener('change', applyFilters);
-        document.getElementById('filter-buyer').addEventListener('change', applyFilters);
-        document.getElementById('filter-status').addEventListener('change', applyFilters);
-        document.getElementById('filter-amount').addEventListener('change', applyFilters);
         document.getElementById('filter-search').addEventListener('input', applyFilters);
 
-        function populateFilters(data) {
-            const months = [...new Set(data.map(d => d.mesAno))].sort();
-            const monthSelect = document.getElementById('filter-month');
-            monthSelect.innerHTML = '<option value="ALL">Todo el Historial</option>' + 
-                months.map(m => `<option value="${m}">${m}</option>`).join('');
+        // Limpiar todos los filtros
+        document.getElementById('clear-filters-btn').addEventListener('click', () => {
+            ['month','buyer','status','amount','local'].forEach(id => {
+                document.querySelectorAll(`.ms-cb-${id}`).forEach(cb => cb.checked = true);
+                msBadge(id);
+            });
+            document.getElementById('filter-search').value = '';
+            applyFilters();
+        });
 
+        // ===== MULTI-SELECT ENGINE =====
+        const MS_DEFAULTS = {
+            month:  'Todo el Historial',
+            buyer:  'Todos los Compradores',
+            status: 'Todos los Estatus',
+            amount: 'Cualquier Monto',
+            local:  'Todas las Localidades'
+        };
+
+        function msInit(id) {
+            document.getElementById(`ms-btn-${id}`).addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Cerrar los demás
+                ['month','buyer','status','amount','local'].forEach(k => {
+                    if (k !== id) document.getElementById(`ms-panel-${k}`)?.classList.remove('open');
+                });
+                document.getElementById(`ms-panel-${id}`).classList.toggle('open');
+            });
+            document.getElementById(`ms-all-${id}`).addEventListener('click', () => {
+                document.querySelectorAll(`.ms-cb-${id}`).forEach(cb => cb.checked = true);
+                msBadge(id); applyFilters();
+            });
+            document.getElementById(`ms-clear-${id}`).addEventListener('click', () => {
+                document.querySelectorAll(`.ms-cb-${id}`).forEach(cb => cb.checked = false);
+                msBadge(id); applyFilters();
+            });
+        }
+
+        function msFill(id, items) {
+            // items: array of { value, label }
+            const list = document.getElementById(`ms-list-${id}`);
+            list.innerHTML = items.map(it => `
+                <label class="ms-item">
+                    <input type="checkbox" class="ms-cb ms-cb-${id}" value="${it.value}" checked>
+                    <span>${it.label}</span>
+                </label>
+            `).join('');
+            list.querySelectorAll(`.ms-cb-${id}`).forEach(cb =>
+                cb.addEventListener('change', () => { msBadge(id); applyFilters(); })
+            );
+            msBadge(id);
+        }
+
+        function msBadge(id) {
+            const all     = document.querySelectorAll(`.ms-cb-${id}`);
+            const checked = document.querySelectorAll(`.ms-cb-${id}:checked`);
+            const badge   = document.getElementById(`ms-badge-${id}`);
+            const lbl     = document.getElementById(`ms-label-${id}`);
+            if (all.length === 0 || checked.length === all.length) {
+                badge.classList.add('hidden');
+                lbl.textContent = MS_DEFAULTS[id];
+            } else if (checked.length === 0) {
+                badge.textContent = '0';
+                badge.classList.remove('hidden');
+                lbl.textContent = 'Ninguno seleccionado';
+            } else {
+                badge.textContent = checked.length;
+                badge.classList.remove('hidden');
+                lbl.textContent = checked.length === 1
+                    ? checked[0].closest('label').querySelector('span').textContent
+                    : `${checked.length} seleccionados`;
+            }
+        }
+
+        function msActive(id) {
+            const all = document.querySelectorAll(`.ms-cb-${id}`).length;
+            const chk = document.querySelectorAll(`.ms-cb-${id}:checked`).length;
+            return chk > 0 && chk < all;
+        }
+
+        function msValues(id) {
+            return [...document.querySelectorAll(`.ms-cb-${id}:checked`)].map(cb => cb.value);
+        }
+
+        // Inicializar todos los multi-selects
+        ['month','buyer','status','amount','local'].forEach(msInit);
+
+        // Cerrar paneles al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('[id^="ms-btn-"]') && !e.target.closest('[id^="ms-panel-"]')) {
+                document.querySelectorAll('.ms-panel.open').forEach(p => p.classList.remove('open'));
+            }
+        });
+
+        // Opciones estáticas para estatus y montos
+        msFill('status', [
+            { value: 'En Tiempo',     label: 'En Tiempo' },
+            { value: 'Retrasada',     label: 'Retrasada' },
+            { value: 'Faltan Fechas', label: 'Fechas Faltantes' }
+        ]);
+        msFill('amount', [
+            { value: '0-5000',      label: 'Menores a $5,000' },
+            { value: '5000-20000',  label: '$5,000 - $20,000' },
+            { value: '20000-50000', label: '$20,000 - $50,000' },
+            { value: '50000+',      label: 'Mayores de $50,000' }
+        ]);
+
+        function populateFilters(data) {
+            // Mes y Año (basado en FECHA_EMISION_OC)
+            const months = [...new Set(data.map(d => d.mesAno))].sort();
+            msFill('month', months.map(m => ({ value: m, label: m })));
+
+            // Compradores
             const buyers = [...new Set(data.map(d => d.comprador))].sort();
-            const buyerSelect = document.getElementById('filter-buyer');
-            buyerSelect.innerHTML = '<option value="ALL">Todos los Compradores</option>' + 
-                buyers.map(b => `<option value="${b}">${b}</option>`).join('');
-            
-            document.getElementById('filter-status').value = 'ALL';
-            document.getElementById('filter-amount').value = 'ALL';
+            msFill('buyer', buyers.map(b => ({ value: b, label: b })));
+
+            // Localidades
+            const locals = [...new Set(data.map(d => d.local))].sort();
+            msFill('local', locals.map(l => ({ value: l, label: l })));
+
+            // Resetear estatus y montos (ya tienen opciones estáticas, solo marcar todo)
+            document.querySelectorAll('.ms-cb-status, .ms-cb-amount')
+                .forEach(cb => cb.checked = true);
+            msBadge('status'); msBadge('amount');
+
             document.getElementById('filter-search').value = '';
         }
 
         function applyFilters() {
-            const month = document.getElementById('filter-month').value;
-            const buyer = document.getElementById('filter-buyer').value;
-            const status = document.getElementById('filter-status').value;
-            const amount = document.getElementById('filter-amount').value;
             const searchText = document.getElementById('filter-search').value.toLowerCase().trim();
 
-            let filtered = parsedData.filter(r => {
-                if(month !== 'ALL' && r.mesAno !== month) return false;
-                if(buyer !== 'ALL' && r.comprador !== buyer) return false;
-                if(status !== 'ALL' && r.estatusTiempo !== status) return false;
-                
-                if(amount === '0-5000' && r.total >= 5000) return false;
-                if(amount === '5000-20000' && (r.total < 5000 || r.total >= 20000)) return false;
-                if(amount === '20000-50000' && (r.total < 20000 || r.total >= 50000)) return false;
-                if(amount === '50000+' && r.total < 50000) return false;
+            const filterMonth  = msActive('month')  ? msValues('month')  : null;
+            const filterBuyer  = msActive('buyer')  ? msValues('buyer')  : null;
+            const filterStatus = msActive('status') ? msValues('status') : null;
+            const filterLocal  = msActive('local')  ? msValues('local')  : null;
+            const filterAmount = msActive('amount') ? msValues('amount') : null;
 
-                if(searchText) {
-                    const oStr = r.numOrden.toLowerCase();
-                    const sStr = r.numSolicitud.toLowerCase();
-                    const supStr = r.suplidor.toLowerCase();
-                    if(!oStr.includes(searchText) && !sStr.includes(searchText) && !supStr.includes(searchText)) {
+            let filtered = parsedData.filter(r => {
+                if (filterMonth  && !filterMonth.includes(r.mesAno))       return false;
+                if (filterBuyer  && !filterBuyer.includes(r.comprador))    return false;
+                if (filterStatus && !filterStatus.includes(r.estatusTiempo)) return false;
+                if (filterLocal  && !filterLocal.includes(r.local))        return false;
+
+                if (filterAmount) {
+                    const ok = filterAmount.some(range => {
+                        if (range === '0-5000')      return r.total < 5000;
+                        if (range === '5000-20000')  return r.total >= 5000  && r.total < 20000;
+                        if (range === '20000-50000') return r.total >= 20000 && r.total < 50000;
+                        if (range === '50000+')      return r.total >= 50000;
                         return false;
-                    }
+                    });
+                    if (!ok) return false;
+                }
+
+                if (searchText) {
+                    const oStr   = r.numOrden.toLowerCase();
+                    const sStr   = r.numSolicitud.toLowerCase();
+                    const supStr = r.suplidor.toLowerCase();
+                    const artStr = (r.articulo || '').toLowerCase();
+                    const dscStr = (r.descripcion || '').toLowerCase();
+                    if (!oStr.includes(searchText) && !sStr.includes(searchText) &&
+                        !supStr.includes(searchText) && !artStr.includes(searchText) &&
+                        !dscStr.includes(searchText))
+                        return false;
                 }
 
                 return true;
@@ -494,14 +1265,14 @@
                     if(json.length > 0) {
                         parsedData = json.map(row => {
                             const fEmision = ExcelDateToJSDate(row['FECHA_EMISION_OC']);
-                            const fSolicitud = ExcelDateToJSDate(row['FECHA_SOLICITUD']);
+                            // Si FECHA_SOLICITUD está vacía, usar FECHA_EMISION_OC como fallback
+                            const fSolicitud = ExcelDateToJSDate(row['FECHA_SOLICITUD']) ?? fEmision;
                             
                             let diffDays = 0;
                             let estatusTiempo = "Faltan Fechas";
 
                             if(fEmision && fSolicitud) {
-                                const diffTime = fEmision.getTime() - fSolicitud.getTime();
-                                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                diffDays = calcWorkingDays(fSolicitud, fEmision);
                                 estatusTiempo = diffDays <= 5 ? "En Tiempo" : "Retrasada";
                             }
 
@@ -517,7 +1288,7 @@
                             return {
                                 mesAno: mesAno,
                                 comprador: compradorName,
-                                local: row['LOCAL'] || 'N/A',
+                                local: (() => { const cod = row['LOCAL']?.toString().trim() || 'N/A'; return localidadesMap[cod] ? `${cod} - ${localidadesMap[cod]}` : cod; })(),
                                 numOrden: row['NUM_ORDEN']?.toString() || 'N/A',
                                 numSolicitud: row['NUM_SOLICITUD']?.toString() || 'N/A',
                                 fecha: fEmision ? fEmision.toLocaleDateString('es-DO') : 'N/D',
@@ -557,6 +1328,28 @@
         const indigos = ['#4f46e5', '#818cf8', '#c7d2fe', '#e0e7ff', '#312e81', '#3730a3', '#4338ca'];
         const slates = ['#0f172a', '#1e293b', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'];
 
+        const localidadesMap = {
+            "GVMG": "Viamar Maximo Gomez",
+            "GVBA": "Viamar Bavaro",
+            "OCMG": "Oportunty Cars",
+            "GVND": "Negocios Diversos /27 Feb",
+            "GVJK": "Viamar Kennedy",
+            "GVAL": "Viamar Alameda",
+            "GVSF": "Viamar San Francisco",
+            "GVSA": "Viamar Santiago E.S",
+            "GVNA": "Viamar Naco",
+            "GVSD": "Viamar Santiago Duarte",
+            "GVQ1": "Quick Lane Pedro Livio",
+            "GVCG": "Viamar Charles de Gaulle",
+            "GVII": "Quicklane Isla Independencia",
+            "GVTS": "Shwroom 360",
+            "GVJT": "Jac Tiradentes",
+            "GVSM": "Servicios Michellin/Marlolera",
+            "GVHI": "Viamar Higuey",
+            "GVCE": "Viamar el Congo/Taller Camiones",
+            "GVBV": "Viamar Bella Vista"
+        };
+
         const compradoresMap = {
             "14": "JOSEPHINE CORONA",
             "133": "MAITTE LORENZO",
@@ -576,6 +1369,9 @@
         };
 
         function processAndRender(cleanData) {
+            // Guardar referencia exacta de los datos filtrados para el Excel export
+            currentFilteredRaw = cleanData;
+
             // KPIs
             const totalSpend = cleanData.reduce((acc, curr) => acc + curr.total, 0);
             
@@ -593,13 +1389,12 @@
 
             const uniqueOrders = uniqueOrdersSet.size;
             const totalItems = cleanData.reduce((acc, curr) => acc + curr.cantidad, 0);
-            const avgOrder = uniqueOrders > 0 ? (totalSpend / uniqueOrders) : 0;
             const pctEnTiempo = uniqueOrders > 0 ? ((enTiempoCount / uniqueOrders) * 100).toFixed(1) : 0;
 
             const k1 = document.getElementById('kpi-total-spend');
             k1.innerText = formatCurrency(totalSpend);
             k1.title = formatCurrency(totalSpend);
-            
+
             const k2 = document.getElementById('kpi-total-orders');
             k2.innerText = formatNumber(uniqueOrders);
             k2.title = formatNumber(uniqueOrders);
@@ -608,15 +1403,11 @@
             k3.innerText = formatNumber(totalItems);
             k3.title = formatNumber(totalItems);
 
-            const k4 = document.getElementById('kpi-avg-order');
-            k4.innerText = formatCurrency(avgOrder);
-            k4.title = formatCurrency(avgOrder);
-
             const k5 = document.getElementById('kpi-on-time');
             k5.innerText = `${pctEnTiempo}%`;
             k5.title = `${pctEnTiempo}%`;
 
-            document.getElementById('row-count-badge').innerText = `${formatNumber(cleanData.length)} registros`;
+            document.getElementById('row-count-badge').innerText = `${formatNumber(uniqueOrders)} órdenes`;
 
             // Agrupaciones para gráficos
             // 1. Gasto por Local
@@ -631,11 +1422,17 @@
                 return acc;
             }, {});
 
-            // 3. Gasto por Forma Pago
-            const gastoPorPago = cleanData.reduce((acc, curr) => {
-                acc[curr.formaPago] = (acc[curr.formaPago] || 0) + curr.total;
-                return acc;
-            }, {});
+            // 3. Gasto y Órdenes por Forma de Pago
+            const gastoPorPago = {};
+            const ordenesPorPago = {}; // { formaPago: Set<numOrden> }
+            cleanData.forEach(r => {
+                gastoPorPago[r.formaPago]  = (gastoPorPago[r.formaPago]  || 0) + r.total;
+                if (!ordenesPorPago[r.formaPago]) ordenesPorPago[r.formaPago] = new Set();
+                ordenesPorPago[r.formaPago].add(r.numOrden);
+            });
+            // Convertir sets a conteos
+            const countPorPago = {};
+            Object.keys(ordenesPorPago).forEach(k => countPorPago[k] = ordenesPorPago[k].size);
 
             // 4. Todos los Artículos
             const gastoPorArticulo = {};
@@ -656,15 +1453,211 @@
             currentAllItemsData = Object.values(gastoPorArticulo).sort((a, b) => b.total - a.total);
             currentItemsData = [...currentAllItemsData];
 
-            renderCharts(gastoPorLocal, gastoPorComprador, gastoPorPago);
-            
+            renderCharts(gastoPorLocal, gastoPorComprador, gastoPorPago, countPorPago, enTiempoCount, uniqueOrders);
+
+            // Agrupar por Núm. Orden para la tabla principal (una fila por orden)
+            const ordenesMap = {};
+            cleanData.forEach(r => {
+                if (!ordenesMap[r.numOrden]) {
+                    ordenesMap[r.numOrden] = {
+                        numOrden:      r.numOrden,
+                        numSolicitud:  r.numSolicitud,
+                        fecha:         r.fecha,
+                        fechaSolicitud: r.fechaSolicitud,
+                        diasProceso:   r.diasProceso,
+                        estatusTiempo: r.estatusTiempo,
+                        local:         r.local,
+                        comprador:     r.comprador,
+                        suplidor:      r.suplidor,
+                        formaPago:     r.formaPago,
+                        mesAno:        r.mesAno,
+                        total:         0,
+                        numArticulos:  0
+                    };
+                }
+                ordenesMap[r.numOrden].total        += r.total;
+                ordenesMap[r.numOrden].numArticulos += 1;
+            });
+
             // Populate data and reset paginations
-            currentTableData = cleanData;
+            currentTableData = Object.values(ordenesMap);
+            document.getElementById('row-count-badge').innerText = `${formatNumber(currentTableData.length)} órdenes`;
             currentPage = 1;
             currentItemsPage = 1;
-            
+
             renderTopTablePaginated();
             renderMainTablePaginated();
+            renderYearComparison(cleanData);
+        }
+
+        // ===== COMPARATIVA ANUAL =====
+        const MONTH_ORDER = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+
+        function getMonthIndex(mesAno) {
+            const part = mesAno.split(' ')[0];
+            const idx = MONTH_ORDER.indexOf(part);
+            return idx === -1 ? 99 : idx;
+        }
+
+        function renderYearComparison(data) {
+            const section = document.getElementById('year-compare-section');
+
+            // Determinar años presentes
+            const yearsSet = new Set(data.map(r => r.mesAno.split(' ').slice(-1)[0]));
+            const years = [...yearsSet].sort();
+
+            if (years.length < 2) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+
+            // Tomar solo los 2 años extremos (primer y último)
+            const yearA = years[0];
+            const yearB = years[years.length - 1];
+
+            const dataA = data.filter(r => r.mesAno.endsWith(yearA));
+            const dataB = data.filter(r => r.mesAno.endsWith(yearB));
+
+            // --- KPIs ---
+            const gastoA  = dataA.reduce((s,r)=>s+r.total,0);
+            const gastoB  = dataB.reduce((s,r)=>s+r.total,0);
+            const ordsA   = new Set(dataA.map(r=>r.numOrden)).size;
+            const ordsB   = new Set(dataB.map(r=>r.numOrden)).size;
+
+            function pctChange(a,b) {
+                if (a === 0) return b > 0 ? '+∞' : '0';
+                const p = ((b - a) / Math.abs(a)) * 100;
+                return (p >= 0 ? '+' : '') + p.toFixed(1) + '%';
+            }
+            function pctClass(a, b) {
+                if (b >= a) return 'text-emerald-600';
+                return 'text-rose-500';
+            }
+
+            const kpiDefs = [
+                { label:'Gasto Total', vA: formatCurrency(gastoA), vB: formatCurrency(gastoB), rawA: gastoA, rawB: gastoB },
+                { label:'Núm. Órdenes', vA: formatNumber(ordsA), vB: formatNumber(ordsB), rawA: ordsA, rawB: ordsB },
+            ];
+
+            const kpiRow = document.getElementById('year-kpi-row');
+            kpiRow.innerHTML = kpiDefs.map(k => {
+                const pct  = pctChange(k.rawA, k.rawB);
+                const cls  = pctClass(k.rawA, k.rawB);
+                return `
+                <div class="flex-1 min-w-[260px] bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">${k.label}</p>
+                    <div class="flex items-end gap-4 flex-wrap">
+                        <div>
+                            <span class="text-[10px] font-black text-indigo-400 uppercase block mb-0.5">${yearA}</span>
+                            <span class="text-lg font-black text-slate-900">${k.vA}</span>
+                        </div>
+                        <div class="flex-1">
+                            <span class="text-[10px] font-black text-purple-400 uppercase block mb-0.5">${yearB}</span>
+                            <span class="text-lg font-black text-slate-900">${k.vB}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] font-black text-slate-400 uppercase block mb-0.5">Var.</span>
+                            <span class="text-lg font-black ${cls}">${pct}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // --- Gráfico por mes ---
+            const mesMapA = {};
+            dataA.forEach(r => { const m = r.mesAno.split(' ')[0]; mesMapA[m]=(mesMapA[m]||0)+r.total; });
+            const mesMapB = {};
+            dataB.forEach(r => { const m = r.mesAno.split(' ')[0]; mesMapB[m]=(mesMapB[m]||0)+r.total; });
+
+            const allMesNames = [...new Set([...Object.keys(mesMapA),...Object.keys(mesMapB)])]
+                .sort((a,b)=>MONTH_ORDER.indexOf(a)-MONTH_ORDER.indexOf(b));
+
+            // Abreviar etiquetas
+            const mesLabels = allMesNames.map(m=>m.charAt(0)+m.slice(1,3).toLowerCase());
+
+            if (chartsInstance['chartYearCompareMes']) chartsInstance['chartYearCompareMes'].destroy();
+            const ctxY = document.getElementById('chartYearCompareMes').getContext('2d');
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            chartsInstance['chartYearCompareMes'] = new Chart(ctxY, {
+                type: 'bar',
+                data: {
+                    labels: mesLabels,
+                    datasets: [
+                        {
+                            label: yearA,
+                            data: allMesNames.map(m=>mesMapA[m]||0),
+                            backgroundColor: '#818cf8',
+                            borderRadius: 6,
+                            borderWidth: 0
+                        },
+                        {
+                            label: yearB,
+                            data: allMesNames.map(m=>mesMapB[m]||0),
+                            backgroundColor: '#7c3aed',
+                            borderRadius: 6,
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20, font:{size:10,weight:'bold'} } },
+                        tooltip: {
+                            backgroundColor: '#0f172a', padding: 12, cornerRadius: 8,
+                            titleFont:{size:12,weight:'bold'}, bodyFont:{size:11},
+                            callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero:true, grid:{color:'#f1f5f9',borderDash:[5,5]}, ticks:{font:{size:10,weight:'bold'},callback:v=>'$'+v.toLocaleString()} },
+                        x: { grid:{display:false}, ticks:{font:{size:11,weight:'bold'}} }
+                    }
+                }
+            });
+
+            // --- Tabla por Local ---
+            const locSetA = {};
+            dataA.forEach(r=>{ locSetA[r.local]=(locSetA[r.local]||0)+r.total; });
+            const locSetB = {};
+            dataB.forEach(r=>{ locSetB[r.local]=(locSetB[r.local]||0)+r.total; });
+            const allLocs = [...new Set([...Object.keys(locSetA),...Object.keys(locSetB)])].sort();
+
+            document.getElementById('year-local-thead').innerHTML = `
+                <tr>
+                    <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px] rounded-tl-xl">Local</th>
+                    <th class="px-6 py-4 font-black text-indigo-300 uppercase text-[10px] text-right">${yearA}</th>
+                    <th class="px-6 py-4 font-black text-purple-300 uppercase text-[10px] text-right">${yearB}</th>
+                    <th class="px-6 py-4 font-black text-slate-300 uppercase text-[10px] text-right rounded-tr-xl">Variación</th>
+                </tr>`;
+
+            const tbody = document.getElementById('year-local-tbody');
+            const rowsSorted = allLocs.map(loc => ({ loc, a: locSetA[loc]||0, b: locSetB[loc]||0 }))
+                .sort((x,y)=>(y.a+y.b)-(x.a+x.b));
+
+            tbody.innerHTML = rowsSorted.map(({loc,a,b}) => {
+                const pct  = pctChange(a, b);
+                const cls  = pctClass(a, b);
+                return `<tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                    <td class="px-6 py-3 text-xs font-black text-slate-600 uppercase">${loc}</td>
+                    <td class="px-6 py-3 text-right font-bold text-slate-700">${a>0?formatCurrency(a):'—'}</td>
+                    <td class="px-6 py-3 text-right font-bold text-slate-700">${b>0?formatCurrency(b):'—'}</td>
+                    <td class="px-6 py-3 text-right font-black ${cls}">${pct}</td>
+                </tr>`;
+            }).join('');
+
+            // Fila total
+            const totA = rowsSorted.reduce((s,r)=>s+r.a, 0);
+            const totB = rowsSorted.reduce((s,r)=>s+r.b, 0);
+            tbody.innerHTML += `<tr class="bg-slate-900">
+                <td class="px-6 py-3 text-xs font-black text-white uppercase rounded-bl-xl">TOTAL</td>
+                <td class="px-6 py-3 text-right font-black text-indigo-300">${formatCurrency(totA)}</td>
+                <td class="px-6 py-3 text-right font-black text-purple-300">${formatCurrency(totB)}</td>
+                <td class="px-6 py-3 text-right font-black ${pctClass(totA,totB)} rounded-br-xl">${pctChange(totA,totB)}</td>
+            </tr>`;
         }
 
         // --- Paginación Lógica API ----
@@ -698,13 +1691,16 @@
             renderTopTablePaginated();
         });
 
-        function createChart(ctxId, type, labels, data, colors, options = {}) {
+        function createChart(ctxId, type, labels, data, colors, extraOptions = {}) {
             if (chartsInstance[ctxId]) chartsInstance[ctxId].destroy();
             
             const ctx = document.getElementById(ctxId).getContext('2d');
             
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#64748b';
+
+            const isHBar = extraOptions.indexAxis === 'y';
+            const isBar = type === 'bar';
 
             chartsInstance[ctxId] = new Chart(ctx, {
                 type: type,
@@ -714,13 +1710,14 @@
                         data: data,
                         backgroundColor: colors,
                         borderWidth: 0,
-                        borderRadius: type === 'bar' ? 6 : 0,
+                        borderRadius: isBar ? 6 : 0,
                         hoverOffset: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    indexAxis: extraOptions.indexAxis || 'x',
                     plugins: {
                         legend: {
                             display: type === 'doughnut' || type === 'pie',
@@ -739,35 +1736,58 @@
                             cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) { label += ': '; }
-                                    if (context.raw !== null) { label += formatCurrency(context.raw); }
-                                    return label;
+                                    let label = context.dataset.label || '';
+                                    const val = isHBar ? context.parsed.x : context.parsed.y ?? context.raw;
+                                    if (extraOptions.countTooltip) {
+                                        return (label ? label + ': ' : '') + (val ?? context.raw) + ' órd.';
+                                    }
+                                    return (label ? label + ': ' : '') + formatCurrency(val ?? context.raw);
+                                },
+                                title: function(items) {
+                                    return items[0]?.label || '';
                                 }
                             }
                         }
                     },
-                    scales: (type === 'bar') ? {
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: '#f1f5f9', borderDash: [5, 5] },
-                            ticks: { font: { size: 10, weight: 'bold' }, callback: function(value) { return '$' + value.toLocaleString(); }}
-                        },
-                        x: { 
-                            grid: { display: false },
-                            ticks: { font: { size: 10, weight: 'bold' } }
+                    scales: isBar ? (
+                        isHBar ? {
+                            x: { 
+                                beginAtZero: true,
+                                grid: { color: '#f1f5f9', borderDash: [5, 5] },
+                                ticks: { font: { size: 10, weight: 'bold' }, callback: function(value) { return '$' + value.toLocaleString(); }}
+                            },
+                            y: { 
+                                grid: { display: false },
+                                ticks: { font: { size: 11, weight: 'bold' }, color: '#334155' }
+                            }
+                        } : {
+                            y: { 
+                                beginAtZero: true, 
+                                grid: { color: '#f1f5f9', borderDash: [5, 5] },
+                                ticks: { font: { size: 10, weight: 'bold' }, callback: function(value) { return '$' + value.toLocaleString(); }}
+                            },
+                            x: { 
+                                grid: { display: false },
+                                ticks: { font: { size: 10, weight: 'bold' } }
+                            }
                         }
-                    } : {}
+                    ) : {}
                 }
             });
         }
 
-        function renderCharts(gastoPorLocal, gastoPorComprador, gastoPorPago) {
-            // Local (Doughnut)
-            createChart('chartLocal', 'doughnut', 
-                Object.keys(gastoPorLocal), 
-                Object.values(gastoPorLocal), 
-                [...indigos, ...slates]
+        function renderCharts(gastoPorLocal, gastoPorComprador, gastoPorPago, countPorPago, enTiempoCount, uniqueOrders) {
+            // Local (Horizontal Bar) - sorted desc
+            const localSorted = Object.entries(gastoPorLocal).sort((a, b) => b[1] - a[1]);
+            const localColors = localSorted.map((_, i) => {
+                const palette = ['#4f46e5','#6366f1','#818cf8','#a5b4fc','#312e81','#3730a3','#4338ca','#0f172a','#1e293b','#334155','#475569','#64748b','#94a3b8','#cbd5e1','#0ea5e9','#0284c7','#7c3aed','#9333ea','#c026d3'];
+                return palette[i % palette.length];
+            });
+            createChart('chartLocal', 'bar',
+                localSorted.map(x => x[0]),
+                localSorted.map(x => x[1]),
+                localColors,
+                { indexAxis: 'y' }
             );
 
             // Comprador (Bar) - Sort by Value
@@ -778,12 +1798,77 @@
                 ['#0f172a']
             );
 
-            // Pago (Pie)
-            createChart('chartPago', 'pie', 
-                Object.keys(gastoPorPago), 
-                Object.values(gastoPorPago), 
-                ['#4f46e5', '#cbd5e1', '#0f172a', '#94a3b8']
+            // Pago (Pie) – colores FIJOS por nombre para no mezclarlos al filtrar
+            const PAGO_COLOR_MAP = {
+                'cr\u00e9dito': '#4f46e5', 'credito': '#4f46e5',
+                'contado':  '#0ea5e9',
+                'efectivo': '#10b981',
+                'cheque':   '#f59e0b',
+                'transferencia': '#8b5cf6',
+                'd\u00e9bito': '#ec4899', 'debito': '#ec4899',
+            };
+            function getPagoColor(forma) {
+                const key = forma.toLowerCase().trim();
+                if (PAGO_COLOR_MAP[key]) return PAGO_COLOR_MAP[key];
+                const FALLBACK = ['#0f172a','#94a3b8','#818cf8','#334155','#64748b', '#cbd5e1'];
+                let hash = 0;
+                for (let i = 0; i < forma.length; i++) hash = (hash * 31 + forma.charCodeAt(i)) | 0;
+                return FALLBACK[Math.abs(hash) % FALLBACK.length];
+            }
+            const pagoKeys   = Object.keys(gastoPorPago);
+            const pagoColors = pagoKeys.map(f => getPagoColor(f));
+            createChart('chartPago', 'pie', pagoKeys, Object.values(gastoPorPago), pagoColors);
+
+            // Resumen de órdenes por forma de pago
+            const totalOrdenesGlobal = Object.values(countPorPago).reduce((a, b) => a + b, 0);
+            const pagoSorted = Object.entries(gastoPorPago).sort((a, b) => b[1] - a[1]);
+            const summary = document.getElementById('pago-summary');
+            summary.innerHTML = pagoSorted.map(([ forma, monto ]) => {
+                const count = countPorPago[forma] || 0;
+                const pct   = totalOrdenesGlobal > 0 ? ((count / totalOrdenesGlobal) * 100).toFixed(1) : 0;
+                const color = getPagoColor(forma);
+                return `
+                    <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-50 last:border-0">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${color}"></span>
+                            <span class="text-xs font-bold text-slate-600 truncate">${forma}</span>
+                        </div>
+                        <div class="flex items-center gap-3 flex-shrink-0">
+                            <span class="text-[11px] font-black text-slate-800">${count} <span class="font-medium text-slate-400">órd.</span></span>
+                            <span class="text-[10px] font-bold text-slate-400 w-10 text-right">${pct}%</span>
+                            <span class="text-[11px] font-black text-indigo-600 w-28 text-right">${formatCurrency(monto)}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            // Estatus de Órdenes (Donut)
+            const retrasadaCount = uniqueOrders - enTiempoCount;
+            createChart('chartOnTime', 'doughnut',
+                ['En Tiempo', 'Retrasada'],
+                [enTiempoCount, retrasadaCount],
+                ['#10b981', '#f43f5e'],
+                { countTooltip: true }
             );
+            const estatusSummary = document.getElementById('estatus-summary');
+            const estatusItems = [
+                { label: 'En Tiempo',  count: enTiempoCount,  color: '#10b981' },
+                { label: 'Retrasada',  count: retrasadaCount, color: '#f43f5e' }
+            ];
+            const total = enTiempoCount + retrasadaCount;
+            estatusSummary.innerHTML = estatusItems.map(item => {
+                const pct = total > 0 ? ((item.count / total) * 100).toFixed(1) : 0;
+                return `
+                    <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-50 last:border-0">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${item.color}"></span>
+                            <span class="text-xs font-bold text-slate-600 truncate">${item.label}</span>
+                        </div>
+                        <div class="flex items-center gap-3 flex-shrink-0">
+                            <span class="text-[11px] font-black text-slate-800">${item.count} <span class="font-medium text-slate-400">órd.</span></span>
+                            <span class="text-[10px] font-bold text-slate-400 w-10 text-right">${pct}%</span>
+                        </div>
+                    </div>`;
+            }).join('');
         }
 
         function renderTopTablePaginated() {
@@ -842,7 +1927,7 @@
                 return;
             }
 
-            allTbody.innerHTML = toRender.map((r, i) => {
+            allTbody.innerHTML = toRender.map((r) => {
                 let estatusBadge = '';
                 if(r.estatusTiempo === 'En Tiempo') {
                     estatusBadge = `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] rounded font-black uppercase">${r.diasProceso} d - En Tiempo</span>`;
@@ -864,13 +1949,64 @@
                     </td>
                     <td class="px-6 py-3 text-xs font-black text-slate-400 uppercase">${r.local}</td>
                     <td class="px-6 py-3 text-xs font-bold text-slate-600">${r.comprador}</td>
-                    <td class="px-6 py-3 text-xs text-slate-500 max-w-[200px] truncate" title="${r.descripcion}">${r.descripcion}</td>
+                    <td class="px-6 py-3">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-black rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            ${r.numArticulos} art.
+                        </span>
+                    </td>
                     <td class="px-6 py-3 text-right font-black text-slate-900">${formatCurrency(r.total)}</td>
                 </tr>
                 `;
             }).join('');
         }
 
+    </script>
+    <!-- Tooltip KPI Global (always on top, fixed to body) -->
+    <div id="kpi-global-tooltip">
+        <strong id="kpi-tip-title"></strong>
+        <span id="kpi-tip-body"></span>
+    </div>
+
+    <script>
+        (function() {
+            const tip    = document.getElementById('kpi-global-tooltip');
+            const tipTtl = document.getElementById('kpi-tip-title');
+            const tipBdy = document.getElementById('kpi-tip-body');
+            const W = 230;
+
+            function show(icon) {
+                tipTtl.textContent = icon.dataset.tipTitle || '';
+                tipBdy.innerHTML   = icon.dataset.tipBody  || '';
+                tip.style.display  = 'block';
+                place(icon);
+            }
+
+            function place(icon) {
+                const rect = icon.getBoundingClientRect();
+                const tipH = tip.offsetHeight;
+                let x = rect.left + rect.width / 2 - W / 2;
+                let y = rect.top  - tipH - 10;
+                // Clamp horizontally
+                if (x < 8) x = 8;
+                if (x + W > window.innerWidth - 8) x = window.innerWidth - W - 8;
+                // If no space above, show below
+                if (y < 8) y = rect.bottom + 10;
+                tip.style.left  = x + 'px';
+                tip.style.top   = y + 'px';
+                // Reposition arrow
+                const arrowX = (rect.left + rect.width / 2) - x;
+                tip.style.setProperty('--arrow-x', arrowX + 'px');
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.kpi-tooltip-icon').forEach(function(icon) {
+                    icon.addEventListener('mouseenter', function() { show(icon); });
+                    icon.addEventListener('mouseleave', function() { tip.style.display = 'none'; });
+                    icon.addEventListener('scroll',     function() { tip.style.display = 'none'; }, true);
+                });
+            });
+        })();
     </script>
 </body>
 </html>
