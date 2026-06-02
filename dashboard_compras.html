@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Personal - Marlene Bernard</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (config before CDN to suppress prod warning) -->
+    <script>if(typeof tailwind!=='undefined'){tailwind.config={};}</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <!-- SheetJS for Excel Reading -->
@@ -577,7 +578,7 @@
                 <!-- Chart: Gasto por Local -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col">
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-6">Gasto por Local</h3>
-                    <div class="w-full relative" style="height: 420px;">
+                    <div id="chartLocal-container" class="w-full relative" style="height: 420px;">
                         <canvas id="chartLocal"></canvas>
                     </div>
                 </div>
@@ -1758,7 +1759,12 @@
                             },
                             y: { 
                                 grid: { display: false },
-                                ticks: { font: { size: 11, weight: 'bold' }, color: '#334155' }
+                                ticks: {
+                                    font: { size: 11, weight: 'bold' },
+                                    color: '#334155',
+                                    autoSkip: extraOptions.autoSkipY === false ? false : true,
+                                    maxRotation: 0
+                                }
                             }
                         } : {
                             y: { 
@@ -1783,11 +1789,14 @@
                 const palette = ['#4f46e5','#6366f1','#818cf8','#a5b4fc','#312e81','#3730a3','#4338ca','#0f172a','#1e293b','#334155','#475569','#64748b','#94a3b8','#cbd5e1','#0ea5e9','#0284c7','#7c3aed','#9333ea','#c026d3'];
                 return palette[i % palette.length];
             });
+            // Ajustar altura dinámicamente: 44px por barra + margen, mínimo 420px
+            const localChartHeight = Math.max(420, localSorted.length * 44 + 60);
+            document.getElementById('chartLocal-container').style.height = localChartHeight + 'px';
             createChart('chartLocal', 'bar',
                 localSorted.map(x => x[0]),
                 localSorted.map(x => x[1]),
                 localColors,
-                { indexAxis: 'y' }
+                { indexAxis: 'y', autoSkipY: false }
             );
 
             // Comprador (Bar) - Sort by Value
