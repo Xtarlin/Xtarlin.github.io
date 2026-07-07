@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Information – IRCC Canada</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+  }
+  body { 
+    font-family: 'Inter', sans-serif; 
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+    background-attachment: fixed;
+    color: #1e293b;
+    margin: 0;
+  }
+  .glass-bg-blobs {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; overflow: hidden; pointer-events: none;
+  }
+  .blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
+    animation: float 20s infinite alternate;
+  }
+  @keyframes float {
+    from { transform: translate(0, 0); }
+    to { transform: translate(100px, 100px); }
+  }
+  
+  .section-header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); color: #fff; }
+  .sub-header { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(4px); color: #f1f5f9; }
+  
+  .field-label { font-size: 0.65rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; display: block; }
+  
+  .form-input {
+    width: 100%; border: 1px solid rgba(203, 213, 225, 0.5); 
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 0.75rem; padding: 0.6rem 0.75rem; font-size: 0.875rem; color: #0f172a; 
+    outline: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .form-input:focus { 
+    background: #fff; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); 
+  }
+  
+  .card { 
+    background: var(--glass-bg); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 1.5rem; 
+    border: 1px solid var(--glass-border); 
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .note-box { background: rgba(254, 249, 195, 0.6); backdrop-filter: blur(4px); border-left: 4px solid #f59e0b; border-radius: 1rem; padding: 1rem; font-size: 0.8rem; }
+  
+  .sig-line { border-bottom: 2px solid #334155; min-height: 2.5rem; }
+  
+  .btn-add { background: var(--accent); color: #fff; border: none; border-radius: 0.75rem; padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+  .btn-add:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+  
+  .btn-remove { background: #ef4444; color: #fff; border: none; border-radius: 0.75rem; padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; }
+  
+  .btn-print { 
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff; border: none; border-radius: 1rem; padding: 0.6rem 1.5rem; 
+    font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+  .btn-print:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3); }
+  
+  .btn-json { 
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #fff; border: none; border-radius: 1rem; padding: 0.6rem 1.5rem; 
+    font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+  }
+  .btn-json:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3); }
+  
+  .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  
+  @media print {
+    header, .no-print, .glass-bg-blobs { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ddd; background: #fff !important; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="glass-bg-blobs">
+  <div class="blob bg-indigo-400 w-[500px] h-[500px] -top-20 -left-20"></div>
+  <div class="blob bg-purple-400 w-[400px] h-[400px] bottom-20 right-20"></div>
+  <div class="blob bg-blue-300 w-[300px] h-[300px] top-1/2 left-1/3"></div>
+</div>
+
+<!-- HEADER -->
+<header class="sticky top-0 z-40 no-print transition-all">
+  <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
+    <div class="card w-full h-16 px-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
+          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base font-black text-slate-900 tracking-tight leading-none">Family Information</h1>
+          <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mt-1">IMM 5707e – IRCC Canada</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex bg-slate-100/50 p-1 rounded-xl border border-slate-200/50">
+          <button id="btn-en" onclick="setLang('en')" class="px-3 py-1.5 rounded-lg text-[10px] font-black transition-all">EN</button>
+          <button id="btn-es" onclick="setLang('es')" class="px-3 py-1.5 rounded-lg text-[10px] font-black transition-all">ES</button>
+        </div>
+        <div class="flex items-center gap-2 no-print">
+        <button class="btn-print" onclick="window.print()" data-i18n="print">🖨 Print / Save PDF</button>
+        <button class="btn-json flex items-center gap-2" onclick="generateFormDataJSON()">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+          </svg>
+          <span data-i18n="generateJsonText">Generate JSON</span>
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SELECTION SCREEN -->
+<div id="selection-screen" class="max-w-5xl mx-auto px-4 sm:px-6 py-16 fade-in">
+  <div class="text-center mb-16">
+    <h2 class="text-4xl font-black text-slate-900 tracking-tight mb-4" data-i18n="portalTitle">Portal de Formularios IRCC</h2>
+    <p class="text-slate-500 text-base max-w-2xl mx-auto leading-relaxed" data-i18n="portalSub">Seleccione el formulario que desea completar para su solicitud de visa canadiense.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <!-- Card IMM 5707e -->
+    <div onclick="showForm('imm5707')" class="card p-10 cursor-pointer hover:border-indigo-300 hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+      <div class="absolute -top-6 -right-6 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl group-hover:bg-indigo-600/20 transition-all"></div>
+      <div class="relative z-10">
+        <div class="w-16 h-16 bg-white/50 backdrop-blur shadow-sm text-indigo-600 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-indigo-200 transition-all duration-300">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2 mb-4">
+          <h3 class="text-2xl font-black text-slate-900">IMM 5707e</h3>
+          <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-full">Family</span>
+        </div>
+        <p class="text-slate-500 text-sm mb-8 leading-relaxed pr-8" data-i18n="desc5707">Información Familiar. Requerido para la mayoría de las solicitudes de residencia temporal.</p>
+        <div class="flex items-center text-indigo-600 font-black text-xs uppercase tracking-widest">
+          <span data-i18n="start">Comenzar</span>
+          <div class="ml-2 w-8 h-8 bg-indigo-50 rounded-full flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card IMM 5257e -->
+    <div onclick="showForm('imm5257')" class="card p-10 cursor-pointer hover:border-indigo-300 hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+      <div class="absolute -top-6 -right-6 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl group-hover:bg-indigo-600/20 transition-all"></div>
+      <div class="relative z-10">
+        <div class="w-16 h-16 bg-white/50 backdrop-blur shadow-sm text-indigo-600 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-indigo-200 transition-all duration-300">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2 mb-4">
+          <h3 class="text-2xl font-black text-slate-900">IMM 5257e</h3>
+          <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-full">Visitor Visa</span>
+        </div>
+        <p class="text-slate-500 text-sm mb-8 leading-relaxed pr-8" data-i18n="desc5257">Solicitud de Visa de Residente Temporal. Formulario principal para visitantes.</p>
+        <div class="flex items-center text-indigo-600 font-black text-xs uppercase tracking-widest">
+          <span data-i18n="start">Comenzar</span>
+          <div class="ml-2 w-8 h-8 bg-indigo-50 rounded-full flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN FORM CONTAINERS -->
+<main id="imm5707-container" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6 fade-in">
+  <button onclick="backToPortal()" class="no-print mb-6 px-4 py-2 card rounded-full flex items-center text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-indigo-600 hover:border-indigo-200 transition-all">
+    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
+    <span data-i18n="back">Volver al Portal</span>
+  </button>
+
+  <!-- INSTRUCTIONS BANNER -->
+  <div class="card p-5">
+    <p class="text-xs text-slate-600 leading-relaxed">
+      Complete <strong>ALL</strong> names in English and in your <span class="text-indigo-600 font-semibold underline">native language</span>
+      (for example, Arabic, Cyrillic, Chinese, Chinese commercial/telegraphic code, Korean, or Japanese characters).
+      Include <strong>ALL</strong> family members even if they are not accompanying you.
+      If you apply on paper and additional space is required, print and attach an additional form.
+    </p>
+    <p class="text-xs text-slate-700 font-bold mt-2 uppercase">Type or print in black ink.</p>
+    <p class="text-xs text-slate-600 mt-1"><strong>Important:</strong> Instructions are available at the end of this form to help you complete the sections below.</p>
+  </div>
+
+  <!-- SECTION A -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3">
+      <span class="text-xs font-black uppercase tracking-widest">Section A</span>
+    </div>
+
+    <!-- APPLICANT -->
+    <div class="px-5 pt-4 pb-2">
+      <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-3">Applicant</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="field-label"><span data-i18n="famName">Family name</span><br><span class="font-normal normal-case text-slate-400" data-i18n="famNameSub">(as shown on passport/travel document)</span></label>
+          <input id="app-family-name" class="form-input" type="text" data-i18n-placeholder="placeholderFamily" placeholder="e.g. Reyes Santos">
+        </div>
+        <div>
+          <label class="field-label"><span data-i18n="givenName">Given name(s)</span><br><span class="font-normal normal-case text-slate-400" data-i18n="givenNameSub">(as shown on passport/travel document)</span></label>
+          <input id="app-given-name" class="form-input" type="text" data-i18n-placeholder="placeholderGiven" placeholder="e.g. Carlos">
+        </div>
+        <div>
+          <label class="field-label"><span data-i18n="nativeName">Name in native language</span><br><span class="font-normal normal-case text-slate-400" data-i18n="nativeNameSub">(if applicable)</span></label>
+          <input id="app-native-name" class="form-input" type="text" placeholder="">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+        <div>
+          <label class="field-label"><span data-i18n="dob">Date of birth</span><br><span class="font-normal normal-case" data-i18n="dobSub">(YYYY-MM-DD)</span></label>
+          <input id="app-dob" class="form-input" type="date">
+        </div>
+        <div>
+          <label class="field-label"><span data-i18n="countryBirth">Country or territory of birth</span><br><span class="font-normal normal-case text-slate-400" data-i18n="countryBirthSub">(as on passport)</span></label>
+          <input id="app-country-birth" class="form-input" type="text" placeholder="e.g. Dominican Republic">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="marital">Marital status</label>
+          <select id="app-marital" class="form-input">
+            <option value="" data-i18n="selectDefault">-- Select --</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Common-law</option>
+            <option>Divorced</option>
+            <option>Separated</option>
+            <option>Widowed</option>
+            <option>Annulled Marriage</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="occupation">Present occupation</label>
+          <input id="app-occupation" class="form-input" type="text" data-i18n-placeholder="placeholderOccupation" placeholder="e.g. Interiorista">
+        </div>
+      </div>
+    </div>
+
+    <!-- SPOUSE SECTION (Dynamic) -->
+    <div id="spouse-section" class="hidden border-t border-slate-100 fade-in">
+      <div class="sub-header px-5 py-2">
+        <span class="text-xs font-black uppercase tracking-widest" data-i18n="spouseTitle">Your Spouse, Common-law Partner or Conjugal Partner</span>
+      </div>
+      <div class="px-5 py-4">
+        <div class="flex items-center gap-6 mb-4">
+          <span class="text-xs font-bold text-slate-600" data-i18n="accompany">Will accompany you to Canada?</span>
+          <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+            <input type="radio" name="sp-accompany" value="yes" class="accent-indigo-600"> <span data-i18n="yes">YES</span>
+          </label>
+          <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+            <input type="radio" name="sp-accompany" value="no" class="accent-indigo-600"> <span data-i18n="no">NO</span>
+          </label>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="field-label"><span data-i18n="famName">Family name</span><br><span class="font-normal normal-case text-slate-400" data-i18n="famNameSub">(as shown on passport/travel document)</span></label>
+            <input id="sp-family-name" class="form-input" type="text">
+          </div>
+          <div>
+            <label class="field-label"><span data-i18n="givenName">Given name(s)</span><br><span class="font-normal normal-case text-slate-400" data-i18n="givenNameSub">(as shown on passport/travel document)</span></label>
+            <input id="sp-given-name" class="form-input" type="text">
+          </div>
+          <div>
+            <label class="field-label"><span data-i18n="nativeName">Name in native language</span><br><span class="font-normal normal-case text-slate-400" data-i18n="nativeNameSub">(if applicable)</span></label>
+            <input id="sp-native-name" class="form-input" type="text">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <label class="field-label"><span data-i18n="dob">Date of birth</span><br><span class="font-normal normal-case" data-i18n="dobSub">(YYYY-MM-DD)</span></label>
+            <input id="sp-dob" class="form-input" type="date">
+          </div>
+          <div>
+            <label class="field-label"><span data-i18n="countryBirth">Country or territory of birth</span><br><span class="font-normal normal-case text-slate-400" data-i18n="countryBirthSub">(as on passport)</span></label>
+            <input id="sp-country-birth" class="form-input" type="text">
+          </div>
+          <div>
+            <label class="field-label"><span data-i18n="address">Present address</span><br><span class="font-normal normal-case text-slate-400" data-i18n="addressSub">(If deceased give city/town, country and date of death)</span></label>
+            <input id="sp-address" class="form-input" type="text">
+          </div>
+          <div>
+            <label class="field-label" data-i18n="occupation">Present occupation</label>
+            <input id="sp-occupation" class="form-input" type="text">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTE 1 -->
+    <div class="mx-5 mb-4 note-box">
+      <p class="font-black text-amber-800 mb-1 text-xs">NOTE 1: If no spouse, common-law or conjugal partner is listed in Section A, read and sign below.</p>
+      <p class="text-amber-900 text-xs">I certify that I do not have a spouse, common-law or conjugal partner.</p>
+      <div class="flex flex-col sm:flex-row gap-6 mt-3">
+        <div class="flex-1">
+          <label class="field-label" data-i18n="signature">Signature</label>
+          <div class="sig-line mt-1"></div>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="date">Date (YYYY-MM-DD)</label>
+          <input id="note1-date" class="form-input w-40" type="date">
+        </div>
+      </div>
+    </div>
+
+    <!-- PARENT 1 -->
+    <div class="sub-header px-5 py-2 mt-2">
+      <span class="text-xs font-black uppercase tracking-widest">Your Parent 1 (Mother or Father)</span>
+    </div>
+    <div class="px-5 py-4">
+      <div class="flex items-center gap-6 mb-4">
+        <span class="text-xs font-bold text-slate-600">Will accompany you to Canada?</span>
+        <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+          <input type="radio" name="p1-accompany" value="yes" class="accent-indigo-600"> YES
+        </label>
+        <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+          <input type="radio" name="p1-accompany" value="no" class="accent-indigo-600"> NO
+        </label>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="field-label" data-i18n="famName">Family name</label>
+          <input id="p1-family-name" class="form-input" type="text" placeholder="">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="givenName">Given name(s)</label>
+          <input id="p1-given-name" class="form-input" type="text" placeholder="">
+        </div>
+        <div>
+          <label class="field-label"><span data-i18n="dob">Date of birth</span> <span data-i18n="dobSub">(YYYY-MM-DD)</span></label>
+          <input id="p1-dob" class="form-input" type="date">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div>
+          <label class="field-label" data-i18n="countryBirth">Country or territory of birth</label>
+          <input id="p1-country-birth" class="form-input" type="text">
+        </div>
+        <div class="sm:col-span-1">
+          <label class="field-label"><span data-i18n="address">Present address</span><br><span class="font-normal normal-case text-slate-400" data-i18n="addressSub">(If deceased give city/town, country and date of death)</span></label>
+          <input id="p1-address" class="form-input" type="text">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="marital">Marital status</label>
+          <select id="p1-marital" class="form-input">
+            <option value="" data-i18n="selectDefault">-- Select --</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Common-law</option>
+            <option>Divorced</option>
+            <option>Separated</option>
+            <option>Widowed</option>
+            <option>Annulled Marriage</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="occupation">Present occupation</label>
+          <input id="p1-occupation" class="form-input" type="text">
+        </div>
+      </div>
+    </div>
+
+    <!-- PARENT 2 -->
+    <div class="sub-header px-5 py-2">
+      <span class="text-xs font-black uppercase tracking-widest">Your Parent 2 (Mother or Father)</span>
+    </div>
+    <div class="px-5 py-4">
+      <div class="flex items-center gap-6 mb-4">
+        <span class="text-xs font-bold text-slate-600">Will accompany you to Canada?</span>
+        <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+          <input type="radio" name="p2-accompany" value="yes" class="accent-indigo-600"> YES
+        </label>
+        <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+          <input type="radio" name="p2-accompany" value="no" class="accent-indigo-600"> NO
+        </label>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="field-label" data-i18n="famName">Family name</label>
+          <input id="p2-family-name" class="form-input" type="text">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="givenName">Given name(s)</label>
+          <input id="p2-given-name" class="form-input" type="text">
+        </div>
+        <div>
+          <label class="field-label"><span data-i18n="dob">Date of birth</span> <span data-i18n="dobSub">(YYYY-MM-DD)</span></label>
+          <input id="p2-dob" class="form-input" type="date">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div>
+          <label class="field-label" data-i18n="countryBirth">Country or territory of birth</label>
+          <input id="p2-country-birth" class="form-input" type="text">
+        </div>
+        <div>
+          <label class="field-label"><span data-i18n="address">Present address</span><br><span class="font-normal normal-case text-slate-400" data-i18n="addressSub">(If deceased give city/town, country and date of death)</span></label>
+          <input id="p2-address" class="form-input" type="text">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="marital">Marital status</label>
+          <select id="p2-marital" class="form-input">
+            <option value="" data-i18n="selectDefault">-- Select --</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Common-law</option>
+            <option>Divorced</option>
+            <option>Separated</option>
+            <option>Widowed</option>
+            <option>Annulled Marriage</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="occupation">Present occupation</label>
+          <input id="p2-occupation" class="form-input" type="text">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION B – CHILDREN -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3 flex items-center justify-between">
+      <span class="text-xs font-black uppercase tracking-widest">Section B – Children</span>
+    </div>
+    <div class="px-5 pt-4 pb-2">
+      <p class="text-xs text-slate-600 mb-1">Include <strong>ALL</strong> sons and daughters, including <strong>ALL</strong> adopted and step-children, regardless of age or place of residence.</p>
+      <p class="text-xs text-slate-500 mb-4">If you require more space, please either add lines to the form by pressing the + button or attach a separate sheet with the additional information.</p>
+
+      <label class="flex items-center gap-2 text-xs font-bold cursor-pointer mb-4">
+        <input type="checkbox" id="no-children" class="accent-indigo-600 w-4 h-4" onchange="toggleChildren(this)">
+        I do not have any children
+      </label>
+
+      <div id="children-container" class="space-y-6"></div>
+
+      <button class="btn-add mt-4 no-print" onclick="addChild()">+ Add Child</button>
+    </div>
+
+    <!-- NOTE 2 -->
+    <div class="mx-5 mb-5 mt-4 note-box">
+      <p class="font-black text-amber-800 mb-1 text-xs">NOTE 2: If no children are listed in Section B, read and sign below.</p>
+      <p class="text-amber-900 text-xs">I certify that I do not have any natural, adopted nor step-children.</p>
+      <div class="flex flex-col sm:flex-row gap-6 mt-3">
+        <div class="flex-1">
+          <label class="field-label" data-i18n="signature">Signature</label>
+          <div class="sig-line mt-1"></div>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="date">Date (YYYY-MM-DD)</label>
+          <input id="note2-date" class="form-input w-40" type="date">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION C – CERTIFICATION -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3">
+      <span class="text-xs font-black uppercase tracking-widest">Section C – Certification</span>
+    </div>
+    <div class="px-5 py-5">
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 text-xs text-slate-700 leading-relaxed">
+        I certify that the information contained in this document is complete, accurate and factual. I also realize that once this document has been completed and signed that it will form part of my Immigration Record and will be used to verify my family details on future applications.
+      </div>
+      <div class="flex flex-col sm:flex-row gap-6">
+        <div class="flex-1">
+          <label class="field-label" data-i18n="signature">Signature</label>
+          <div class="sig-line mt-1"></div>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="date">Date (YYYY-MM-DD)</label>
+          <input id="cert-date" class="form-input w-44" type="date" value="2026-07-07">
+        </div>
+      </div>
+    </div>
+    <div class="px-5 pb-5">
+      <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-xs text-indigo-900 leading-relaxed">
+        <strong>The information you provide on this form</strong> is collected under the authority of the <em>Immigration and Refugee Protection Act</em> to determine if you may be admitted to Canada as a temporary resident. It will be stored in Personal Information Bank CIC PPU 055, Visitor Case File. It is protected and accessible under the <em>Privacy Act</em> and the <em>Access to Information Act.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTRUCTIONS SECTION -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3">
+      <span class="text-xs font-black uppercase tracking-widest">Instructions</span>
+    </div>
+    <div class="px-5 py-5 space-y-4 text-xs text-slate-700">
+      <div>
+        <p class="font-black text-slate-900 mb-1">Who needs to fill out this application form?</p>
+        <p class="mb-1">This form must be completed by:</p>
+        <ul class="list-disc ml-5 space-y-0.5">
+          <li>each person, 18 years of age or older, or</li>
+          <li>a minor (less than 18 years of age) travelling alone.</li>
+        </ul>
+      </div>
+      <div class="border border-slate-200 rounded-xl p-4">
+        <p class="font-black text-slate-900 mb-2">Section A</p>
+        <p class="mb-2">Write the personal details for: yourself, your spouse/common-law/conjugal partner (if applicable), your mother and your father or parent.</p>
+        <p class="mb-1">Include: full name (family name and given name), name in native language (if applicable), date of birth, country or territory of birth, present address, marital status and present occupation (job).</p>
+        <p class="mb-1"><strong>Check Yes or No</strong> to indicate if the person will accompany you to Canada.</p>
+        <p class="mb-1">If a person is deceased, indicate in which city/town, country and the date of death under "Present address".</p>
+        <p class="mb-1">If a person is not employed, indicate whether the person is retired, studying, etc.</p>
+        <p class="mb-1">If a section does not apply to you write "Not applicable" or "N/A".</p>
+        <p class="font-semibold text-indigo-700">Note: If you do not have a spouse, a common-law or conjugal partner, read "Note 1", sign and date the declaration.</p>
+      </div>
+      <div class="border border-slate-200 rounded-xl p-4">
+        <p class="font-black text-slate-900 mb-2">Section B</p>
+        <p class="mb-2">Write the personal details for your children. It is very important that you list all of your children (even if they are already permanent residents or citizens of Canada). This includes: married children, adopted children, children of your spouse (step-children) or common-law partner, any of your children who have been adopted by others, any of your children who are in the custody of an ex-spouse, former common-law partner or other guardian.</p>
+        <p class="mb-1">Include: relationship (e.g. son, adopted daughter), full name, name in native language (if applicable), date of birth, country or territory of birth, present address, marital status and present occupation (job).</p>
+        <p class="font-semibold text-indigo-700">Note: If you do not have any children, check the box 'I do not have any children' and read "Note 2", sign and date the declaration.</p>
+      </div>
+      <div class="border border-slate-200 rounded-xl p-4">
+        <p class="font-black text-slate-900 mb-1">Section C – Signature</p>
+        <p class="mb-1">Sign and date in the sections provided.</p>
+        <p><strong>Note:</strong> By signing, you certify that you fully understand the questions asked, and that the information you have provided is complete, accurate and factual. If you do not sign or date the form, your application will be returned to you.</p>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 text-[11px] leading-relaxed text-slate-600">
+        Personal information provided on this form is collected by Immigration, Refugees, and Citizenship Canada (IRCC) under the authority of the Immigration and Refugee Protection Act (IRPA). The personal information provided will be used for the purpose of processing an application. The personal information provided may be disclosed to other federal government institutions, law enforcement bodies, provincial/territorial governments, foreign governments for the purpose of validating identity, eligibility and admissibility. The personal information may also be disclosed to medical practitioners for the purpose of validating identity and eligibility.<br><br>
+        Personal information may also be used for other purposes including research, statistics, program and policy evaluation, internal audit, compliance, risk management, subsequent program eligibility, and strategy development and reporting.<br><br>
+        Failure to complete the form in full may result in a delay or the application not being processed. The Privacy Act gives individuals the right of access to, protection, and correction of their personal information. If you are not satisfied with the manner in which IRCC handles your personal information, you may exercise your right to file a complaint to the Office of the Privacy Commissioner of Canada. The collection, use, disclosure and retention of your personal information is further described in IRCC's Personal Information Bank – IRCC PPU 013, 051, 068.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<main id="imm5257-container" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6 fade-in">
+  <button onclick="backToPortal()" class="no-print mb-6 px-4 py-2 card rounded-full flex items-center text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-indigo-600 hover:border-indigo-200 transition-all">
+    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
+    <span data-i18n="back">Volver al Portal</span>
+  </button>
+
+
+
+  <!-- SECTION 1: TOP FIELDS -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="card p-5">
+      <label class="field-label" data-i18n="uci">UCI</label>
+      <input type="text" class="form-input" placeholder="0000-0000">
+    </div>
+    <div class="card p-5">
+      <label class="field-label" data-i18n="serviceLang">I want service in</label>
+      <select class="form-input">
+        <option>English</option>
+        <option>Français</option>
+      </select>
+    </div>
+    <div class="card p-5">
+      <label class="field-label" data-i18n="visaRequested">Visa Requested</label>
+      <select class="form-input">
+        <option>Visitor Visa</option>
+        <option>Transit Visa</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SECTION 2: PERSONAL DETAILS -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3">
+      <span class="text-xs font-black uppercase tracking-widest" data-i18n="personalDetails">Personal Details</span>
+    </div>
+    <div class="px-5 py-6 space-y-8">
+      <!-- Full Name -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label class="field-label" data-i18n="famName">Family name</label>
+          <input type="text" class="form-input" data-i18n-placeholder="placeholderFamily" placeholder="e.g. Reyes Santos">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="givenName">Given name(s)</label>
+          <input type="text" class="form-input" data-i18n-placeholder="placeholderGiven" placeholder="e.g. Carlos">
+        </div>
+      </div>
+
+      <!-- Alias -->
+      <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+        <label class="flex items-center gap-3 text-xs font-bold text-slate-700 mb-4 cursor-pointer">
+          <input type="checkbox" class="accent-indigo-600 w-4 h-4" onchange="toggleAlias(this)">
+          <span data-i18n="aliasQuestion">Have you ever used any other name?</span>
+        </label>
+        <div id="alias-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+          <div>
+            <label class="field-label" data-i18n="famName">Family name</label>
+            <input type="text" class="form-input">
+          </div>
+          <div>
+            <label class="field-label" data-i18n="givenName">Given name(s)</label>
+            <input type="text" class="form-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- Birth Info -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+        <div>
+          <label class="field-label" data-i18n="gender">Sex</label>
+          <select class="form-input">
+            <option value="" data-i18n="selectDefault">-- Select --</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="dob">Date of Birth</label>
+          <input type="date" class="form-input">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="pob">Place of Birth (City)</label>
+          <input type="text" class="form-input" placeholder="e.g. Altamira">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="countryBirth">Country or Territory</label>
+          <input type="text" class="form-input" placeholder="e.g. Dominican Republic">
+        </div>
+      </div>
+
+      <!-- Citizenship & Residence -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label class="field-label" data-i18n="citizenship">Citizenship</label>
+          <input type="text" class="form-input" placeholder="e.g. Dominican Republic">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="residence">Current country of residence</label>
+          <div class="grid grid-cols-2 gap-4">
+            <input type="text" class="form-input" data-i18n-placeholder="status" placeholder="Status (e.g. Citizen)">
+            <input type="text" class="form-input" placeholder="Other">
+          </div>
+        </div>
+      </div>
+
+      <!-- Previous Residence & Where Applying -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+          <label class="flex items-center gap-3 text-xs font-bold text-slate-700 mb-2 cursor-pointer">
+            <input type="checkbox" class="accent-indigo-600 w-4 h-4">
+            <span data-i18n="prevResQuestion">Previous countries of residence (past 5 years)?</span>
+          </label>
+        </div>
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+          <label class="flex items-center gap-3 text-xs font-bold text-slate-700 mb-2 cursor-pointer">
+            <input type="checkbox" class="accent-indigo-600 w-4 h-4">
+            <span data-i18n="applyingQuestion">Country where applying same as residence?</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Marital Status Details -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+        <div>
+          <label class="field-label" data-i18n="marital">Marital status</label>
+          <select id="app5257-marital" class="form-input">
+            <option value="" data-i18n="selectDefault">-- Select --</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Common-law</option>
+            <option>Divorced</option>
+            <option>Separated</option>
+            <option>Widowed</option>
+            <option>Annulled Marriage</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="prevMarital">Have you previously been married?</label>
+          <div class="flex gap-4 mt-2">
+            <label class="flex items-center gap-2 text-xs font-bold cursor-pointer">
+              <input type="radio" name="prev-married" value="yes" class="accent-indigo-600" onchange="togglePrevMarried(true)"> 
+              <span data-i18n="yes">YES</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs font-bold cursor-pointer">
+              <input type="radio" name="prev-married" value="no" class="accent-indigo-600" onchange="togglePrevMarried(false)"> 
+              <span data-i18n="no">NO</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Previous Marriage Details -->
+      <div id="prev-married-details" class="hidden space-y-6 pt-6 border-t border-slate-100 bg-slate-50 p-5 rounded-2xl border border-slate-100">
+        <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest" data-i18n="prevPartnerInfo">Previous Spouse/Partner Information</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <label class="field-label" data-i18n="famName">Family name</label>
+            <input type="text" class="form-input">
+          </div>
+          <div>
+            <label class="field-label" data-i18n="givenName">Given name(s)</label>
+            <input type="text" class="form-input">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div>
+            <label class="field-label" data-i18n="dob">Date of Birth</label>
+            <input type="date" class="form-input">
+          </div>
+          <div>
+            <label class="field-label" data-i18n="relType">Type of Relationship</label>
+            <select class="form-input">
+              <option value="" data-i18n="selectDefault">-- Select --</option>
+              <option data-i18n="married">Married</option>
+              <option data-i18n="commonLaw">Common-law</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" data-i18n="duration">Duration (From - To)</label>
+            <div class="flex gap-2">
+              <input type="date" class="form-input text-[10px]" title="From">
+              <input type="date" class="form-input text-[10px]" title="To">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: LANGUAGES & ID -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Languages -->
+    <div class="card overflow-hidden">
+      <div class="section-header px-5 py-3">
+        <span class="text-xs font-black uppercase tracking-widest" data-i18n="languages">Languages</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="field-label" data-i18n="nativeLang">Native language</label>
+          <input type="text" class="form-input" placeholder="e.g. Spanish">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="commLang">Able to communicate in</label>
+          <select class="form-input">
+            <option>English</option>
+            <option>French</option>
+            <option>Both</option>
+            <option>Neither</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- National ID -->
+    <div class="card overflow-hidden">
+      <div class="section-header px-5 py-3">
+        <span class="text-xs font-black uppercase tracking-widest" data-i18n="nationalId">National Identity Document</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="flex items-center gap-4 mb-2">
+          <span class="text-xs font-bold text-slate-600" data-i18n="haveId">Do you have one?</span>
+          <label class="flex items-center gap-1 text-xs font-bold"><input type="radio" name="has-id"> YES</label>
+          <label class="flex items-center gap-1 text-xs font-bold"><input type="radio" name="has-id"> NO</label>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="docNum">Document Number</label>
+          <input type="text" class="form-input">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="countryIssue">Country of Issue</label>
+          <input type="text" class="form-input">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="field-label" data-i18n="issueDate">Issue Date</label>
+            <input type="date" class="form-input">
+          </div>
+          <div>
+            <label class="field-label" data-i18n="expiryDate">Expiry Date</label>
+            <input type="date" class="form-input">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: PASSPORT & CONTACT -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Passport -->
+    <div class="card overflow-hidden">
+      <div class="section-header px-5 py-3">
+        <span class="text-xs font-black uppercase tracking-widest" data-i18n="passport">Passport</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="field-label" data-i18n="passNum">Passport number</label>
+            <input type="text" class="form-input" placeholder="RD0000000">
+          </div>
+          <div>
+            <label class="field-label" data-i18n="countryIssue">Country of Issue</label>
+            <input type="text" class="form-input">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="field-label" data-i18n="issueDate">Issue Date</label>
+            <input type="date" class="form-input">
+          </div>
+          <div>
+            <label class="field-label" data-i18n="expiryDate">Expiry Date</label>
+            <input type="date" class="form-input">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="card overflow-hidden">
+      <div class="section-header px-5 py-3">
+        <span class="text-xs font-black uppercase tracking-widest" data-i18n="contact">Contact Information</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="field-label" data-i18n="email">Email Address</label>
+          <input type="email" class="form-input" placeholder="name@example.com">
+        </div>
+        <div>
+          <label class="field-label" data-i18n="phone">Telephone Number</label>
+          <div class="flex gap-2">
+            <select class="form-input w-1/3">
+              <option>Cellular</option>
+              <option>Residence</option>
+              <option>Business</option>
+            </select>
+            <input type="text" class="form-input flex-1" placeholder="+1 (809) 000-0000">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: EDUCATION & EMPLOYMENT -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3">
+      <span class="text-xs font-black uppercase tracking-widest" data-i18n="eduEmp">Education & Employment</span>
+    </div>
+    <div class="p-5 space-y-8">
+      <!-- Education -->
+      <div>
+        <div class="flex items-center gap-6 mb-4">
+          <span class="text-xs font-bold text-slate-700" data-i18n="eduQuestion">Have you had any post secondary education?</span>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 text-xs font-bold cursor-pointer">
+              <input type="radio" name="edu-choice" value="yes" class="accent-indigo-600 w-4 h-4" onchange="toggleEdu(this)">
+              <span data-i18n="yes">YES</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs font-bold cursor-pointer">
+              <input type="radio" name="edu-choice" value="no" class="accent-indigo-600 w-4 h-4" onchange="toggleEdu(this)">
+              <span data-i18n="no">NO</span>
+            </label>
+          </div>
+        </div>
+        
+        <div id="edu-details" class="hidden space-y-6 bg-slate-50 p-5 rounded-2xl border border-slate-100">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label class="field-label" data-i18n="fieldStudy">Field of Study</label>
+              <input type="text" class="form-input" placeholder="e.g. Design">
+            </div>
+            <div>
+              <label class="field-label" data-i18n="schoolName">School/Facility Name</label>
+              <input type="text" class="form-input">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+            <div>
+              <label class="field-label" data-i18n="startDate">Start Date</label>
+              <input type="date" class="form-input">
+            </div>
+            <div>
+              <label class="field-label" data-i18n="endDate">End Date</label>
+              <input type="date" class="form-input">
+            </div>
+            <div>
+              <label class="field-label" data-i18n="city">City</label>
+              <input type="text" class="form-input">
+            </div>
+            <div>
+              <label class="field-label" data-i18n="country">Country</label>
+              <input type="text" class="form-input">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employment -->
+      <div>
+        <p class="text-xs font-black text-slate-900 mb-4 uppercase tracking-wider" data-i18n="employment">Employment (Past 10 years)</p>
+        <div class="space-y-6">
+          <!-- Job 1 -->
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4">
+            <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest" data-i18n="job1">Employment 1 (Current)</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label class="field-label" data-i18n="duration">Duration (From - To)</label>
+                <div class="flex gap-2"><input type="date" class="form-input text-xs"><input type="date" class="form-input text-xs"></div>
+              </div>
+              <div>
+                <label class="field-label" data-i18n="occupation">Occupation</label>
+                <input type="text" class="form-input">
+              </div>
+              <div>
+                <label class="field-label" data-i18n="companyName">Company/Employer</label>
+                <input type="text" class="form-input">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="field-label" data-i18n="city">City</label>
+                <input type="text" class="form-input">
+              </div>
+              <div>
+                <label class="field-label" data-i18n="country">Country</label>
+                <input type="text" class="form-input">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Job 2 -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-100 space-y-4">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest" data-i18n="job2">Employment 2</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label class="field-label" data-i18n="duration">Duration (From - To)</label>
+                <div class="flex gap-2"><input type="date" class="form-input text-xs"><input type="date" class="form-input text-xs"></div>
+              </div>
+              <div>
+                <label class="field-label" data-i18n="occupation">Occupation</label>
+                <input type="text" class="form-input">
+              </div>
+              <div>
+                <label class="field-label" data-i18n="companyName">Company/Employer</label>
+                <input type="text" class="form-input">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="field-label" data-i18n="city">City</label>
+                <input type="text" class="form-input">
+              </div>
+              <div>
+                <label class="field-label" data-i18n="country">Country</label>
+                <input type="text" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- Job 3 -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-100 space-y-4">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest" data-i18n="job3">Employment 3</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label class="field-label" data-i18n="duration">Duration (From - To)</label>
+                <div class="flex gap-2"><input type="date" class="form-input text-xs"><input type="date" class="form-input text-xs"></div>
+              </div>
+              <div>
+                <label class="field-label" data-i18n="occupation">Occupation</label>
+                <input type="text" class="form-input">
+              </div>
+              <div>
+                <label class="field-label" data-i18n="companyName">Company/Employer</label>
+                <input type="text" class="form-input">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="field-label" data-i18n="city">City</label>
+                <input type="text" class="form-input">
+              </div>
+              <div>
+                <label class="field-label" data-i18n="country">Country</label>
+                <input type="text" class="form-input">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: BACKGROUND INFO -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3">
+      <span class="text-xs font-black uppercase tracking-widest" data-i18n="backgroundInfo">Background Information</span>
+    </div>
+    <div class="p-5 space-y-8">
+      <!-- Group 1: Health -->
+      <div class="space-y-4">
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg1">1. a) Within the past two years, have you or a family member ever had tuberculosis of the lungs or been in close contact with a person with tuberculosis?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg1a" value="yes" class="accent-indigo-600" onchange="toggleBgDetails('bg1-details', true)"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg1a" value="no" class="accent-indigo-600" onchange="toggleBgDetails('bg1-details', false)"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg1b">b) Do you have any physical or mental disorder that would require social and/or health services, other than medication, during a stay in Canada?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg1b" value="yes" class="accent-indigo-600" onchange="toggleBgDetails('bg1-details', true)"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg1b" value="no" class="accent-indigo-600" onchange="toggleBgDetails('bg1-details', false)"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div id="bg1-details" class="hidden pt-2">
+          <label class="field-label" data-i18n="provideDetails">Please provide details:</label>
+          <textarea class="form-input min-h-[80px] text-xs" data-i18n-placeholder="detailsPlaceholder"></textarea>
+        </div>
+      </div>
+
+      <!-- Group 2: Status & Refusal (The user's specific request) -->
+      <div class="space-y-4 pt-6 border-t border-slate-100">
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg2a">2. a) Have you ever remained beyond the validity of your status, attended school without authorization or worked without authorization in Canada?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg2a" value="yes" class="accent-indigo-600" onchange="checkGroup2()"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg2a" value="no" class="accent-indigo-600" onchange="checkGroup2()"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg2b">b) Have you ever been refused a visa or permit, denied entry or ordered to leave Canada or any other country or territory?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg2b" value="yes" class="accent-indigo-600" onchange="checkGroup2()"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg2b" value="no" class="accent-indigo-600" onchange="checkGroup2()"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg2c">c) Have you previously applied to enter or remain in Canada?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg2c" value="yes" class="accent-indigo-600" onchange="checkGroup2()"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg2c" value="no" class="accent-indigo-600" onchange="checkGroup2()"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div id="bg2-details" class="hidden pt-2">
+          <label class="field-label" data-i18n="provideDetailsGroup2">If you answered "yes" to question 2a), 2b), or 2c), please provide details:</label>
+          <textarea class="form-input min-h-[80px] text-xs" data-i18n-placeholder="detailsPlaceholder"></textarea>
+        </div>
+      </div>
+
+      <!-- Group 3: Criminality -->
+      <div class="space-y-4 pt-6 border-t border-slate-100">
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg3">3. a) Have you ever committed, been arrested for or charged with any criminal offence in any country or territory?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg3a" value="yes" class="accent-indigo-600" onchange="toggleBgDetails('bg3-details', true)"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg3a" value="no" class="accent-indigo-600" onchange="toggleBgDetails('bg3-details', false)"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div id="bg3-details" class="hidden pt-2">
+          <label class="field-label" data-i18n="provideDetails">Please provide details:</label>
+          <textarea class="form-input min-h-[80px] text-xs" data-i18n-placeholder="detailsPlaceholder"></textarea>
+        </div>
+      </div>
+
+      <!-- Group 4: Military/Police -->
+      <div class="space-y-4 pt-6 border-t border-slate-100">
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg4">4. a) Did you serve in any military, militia, or civil defence unit or serve in a security organization or police force (including non obligatory national service, reserve or volunteer units)?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg4a" value="yes" class="accent-indigo-600" onchange="toggleBgDetails('bg4-details', true)"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg4a" value="no" class="accent-indigo-600" onchange="toggleBgDetails('bg4-details', false)"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div id="bg4-details" class="hidden pt-2">
+          <label class="field-label" data-i18n="provideDetailsGroup4">If you answered "yes" to question 4a), please provide dates of service and countries or territories where you served:</label>
+          <textarea class="form-input min-h-[80px] text-xs" data-i18n-placeholder="detailsPlaceholder"></textarea>
+        </div>
+      </div>
+
+      <!-- Questions 5 & 6 -->
+      <div class="space-y-4 pt-6 border-t border-slate-100">
+        <div class="flex items-start justify-between gap-6">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg5">5. Are you, or have you ever been a member or associated with any political party, or other group or organization which has engaged in or advocated violence as a means to achieving a political or religious objective, or which has been associated with criminal activity at any time?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg5" value="yes" class="accent-indigo-600"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg5" value="no" class="accent-indigo-600"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+        <div class="flex items-start justify-between gap-6 pt-4">
+          <p class="text-xs font-bold text-slate-800 leading-relaxed" data-i18n="bg6">6. Have you ever witnessed or participated in the ill treatment of prisoners or civilians, looting or desecration of religious buildings?</p>
+          <div class="flex gap-4 shrink-0">
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg6" value="yes" class="accent-indigo-600"> <span data-i18n="yes">YES</span></label>
+            <label class="flex items-center gap-2 text-[10px] font-black cursor-pointer"><input type="radio" name="bg6" value="no" class="accent-indigo-600"> <span data-i18n="no">NO</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule 1 Note -->
+      <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl">
+        <p class="text-[11px] font-bold text-amber-800 leading-relaxed" data-i18n="bgNote">If you answered "yes" to any of questions 3 to 6 above, or upon request of a visa officer, you MAY BE REQUIRED to fill out IMM 5257 Schedule 1.</p>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- SECTION 7: VISIT DETAILS -->
+  <div class="card overflow-hidden">
+    <div class="section-header px-5 py-3">
+      <span class="text-xs font-black uppercase tracking-widest" data-i18n="visitDetails">Details of Visit to Canada</span>
+    </div>
+    <div class="p-5 space-y-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div>
+          <label class="field-label" data-i18n="purpose">Purpose of my visit</label>
+          <select class="form-input">
+            <option>Tourism</option>
+            <option>Business</option>
+            <option>Family Visit</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="duration">How long you plan to stay</label>
+          <div class="flex gap-2">
+            <input type="date" class="form-input text-xs" title="From">
+            <input type="date" class="form-input text-xs" title="To">
+          </div>
+        </div>
+        <div>
+          <label class="field-label" data-i18n="funds">Funds available (CAD)</label>
+          <input type="number" class="form-input" placeholder="3000">
+        </div>
+      </div>
+
+      <!-- People/Institutions to visit -->
+      <div class="space-y-6 pt-6 border-t border-slate-100">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest" data-i18n="visitContacts">Name, address and relationship of any person(s) or institution(s) I will visit:</p>
+        
+        <!-- Entry 1 -->
+        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label class="field-label" data-i18n="name">Name</label>
+              <input type="text" class="form-input">
+            </div>
+            <div>
+              <label class="field-label" data-i18n="relationship">Relationship to me</label>
+              <input type="text" class="form-input">
+            </div>
+          </div>
+          <div>
+            <label class="field-label" data-i18n="addressCanada">Address in Canada</label>
+            <input type="text" class="form-input" placeholder="Full address in Canada">
+          </div>
+        </div>
+
+        <!-- Entry 2 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label class="field-label" data-i18n="name">Name</label>
+              <input type="text" class="form-input">
+            </div>
+            <div>
+              <label class="field-label" data-i18n="relationship">Relationship to me</label>
+              <input type="text" class="form-input">
+            </div>
+          </div>
+          <div>
+            <label class="field-label" data-i18n="addressCanada">Address in Canada</label>
+            <input type="text" class="form-input" placeholder="Full address in Canada">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL ACTIONS -->
+  <div class="flex justify-end gap-4 no-print pt-6">
+    <button onclick="backToPortal()" class="px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all" data-i18n="cancel">Cancel</button>
+    <button onclick="window.print()" class="btn-print px-8 py-3 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all" data-i18n="print">Print / Save PDF</button>
+  </div>
+</main>
+
+<footer class="no-print py-6 text-center fade-in">
+  <div class="card inline-block px-6 py-2.5">
+    <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Formulario generado y creado por <a href="https://www.linkedin.com/in/starlingbernard/" target="_blank" class="text-indigo-600 hover:text-indigo-400 transition-colors border-b border-indigo-200">SBERNARD</a></p>
+  </div>
+</footer>
+
+<script>
+let currentLang = 'es';
+let currentFormId = null;
+let childCount = 0;
+
+const T = {
+  en: {
+    print:'🖨 Print / Save PDF',
+    generateJsonText:'Generate JSON',
+    formTitle:'IRCC Forms Portal', formSub:'Select a form to begin',
+    formTitle5707:'Family Information', formSub5707:'IMM 5707e – IRCC Canada',
+    formTitle5257:'Application for Visitor Visa', formSub5257:'IMM 5257e – IRCC Canada',
+    bannerP1:'Complete <strong>ALL</strong> names in English and in your <span class="text-indigo-600 font-semibold underline">native language</span> (for example, Arabic, Cyrillic, Chinese, Korean, or Japanese characters). Include <strong>ALL</strong> family members even if they are not accompanying you.',
+    bannerInk:'Type or print in black ink.',
+    bannerNote:'<strong>Important:</strong> Instructions are available at the end of this form to help you complete the sections below.',
+    portalTitle:'IRCC Forms Portal',
+    portalSub:'Select the form you wish to complete for your Canadian visa application.',
+    desc5707:'Family Information. Required for most temporary resident applications.',
+    desc5257:'Application for Temporary Resident Visa. Main form for visitors.',
+    start:'Start',
+    back:'Back to Portal',
+    secA:'Section A', secB:'Section B – Children', secC:'Section C – Certification', secIns:'Instructions',
+    title5257:'Application for Visitor Visa (TRV)',
+    validate:'Validate',
+    uci:'UCI',
+    serviceLang:'I want service in',
+    visaRequested:'Visa Requested',
+    personalDetails:'Personal Details',
+    aliasQuestion:'Have you ever used any other name?',
+    gender:'Sex',
+    pob:'Place of Birth (City)',
+    citizenship:'Citizenship',
+    residence:'Current country of residence',
+    status:'Status',
+    passport:'Passport',
+    passNum:'Passport number',
+    issueDate:'Issue Date',
+    expiryDate:'Expiry Date',
+    contact:'Contact Information',
+    email:'Email Address',
+    phone:'Telephone Number',
+    visitDetails:'Details of Visit to Canada',
+    purpose:'Purpose of my visit',
+    duration:'How long you plan to stay',
+    funds:'Funds available (CAD)',
+    visitContacts:'Name, address and relationship of any person(s) or institution(s) I will visit:',
+    name:'Name',
+    addressCanada:'Address in Canada',
+    prevPartnerInfo:'Previous Spouse/Partner Information',
+    relType:'Type of Relationship',
+    married:'Married',
+    commonLaw:'Common-law',
+    cancel:'Cancel',
+    prevResQuestion:'Previous countries of residence (past 5 years)?',
+    applyingQuestion:'Country where applying same as residence?',
+    prevMarital:'Have you previously been married?',
+    languages:'Languages',
+    nativeLang:'Native language',
+    commLang:'Able to communicate in',
+    nationalId:'National Identity Document',
+    haveId:'Do you have one?',
+    docNum:'Document Number',
+    countryIssue:'Country of Issue',
+    eduEmp:'Education & Employment',
+    eduQuestion:'Have you had any post secondary education?',
+    fieldStudy:'Field of Study',
+    schoolName:'School/Facility Name',
+    employment:'Employment (Past 10 years)',
+    companyName:'Company/Employer Name',
+    startDate:'Start Date',
+    endDate:'End Date',
+    city:'City',
+    country:'Country',
+    job1:'Employment 1 (Current)',
+    job2:'Employment 2',
+    job3:'Employment 3',
+    backgroundInfo:'Background Information',
+    provideDetails:'Please provide details:',
+    provideDetailsGroup2:'If you answered "yes" to question 2a), 2b), or 2c), please provide details:',
+    detailsPlaceholder:'Explain here...',
+    bg1:'1. a) Within the past two years, have you or a family member ever had tuberculosis of the lungs or been in close contact with a person with tuberculosis?',
+    bg1b:'b) Do you have any physical or mental disorder that would require social and/or health services, other than medication, during a stay in Canada?',
+    bg2a:'2. a) Have you ever remained beyond the validity of your status, attended school without authorization or worked without authorization in Canada?',
+    bg2b:'b) Have you ever been refused a visa or permit, denied entry or ordered to leave Canada or any other country or territory?',
+    bg2c:'c) Have you previously applied to enter or remain in Canada?',
+    bg3:'3. a) Have you ever committed, been arrested for or charged with any criminal offence in any country or territory?',
+    bg4:'4. a) Did you serve in any military, militia, or civil defence unit or serve in a security organization or police force (including non obligatory national service, reserve or volunteer units)?',
+    bg5:'5. Are you, or have you ever been a member or associated with any political party, or other group or organization which has engaged in or advocated violence as a means to achieving a political or religious objective, or which has been associated with criminal activity at any time?',
+    bg6:'6. Have you ever witnessed or participated in the ill treatment of prisoners or civilians, looting or desecration of religious buildings?',
+    provideDetailsGroup4:'If you answered "yes" to question 4a), please provide dates of service and countries or territories where you served:',
+    bgNote:'If you answered "yes" to any of questions 3 to 6 above, or upon request of a visa officer, you MAY BE REQUIRED to fill out IMM 5257 Schedule 1.',
+    applicant:'Applicant',
+    famName:'Family name', famNameSub:'(as shown on passport/travel document)',
+    givenName:'Given name(s)', givenNameSub:'(as shown on passport/travel document)',
+    nativeName:'Name in native language', nativeNameSub:'(if applicable)',
+    dob:'Date of birth', dobSub:'(YYYY-MM-DD)',
+    countryBirth:'Country or territory of birth', countryBirthSub:'(as on passport)',
+    marital:'Marital status', occupation:'Present occupation',
+    accompany:'Will accompany you to Canada?',
+    address:'Present address', addressSub:'(If deceased give city/town, country and date of death)',
+    parent1:'Your Parent 1 (Mother or Father)', parent2:'Your Parent 2 (Mother or Father)',
+    note1Title:'NOTE 1: If no spouse, common-law or conjugal partner is listed in Section A, read and sign below.',
+    note1Text:'I certify that I do not have a spouse, common-law or conjugal partner.',
+    note2Title:'NOTE 2: If no children are listed in Section B, read and sign below.',
+    note2Text:'I certify that I do not have any natural, adopted nor step-children.',
+    signature:'Signature', date:'Date (YYYY-MM-DD)',
+    secBp1:'Include <strong>ALL</strong> sons and daughters, including <strong>ALL</strong> adopted and step-children, regardless of age or place of residence.',
+    secBp2:'If you require more space, please either add lines to the form by pressing the + button or attach a separate sheet.',
+    noChildren:'I do not have any children',
+    addChild:'+ Add Child', removeChild:'− Remove',
+    relationship:'Relationship',
+    certText:'I certify that the information contained in this document is complete, accurate and factual. I also realize that once this document has been completed and signed that it will form part of my Immigration Record and will be used to verify my family details on future applications.',
+    certLegal:'<strong>The information you provide on this form</strong> is collected under the authority of the <em>Immigration and Refugee Protection Act</em> to determine if you may be admitted to Canada as a temporary resident. It will be stored in Personal Information Bank CIC PPU 055, Visitor Case File. It is protected and accessible under the <em>Privacy Act</em> and the <em>Access to Information Act.</em>',
+    insTitle:'Who needs to fill out this application form?',
+    insP1:'This form must be completed by:',
+    insLi1:'each person, 18 years of age or older, or',
+    insLi2:'a minor (less than 18 years of age) travelling alone.',
+    insATitle:'Section A',
+    insAText:'Write the personal details for: yourself, your spouse/common-law/conjugal partner (if applicable), your mother and your father or parent. Include: full name, name in native language (if applicable), date of birth, country or territory of birth, present address, marital status and present occupation.',
+    insANote:'Note: If you do not have a spouse, a common-law or conjugal partner, read "Note 1", sign and date the declaration.',
+    insBTitle:'Section B',
+    insBText:'Write the personal details for your children. Include all married, adopted, step-children and children in custody of an ex-spouse or other guardian.',
+    insBNote:'Note: If you do not have any children, check the box and read "Note 2", sign and date the declaration.',
+    insCTitle:'Section C – Signature',
+    insCText:'Sign and date in the sections provided.',
+    insCNote:'Note: By signing, you certify that you fully understand the questions asked, and that the information you have provided is complete, accurate and factual.',
+    insPrivacy:'Personal information provided on this form is collected by IRCC under the authority of the Immigration and Refugee Protection Act (IRPA). It will be used to process an application and may be disclosed to government institutions to validate identity, eligibility and admissibility. Failure to complete the form in full may result in a delay or the application not being processed – IRCC PPU 013, 051, 068.',
+    selectDefault:'-- Select --',
+    maritalOptions:['Single','Married','Common-law','Divorced','Separated','Widowed','Annulled Marriage','Unknown'],
+    relOptions:['Son','Daughter','Adopted Son','Adopted Daughter','Step-Son','Step-Daughter'],
+    childLabel:'Child #',
+    placeholderFamily:'e.g. Reyes Santos',
+    placeholderGiven:'e.g. Carlos',
+    placeholderOccupation:'e.g. Interiorista',
+    spouseTitle:'Your Spouse, Common-law Partner or Conjugal Partner',
+    yes:'YES',
+    no:'NO'
+  },
+  es: {
+    print:'🖨 Imprimir / Guardar PDF',
+    generateJsonText:'Generar JSON',
+    formTitle:'Portal de Formularios IRCC', formSub:'Seleccione un formulario para comenzar',
+    formTitle5707:'Información Familiar', formSub5707:'IMM 5707e – IRCC Canadá',
+    formTitle5257:'Solicitud de Visa de Visitante', formSub5257:'IMM 5257e – IRCC Canadá',
+    bannerP1:'Complete <strong>TODOS</strong> los nombres en inglés y en su <span class="text-indigo-600 font-semibold underline">idioma nativo</span> (por ejemplo, árabe, cirílico, chino, coreano o japonés). Incluya <strong>TODOS</strong> los miembros de la familia aunque no lo acompañen.',
+    bannerInk:'Escriba o imprima en tinta negra.',
+    bannerNote:'<strong>Importante:</strong> Las instrucciones están disponibles al final de este formulario para ayudarle a completar las secciones a continuación.',
+    portalTitle:'Portal de Formularios IRCC',
+    portalSub:'Seleccione el formulario que desea completar para su solicitud de visa canadiense.',
+    desc5707:'Información Familiar. Requerido para la mayoría de las solicitudes de residencia temporal.',
+    desc5257:'Solicitud de Visa de Residente Temporal. Formulario principal para visitantes.',
+    start:'Comenzar',
+    back:'Volver al Portal',
+    secA:'Sección A', secB:'Sección B – Hijos', secC:'Sección C – Certificación', secIns:'Instrucciones',
+    title5257:'Solicitud de Visa de Visitante (TRV)',
+    validate:'Validar',
+    uci:'UCI',
+    serviceLang:'Idioma de servicio',
+    visaRequested:'Visa Solicitada',
+    personalDetails:'Detalles Personales',
+    aliasQuestion:'¿Ha utilizado algún otro nombre?',
+    gender:'Sexo',
+    pob:'Lugar de Nacimiento (Ciudad)',
+    citizenship:'Ciudadanía',
+    residence:'País de residencia actual',
+    status:'Estado',
+    passport:'Pasaporte',
+    passNum:'Número de pasaporte',
+    issueDate:'Fecha de emisión',
+    expiryDate:'Fecha de expiración',
+    contact:'Información de Contacto',
+    email:'Correo Electrónico',
+    phone:'Número de Teléfono',
+    visitDetails:'Detalles de la Visita a Canadá',
+    purpose:'Propósito de mi visita',
+    duration:'Tiempo de estancia previsto',
+    funds:'Fondos disponibles (CAD)',
+    visitContacts:'Nombre, dirección y relación de cualquier persona(s) o institución(es) que visitaré:',
+    name:'Nombre',
+    addressCanada:'Dirección en Canadá',
+    prevPartnerInfo:'Información de ex-cónyuge/pareja',
+    relType:'Tipo de relación',
+    married:'Casado/a',
+    commonLaw:'Unión libre',
+    cancel:'Cancelar',
+    prevResQuestion:'¿Países previos de residencia (últimos 5 años)?',
+    applyingQuestion:'¿País donde solicita igual al de residencia?',
+    prevMarital:'¿Ha estado casado anteriormente?',
+    languages:'Idiomas',
+    nativeLang:'Lengua materna',
+    commLang:'Capaz de comunicarse en',
+    nationalId:'Documento Nacional de Identidad',
+    haveId:'¿Tiene uno?',
+    docNum:'Número de documento',
+    countryIssue:'País de emisión',
+    eduEmp:'Educación y Empleo',
+    eduQuestion:'¿Ha tenido educación postsecundaria?',
+    fieldStudy:'Campo de estudio',
+    schoolName:'Nombre de la escuela/institución',
+    employment:'Empleo (Últimos 10 años)',
+    companyName:'Nombre de la empresa/empleador',
+    startDate:'Fecha de inicio',
+    endDate:'Fecha de fin',
+    city:'Ciudad',
+    country:'País',
+    job1:'Empleo 1 (Actual)',
+    job2:'Empleo 2',
+    job3:'Empleo 3',
+    backgroundInfo:'Información de Antecedentes',
+    provideDetails:'Por favor, proporcione detalles:',
+    provideDetailsGroup2:'Si respondió "sí" a las preguntas 2a), 2b) o 2c), proporcione detalles:',
+    detailsPlaceholder:'Explique aquí...',
+    bg1:'1. a) ¿En los últimos dos años, usted o un familiar ha tenido tuberculosis pulmonar o ha estado en contacto cercano con una persona con tuberculosis?',
+    bg1b:'b) ¿Tiene algún trastorno físico o mental que requiera servicios sociales o de salud, aparte de medicamentos, durante su estancia en Canadá?',
+    bg2a:'2. a) ¿Ha permanecido alguna vez más allá de la validez de su estatus, asistido a la escuela sin autorización o trabajado sin autorización en Canadá?',
+    bg2b:'b) ¿Se le ha negado alguna vez una visa o permiso, negado la entrada o se le ha ordenado salir de Canadá o de cualquier otro país o territorio?',
+    bg2c:'c) ¿Ha solicitado previamente entrar o permanecer en Canadá?',
+    bg3:'3. a) ¿Ha cometido alguna vez, ha sido arrestado o acusado de algún delito penal en cualquier país o territorio?',
+    bg4:'4. a) ¿Sirvió en alguna unidad militar, milicia o unidad de defensa civil o sirvió en una organización de seguridad o fuerza policial (incluyendo el servicio nacional no obligatorio, unidades de reserva o voluntarias)?',
+    bg5:'5. ¿Es usted, o ha sido alguna vez miembro o asociado con algún partido político u otro grupo u organización que haya participado o abogado por la violencia como medio para lograr un objetivo político o religioso, o que haya estado asociado con actividad criminal en cualquier momento?',
+    bg6:'6. ¿Ha presenciado o participado alguna vez en el maltrato de prisioneros o civiles, saqueo o profanación de edificios religiosos?',
+    provideDetailsGroup4:'Si respondió "sí" a la pregunta 4a), proporcione las fechas de servicio y los países o territorios donde sirvió:',
+    bgNote:'Si respondió "sí" a cualquiera de las preguntas 3 a 6 anteriores, o a petición de un oficial de visas, ES POSIBLE QUE SE LE SOLICITE completar el formulario IMM 5257 Anexo 1 (Schedule 1).',
+    applicant:'Solicitante',
+    famName:'Apellido(s)', famNameSub:'(como aparece en pasaporte/documento de viaje)',
+    givenName:'Nombre(s)', givenNameSub:'(como aparece en pasaporte/documento de viaje)',
+    nativeName:'Nombre en idioma nativo', nativeNameSub:'(si aplica)',
+    dob:'Fecha de nacimiento', dobSub:'(AAAA-MM-DD)',
+    countryBirth:'País o territorio de nacimiento', countryBirthSub:'(como en el pasaporte)',
+    marital:'Estado civil', occupation:'Ocupación actual',
+    accompany:'¿Lo acompañará a Canadá?',
+    address:'Dirección actual', addressSub:'(Si falleció, indique ciudad, país y fecha de fallecimiento)',
+    parent1:'Su Padre/Madre 1', parent2:'Su Padre/Madre 2',
+    note1Title:'NOTA 1: Si no tiene cónyuge, pareja de hecho o pareja conyugal en la Sección A, lea y firme a continuación.',
+    note1Text:'Certifico que no tengo cónyuge, pareja de hecho ni pareja conyugal.',
+    note2Title:'NOTA 2: Si no hay hijos en la Sección B, lea y firme a continuación.',
+    note2Text:'Certifico que no tengo hijos naturales, adoptados ni hijastros.',
+    signature:'Firma', date:'Fecha (AAAA-MM-DD)',
+    secBp1:'Incluya <strong>TODOS</strong> los hijos e hijas, incluidos <strong>TODOS</strong> los adoptados e hijastros, independientemente de la edad o lugar de residencia.',
+    secBp2:'Si necesita más espacio, agregue líneas presionando el botón + o adjunte una hoja adicional.',
+    noChildren:'No tengo hijos',
+    addChild:'+ Agregar Hijo/a', removeChild:'− Eliminar',
+    relationship:'Parentesco',
+    certText:'Certifico que la información contenida en este documento es completa, exacta y verdadera. También reconozco que una vez completado y firmado, formará parte de mi Expediente de Inmigración.',
+    certLegal:'<strong>La información que proporciona en este formulario</strong> es recopilada bajo la autoridad de la <em>Ley de Inmigración y Protección de Refugiados</em> para determinar si puede ser admitido en Canadá como residente temporal. Estará almacenada en el Banco de Información Personal CIC PPU 055.',
+    insTitle:'¿Quién debe completar este formulario?',
+    insP1:'Este formulario debe ser completado por:',
+    insLi1:'cada persona de 18 años de edad o más, o',
+    insLi2:'un menor (menos de 18 años) que viaje solo.',
+    insATitle:'Sección A',
+    insAText:'Escriba los datos personales de: usted, su cónyuge/pareja de hecho (si aplica), su madre y su padre. Incluya: nombre completo, nombre en idioma nativo (si aplica), fecha de nacimiento, país de nacimiento, dirección actual, estado civil y ocupación.',
+    insANote:'Nota: Si no tiene cónyuge ni pareja de hecho, lea la "Nota 1" y firme la declaración.',
+    insBTitle:'Sección B',
+    insBText:'Escriba los datos personales de sus hijos. Incluya todos los hijos casados, adoptados, hijastros y los que estén bajo custodia de un ex-cónyuge u otro tutor.',
+    insBNote:'Nota: Si no tiene hijos, marque la casilla y lea la "Nota 2", firme y feche la declaración.',
+    insCTitle:'Sección C – Firma',
+    insCText:'Firme y feche en las secciones indicadas.',
+    insCNote:'Nota: Al firmar, certifica que comprende completamente las preguntas y que la información proporcionada es completa, exacta y verdadera.',
+    insPrivacy:'La información personal proporcionada en este formulario es recopilada por IRCC bajo la autoridad de la Ley de Inmigración y Protección de Refugiados (IRPA). Será utilizada para procesar una solicitud y podrá ser divulgada a organismos gubernamentales. El incumplimiento del formulario puede resultar en un retraso o en que la solicitud no sea procesada – IRCC PPU 013, 051, 068.',
+    selectDefault:'-- Seleccionar --',
+    maritalOptions:['Soltero/a','Casado/a','Unión libre','Divorciado/a','Separado/a','Viudo/a','Matrimonio anulado','Desconocido'],
+    relOptions:['Hijo','Hija','Hijo adoptado','Hija adoptada','Hijastro','Hijastra'],
+    childLabel:'Hijo/a #',
+    placeholderFamily:'ej. Reyes Santos',
+    placeholderGiven:'ej. Carlos',
+    placeholderOccupation:'ej. Interiorista',
+    spouseTitle:'Su Cónyuge, Pareja de Hecho o Pareja Conyugal',
+    yes:'SÍ',
+    no:'NO'
+  }
+};
+
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = T[lang];
+  document.getElementById('html-root').lang = lang;
+
+  // Header Buttons
+  const btnEn = document.getElementById('btn-en');
+  const btnEs = document.getElementById('btn-es');
+  if (btnEn) btnEn.className = lang==='en' ? 'px-4 py-1.5 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-100 transition-all' : 'px-4 py-1.5 rounded-lg bg-transparent text-slate-500 hover:bg-slate-100 transition-all';
+  if (btnEs) btnEs.className = lang==='es' ? 'px-4 py-1.5 rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-100 transition-all' : 'px-4 py-1.5 rounded-lg bg-transparent text-slate-500 hover:bg-slate-100 transition-all';
+
+  // Dynamic Header Titles
+  const h1 = document.querySelector('h1');
+  const hp = document.querySelector('header p');
+  if (currentFormId) {
+    if (h1) h1.textContent = t['formTitle' + currentFormId.replace('imm','')];
+    if (hp) hp.textContent = t['formSub' + currentFormId.replace('imm','')];
+  } else {
+    if (h1) h1.textContent = t.formTitle;
+    if (hp) hp.textContent = t.formSub;
+  }
+
+  // Translate all elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+
+  // Translate all placeholders with data-i18n-placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+
+  // Translate Marital Status Selects
+  const maritalIds = ['app-marital', 'p1-marital', 'p2-marital'];
+  maritalIds.forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) {
+      const options = sel.querySelectorAll('option');
+      options.forEach((opt, idx) => {
+        if (idx === 0) opt.textContent = t.selectDefault;
+        else if (t.maritalOptions && t.maritalOptions[idx-1]) {
+          opt.textContent = t.maritalOptions[idx-1];
+        }
+      });
+    }
+  });
+
+  // Translate Relationship Selects for Children
+  document.querySelectorAll('[id^="ch-rel-"]').forEach(sel => {
+    const options = sel.querySelectorAll('option');
+    options.forEach((opt, idx) => {
+      if (idx === 0) opt.textContent = t.selectDefault;
+      else if (t.relOptions && t.relOptions[idx-1]) {
+        opt.textContent = t.relOptions[idx-1];
+      }
+    });
+  });
+
+  // Update specific elements
+  document.querySelectorAll('.btn-add').forEach(btn => btn.textContent = t.addChild);
+  document.querySelectorAll('.btn-remove').forEach(btn => btn.textContent = t.removeChild);
+
+  // Banner
+  const banner = document.querySelectorAll('.card')[0]?.querySelectorAll('p');
+  if (banner && banner.length >= 3) {
+    banner[0].innerHTML = t.bannerP1;
+    banner[1].innerHTML = t.bannerInk;
+    banner[2].innerHTML = t.bannerNote;
+  }
+
+  // Section headers that might not have data-i18n yet
+  document.querySelectorAll('.section-header span').forEach((el, idx) => {
+    if (idx === 0) el.textContent = t.secA;
+    if (idx === 1) el.textContent = t.secB;
+  });
+
+  // Update existing child blocks
+  document.querySelectorAll('.child-block').forEach((block, i) => {
+    const label = block.querySelector('span.text-indigo-700');
+    if (label) label.textContent = t.childLabel + (i+1);
+    
+    const remBtn = block.querySelector('.btn-remove');
+    if (remBtn) remBtn.textContent = t.removeChild;
+    
+    const accompSpan = block.querySelector('.text-slate-600.font-bold') || block.querySelector('.text-slate-600');
+    if (accompSpan) accompSpan.textContent = t.accompany;
+  });
+}
+
+function addChild() {
+  if (document.getElementById('no-children').checked) return;
+  const t = T[currentLang];
+  childCount++;
+  const id = childCount;
+  const container = document.getElementById('children-container');
+  const div = document.createElement('div');
+  div.className = 'child-block card p-6 relative fade-in';
+  div.id = 'child-' + id;
+  div.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-black text-indigo-700 uppercase tracking-widest">${t.childLabel}${id}</span>
+      <div class="flex gap-2 no-print">
+        <button class="btn-remove" onclick="removeChild(${id})">${t.removeChild}</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-6 mb-3">
+      <span class="text-xs font-bold text-slate-600">${t.accompany}</span>
+      <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+        <input type="radio" name="ch${id}-accompany" value="yes" class="accent-indigo-600"> YES
+      </label>
+      <label class="flex items-center gap-1 text-xs font-semibold cursor-pointer">
+        <input type="radio" name="ch${id}-accompany" value="no" class="accent-indigo-600"> NO
+      </label>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
+      <div>
+        <label class="field-label">${t.relationship}</label>
+        <select class="form-input" data-rel="1">
+          <option value="">${t.selectDefault}</option>
+          ${t.relOptions.map(o=>`<option>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="field-label">${t.famName}</label>
+        <input class="form-input" type="text">
+      </div>
+      <div>
+        <label class="field-label">${t.givenName}</label>
+        <input class="form-input" type="text">
+      </div>
+      <div>
+        <label class="field-label">${t.dob} (YYYY-MM-DD)</label>
+        <input class="form-input" type="date">
+      </div>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div>
+        <label class="field-label">${t.countryBirth}</label>
+        <input class="form-input" type="text">
+      </div>
+      <div>
+        <label class="field-label">${t.address}<br><span class="font-normal normal-case text-slate-400">${t.addressSub}</span></label>
+        <input class="form-input" type="text">
+      </div>
+      <div>
+        <label class="field-label">${t.marital}</label>
+        <select class="form-input">
+          <option value="">${t.selectDefault}</option>
+          ${t.maritalOptions.map(o=>`<option>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="field-label">${t.occupation}</label>
+        <input class="form-input" type="text">
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+function removeChild(id) {
+  const el = document.getElementById('child-' + id);
+  if (el) el.remove();
+}
+
+function toggleChildren(cb) {
+  const container = document.getElementById('children-container');
+  const addBtn = document.querySelector('#children-container + button, .btn-add');
+  if (cb.checked) {
+    container.style.opacity = '0.3';
+    container.style.pointerEvents = 'none';
+  } else {
+    container.style.opacity = '1';
+    container.style.pointerEvents = '';
+  }
+}
+
+// Handle applicant marital status change to show/hide spouse section
+document.getElementById('app-marital').addEventListener('change', function() {
+  const val = this.value;
+  // Hide only when Single/Soltero or no selection; show for everything else
+  const hideStatuses = ['', 'Single', 'Soltero/a'];
+  const section = document.getElementById('spouse-section');
+  if (!val || hideStatuses.includes(val)) {
+    section.classList.add('hidden');
+  } else {
+    section.classList.remove('hidden');
+  }
+});
+
+// Logic for showing forms
+function showForm(id) {
+  currentFormId = id;
+  const t = T[currentLang];
+  document.getElementById('selection-screen').classList.add('hidden');
+  document.getElementById('imm5707-container').classList.add('hidden');
+  document.getElementById('imm5257-container').classList.add('hidden');
+  
+  document.getElementById(id + '-container').classList.remove('hidden');
+  
+  // Update Header
+  const h1 = document.querySelector('h1');
+  const hp = document.querySelector('header p');
+  if (h1) h1.textContent = t['formTitle' + id.replace('imm','')];
+  if (hp) hp.textContent = t['formSub' + id.replace('imm','')];
+  
+  window.scrollTo(0,0);
+}
+
+function backToPortal() {
+  currentFormId = null;
+  const t = T[currentLang];
+  document.getElementById('selection-screen').classList.remove('hidden');
+  document.getElementById('imm5707-container').classList.add('hidden');
+  document.getElementById('imm5257-container').classList.add('hidden');
+  
+  // Reset Header
+  const h1 = document.querySelector('h1');
+  const hp = document.querySelector('header p');
+  if (h1) h1.textContent = t.formTitle;
+  if (hp) hp.textContent = t.formSub;
+  
+  window.scrollTo(0,0);
+}
+
+function toggleAlias(cb) {
+  const fields = document.getElementById('alias-fields');
+  if (cb.checked) fields.classList.remove('hidden');
+  else fields.classList.add('hidden');
+}
+
+function toggleEdu(radio) {
+  const details = document.getElementById('edu-details');
+  if (radio.value === 'yes') details.classList.remove('hidden');
+  else details.classList.add('hidden');
+}
+
+function toggleBgDetails(id, show) {
+  const el = document.getElementById(id);
+  if (show) el.classList.remove('hidden');
+  else el.classList.add('hidden');
+}
+
+function checkGroup2() {
+  const q2a = document.querySelector('input[name="bg2a"]:checked')?.value;
+  const q2b = document.querySelector('input[name="bg2b"]:checked')?.value;
+  const q2c = document.querySelector('input[name="bg2c"]:checked')?.value;
+  const show = (q2a === 'yes' || q2b === 'yes' || q2c === 'yes');
+  toggleBgDetails('bg2-details', show);
+}
+
+function togglePrevMarried(show) {
+  const el = document.getElementById('prev-married-details');
+  if (show) el.classList.remove('hidden');
+  else el.classList.add('hidden');
+}
+
+function removeChild(id) {
+  const el = document.getElementById('child-' + id);
+  if (el) el.remove();
+}
+
+function toggleChildren(cb) {
+  const container = document.getElementById('children-container');
+  if (cb.checked) container.classList.add('hidden');
+  else container.classList.remove('hidden');
+}
+
+// Initial Setup
+addChild();
+setLang('es');
+
+function generateFormDataJSON() {
+  const formId = currentFormId; 
+  if (!formId) {
+    alert(currentLang === 'en' ? 'Please select a form first.' : 'Por favor, seleccione un formulario primero.');
+    return;
+  }
+
+  const container = document.getElementById(formId + '-container');
+  const data = {
+    formType: formId.toUpperCase(),
+    exportDate: new Date().toLocaleString(),
+    formData: {}
+  };
+
+  const inputs = container.querySelectorAll('input, select, textarea');
+  inputs.forEach((input, index) => {
+    // Determine a smart key
+    let key = input.id || input.name;
+    
+    if (!key) {
+      // Look for a sibling or parent label with data-i18n
+      const parent = input.closest('div');
+      const label = parent ? parent.querySelector('.field-label span[data-i18n]') || parent.querySelector('.field-label[data-i18n]') : null;
+      if (label) {
+        key = label.getAttribute('data-i18n') + '_' + index;
+      } else {
+        key = 'field_' + index;
+      }
+    }
+
+    if (input.type === 'checkbox') {
+      data.formData[key] = input.checked;
+    } else if (input.type === 'radio') {
+      if (input.checked) {
+        data.formData[input.name || key] = input.value;
+      }
+    } else {
+      data.formData[key] = input.value;
+    }
+  });
+
+  // Dedicated handling for children in IMM 5707
+  if (formId === 'imm5707') {
+    const children = [];
+    container.querySelectorAll('.child-block').forEach((block, idx) => {
+      const childInputs = block.querySelectorAll('input, select');
+      children.push({
+        index: idx + 1,
+        accompany: block.querySelector('input[type="radio"]:checked')?.value || 'no',
+        relationship: childInputs[2]?.value,
+        familyName: childInputs[3]?.value,
+        givenName: childInputs[4]?.value,
+        dob: childInputs[5]?.value,
+        countryBirth: childInputs[6]?.value,
+        address: childInputs[7]?.value,
+        maritalStatus: childInputs[8]?.value,
+        occupation: childInputs[9]?.value
+      });
+    });
+    data.formData.children_list = children;
+  }
+
+  const jsonString = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${formId.toUpperCase()}_Data_${new Date().getTime()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
