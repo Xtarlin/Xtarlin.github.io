@@ -2041,5 +2041,135 @@ function generateFormDataJSON() {
   URL.revokeObjectURL(url);
 }
 </script>
+
+<!-- ── SAVE TOAST ── -->
+<div id="save-toast" class="no-print fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-slate-900/90 text-white text-[11px] font-bold px-4 py-2.5 rounded-2xl shadow-xl opacity-0 transition-opacity duration-500 pointer-events-none">
+  <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+  <span id="save-toast-text">Progreso guardado</span>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  AUTOSAVE — localStorage
+// ════════════════════════════════════════════════
+const CACHE_KEY = 'ircc_form_cache';
+let autosaveTimer = null;
+
+function showSaveToast() {
+  const toast = document.getElementById('save-toast');
+  if (!toast) return;
+  document.getElementById('save-toast-text').textContent =
+    currentLang === 'es' ? 'Progreso guardado' : 'Progress saved';
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+}
+
+function collectFields(container) {
+  const data = {};
+  container.querySelectorAll('input, select, textarea').forEach((el, i) => {
+    const key = el.id || el.name || ('field_' + i);
+    if (el.type === 'checkbox') data[key] = el.checked;
+    else if (el.type === 'radio') { if (el.checked) data[key] = el.value; }
+    else data[key] = el.value;
+  });
+  return data;
+}
+
+function saveFormCache() {
+  if (!currentFormId) return;
+  const container = document.getElementById(currentFormId + '-container');
+  if (!container) return;
+  const cache = {
+    formId: currentFormId, lang: currentLang, savedAt: new Date().toISOString(),
+    fields: collectFields(container), childCount, prevResCount,
+    childBlocks: [], prevResBlocks: []
+  };
+  container.querySelectorAll('.child-block').forEach(b => cache.childBlocks.push(collectFields(b)));
+  container.querySelectorAll('.prev-res-block').forEach(b => cache.prevResBlocks.push(collectFields(b)));
+  localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  showSaveToast();
+}
+
+function applyFields(container, data) {
+  container.querySelectorAll('input, select, textarea').forEach((el, i) => {
+    const key = el.id || el.name || ('field_' + i);
+    if (!(key in data)) return;
+    if (el.type === 'checkbox') { el.checked = data[key]; el.dispatchEvent(new Event('change')); }
+    else if (el.type === 'radio') { if (el.value === data[key]) { el.checked = true; el.dispatchEvent(new Event('change')); } }
+    else el.value = data[key];
+  });
+}
+
+function restoreFormCache(id) {
+  const raw = localStorage.getItem(CACHE_KEY);
+  if (!raw) return;
+  let cache;
+  try { cache = JSON.parse(raw); } catch { return; }
+  if (!cache || cache.formId !== id) return;
+  const container = document.getElementById(id + '-container');
+  if (!container) return;
+
+  // Recreate child blocks
+  if (cache.childBlocks && cache.childBlocks.length > 0) {
+    container.querySelectorAll('.child-block').forEach(el => el.remove());
+    childCount = 0;
+    cache.childBlocks.forEach(bd => {
+      addChild();
+      const block = document.getElementById('child-' + childCount);
+      if (block) applyFields(block, bd);
+    });
+  }
+
+  // Recreate prev-res blocks
+  if (cache.prevResBlocks && cache.prevResBlocks.length > 0) {
+    const list = document.getElementById('prev-res-list');
+    if (list) list.innerHTML = '';
+    prevResCount = 0;
+    cache.prevResBlocks.forEach(bd => {
+      addPrevCountry();
+      const block = document.getElementById('prev-res-' + prevResCount);
+      if (block) applyFields(block, bd);
+    });
+    const prevCont = document.getElementById('prev-res-container');
+    if (prevCont) prevCont.classList.remove('hidden');
+  }
+
+  applyFields(container, cache.fields);
+
+  const noChild = container.querySelector('#no-children');
+  if (noChild && noChild.checked) toggleChildren(noChild);
+  const prevYes = container.querySelector('input[name="has-prev-res"][value="yes"]');
+  if (prevYes && prevYes.checked) togglePrevRes(true);
+  if (cache.lang && cache.lang !== currentLang) setLang(cache.lang);
+}
+
+function startAutosave() {
+  if (!currentFormId) return;
+  const container = document.getElementById(currentFormId + '-container');
+  if (!container) return;
+  const observer = new MutationObserver(() => attachListeners(container));
+  observer.observe(container, { childList: true, subtree: true });
+  attachListeners(container);
+}
+
+function attachListeners(container) {
+  container.querySelectorAll('input, select, textarea').forEach(el => {
+    if (el.dataset.autosaveAttached) return;
+    el.dataset.autosaveAttached = 'true';
+    el.addEventListener('input', debouncedSave);
+    el.addEventListener('change', debouncedSave);
+  });
+}
+
+function debouncedSave() {
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(saveFormCache, 800);
+}
+
+function clearFormCache() {
+  localStorage.removeItem(CACHE_KEY);
+  alert(currentLang === 'es' ? 'Caché borrado correctamente.' : 'Cache cleared.');
+}
+</script>
 </body>
 </html>
